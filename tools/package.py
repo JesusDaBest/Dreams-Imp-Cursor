@@ -46,7 +46,7 @@ for archive in archives:
                 for p in sorted((ROOT/directory).rglob('*')):
                     if p.is_file() and p.suffix not in ('.obj','.res','.exe','.pyc') and '__pycache__' not in p.parts and p.name!='build-local.cmd':
                         z.write(p,Path('Dreams Imp')/p.relative_to(ROOT))
-            for filename in ('test_picker_lifecycle.py','test_desktop_access.py','test_portable_render.py','test_tip_bloom.py','test_body_glow.py','body-glow-report.json','body-glow-comparison.png','portable-render-log.txt','catalog-render.json','character-counts.json','appearance-sheet.png'):
+            for filename in ('test_picker_lifecycle.py','test_desktop_access.py','test_portable_render.py','test_tip_bloom.py','portable-render-log.txt','catalog-render.json','character-counts.json','appearance-sheet.png'):
                 z.write(ROOT/'tests'/filename,'Dreams Imp/tests/'+filename)
     with zipfile.ZipFile(archive) as z:
         bad=z.testzip()

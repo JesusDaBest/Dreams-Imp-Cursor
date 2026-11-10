@@ -16,27 +16,6 @@ Present = C.CFUNCTYPE(C.c_int, C.c_void_p, C.c_uint, C.c_uint, C.c_void_p)
 Eyes = C.CFUNCTYPE(C.c_int, C.c_void_p)
 
 
-def cursor_view(captured):
-    if len(captured) != 208:
-        raise ValueError('Unrecognized Imp view layout')
-    view = bytearray(captured)
-    # PrimImpOverBokehPS adds view[47] * body colour * its internal-light
-    # profile to the surface colour. The captured scene had this gain at
-    # 1.5 even at rest. A desktop Imp must not emit that body glow.
-    # The captured scene-light coefficients (view[12:39]) are all zero. Do
-    # not mix that absent scene lighting over the native surface colour:
-    # the original shader uses view[39] as that blend weight. Otherwise
-    # removing emission leaves a black body lit only by the old glow.
-    # Its base-light endpoints at view[8:10] were 0.05/0.28, relying on the
-    # removed internal light for visibility. Set both to neutral illumination
-    # (1), so the original pigment colour remains visible without emission.
-    # These are original shader inputs, not a substitute shader or colour LUT.
-    struct.pack_into('<2f', view, 8 * 4, 1.0, 1.0)
-    struct.pack_into('<f', view, 39 * 4, 0.0)
-    struct.pack_into('<f', view, 47 * 4, 0.0)
-    return view
-
-
 class LiveFrames(C.Structure):
     _fields_ = [
         ('shader', C.c_char_p), ('constants', C.c_void_p), ('push', C.c_void_p),
@@ -145,7 +124,7 @@ def render(particles, present, stick_particles=lambda: (b'', b''), eye_count=lam
                    tip_ready if tip_count and present_tip else Present())
     import tempfile
     view = Path(tempfile.gettempdir())/f'dreams-imp-lighting-{os.getpid()}.bin'
-    view_bytes = cursor_view((captures/'stage-0-buffer1.bin').read_bytes()[:208])
+    view_bytes = bytearray((captures/'stage-0-buffer1.bin').read_bytes()[:208])
     body = runpy.run_path(str(ROOT/'verify-native-imp-body.py'))
     view_bytes[16:28] = body['stock_body_parameters']()[0x40:0x4c]
     view.write_bytes(view_bytes)

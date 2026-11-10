@@ -18,7 +18,7 @@ from app_paths import ROOT, STATE, READY, ERROR, write_json
 from space_preview import card_image, SpacePreview
 
 TITLE = 'Dreams Imp'
-VERSION = '1.0.2'
+VERSION = '1.0.3'
 BG, PANEL, FG, MUTED, ACCENT = '#170f26', '#291a40', '#f4edff', '#bfafd2', '#d8b3ff'
 
 def named_handle(name):

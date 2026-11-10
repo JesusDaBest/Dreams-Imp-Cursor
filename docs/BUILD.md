@@ -65,18 +65,11 @@ Intel hardware have not been physically tested; compatibility depends on driver
 features, not a vendor-name check. This is not a claim of exact behavior of every
 game revision or every Windows application.
 
-Preset colours come from the decoded character data. The desktop uses the original
-shader's neutral surface-light inputs (view bytes 32/36 = 1), disables its absent
-scene-light blend (byte 156 = 0), and sets the always-on internal body emission gain
-to zero (byte 188). In PrimImpOverBokehPS, view[47] multiplies the internal-light
-profile and adds it to the surface RGB. The captured settings previously used a
-gain of 1.5 and zero scene-light coefficients, creating a bright body centre even
-without hovering. These are shader-input changes; the shader and preset pigment
-colours are retained. This desktop lighting is not a claim that every preset has
-been visually matched against every Dreams scene.
+Preset colours come from the decoded character data. Version 1.0.3 restores the
+original 1.0.1 lighting inputs and all 149 original card images byte-for-byte.
+The 1.0.2 body-light changes altered the intended appearance and were removed.
+Displayed colours have not been compared against Dreams for every preset.
 
-Two native appearances passed 96 before/after GPU frames with identical particle
-streams and coverage. All 149 card previews were regenerated without body emission.
 Hover bloom now uses only a separate draw of the two native tip particles with the
 original eye shader and bloom math. A 64-frame GPU test checks hover transitions,
 unchanged output while hover is off, and no halo from bright body pixels.

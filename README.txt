@@ -1,4 +1,4 @@
-Dreams Imp for Windows — 1.0.2
+Dreams Imp for Windows — 1.0.3
 
 Extract the whole ZIP, then double-click Dreams Imp.exe.
 Choose an Imp, then click Set as cursor. Opening the app and browsing presets
@@ -16,8 +16,8 @@ ported original shaders. Windows mouse events drive the reactions. It is a
 live, click-through cursor overlay, not a GIF. The render area is padded for
 movement; the Imp is approximately 5 times the original cursor size. Animation
 and morph speed are 50%; drawing targets 120 Hz, subject to GPU/CPU load.
-The picker presents the Imps in purple space with a floating preview. Body
-emission is off; the antenna tip alone gains a halo over interactive controls.
+The picker presents the Imps in purple space with a floating preview. Original
+Imp lighting and colours are retained; added bloom is confined to the antenna tip.
 
 Requirements
   Windows 10/11 x64, an AVX2-capable CPU and a current Vulkan 1.3 graphics driver.
