@@ -1,13 +1,13 @@
 # Dreams Imp
 
 Portable Windows cursor app using the original Dreams Imp assets, motion
-routines and ported Vulkan shaders. Choose a preset and click **Set as cursor**.
-Opening the app or browsing presets does not activate or change the cursor.
+routines and ported Vulkan shaders. Click an Imp card to set it as your cursor.
+Opening the app or filtering categories does not activate or change the cursor.
 
 ## Run
 
-Extract the complete Windows package, open `Dreams Imp.exe`, choose an Imp,
-and click **Set as cursor**. Close the picker to restore the Windows cursor.
+Extract the complete Windows package, open `Dreams Imp.exe`, and click an Imp
+card. Close the picker to restore the Windows cursor.
 The included runtime contains Python, Tk and Pillow. No development tools are
 needed to run it, and Dreams does not need to be open.
 
@@ -52,7 +52,7 @@ spirv-as --target-env spv1.3 native/shaders/wave32-resolve.spvasm -o runtime/sha
 All 149 presets were decoded with the game loader and native face setup routines.
 The complete catalog passed 3,576 offscreen GPU frames on AMD Radeon 8060S.
 The desktop renderer reported its first displayed frame in the local live check.
-Seven startup, explicit-selection and process-handover tests passed. The packaged renderer also passed
+Nine startup, explicit-selection and process-handover tests passed. The packaged renderer also passed
 96 offscreen frames covering eight motions/expressions for the Clown, launched
 from an unrelated working directory with the bundled Python runtime.
 Thirteen desktop-access and visibility tests reproduce Windows error 5, verify that unavailable
@@ -73,8 +73,9 @@ Displayed colours have not been compared against Dreams for every preset.
 Hover bloom now uses only a separate draw of the two native tip particles with the
 original eye shader and bloom math. A 64-frame GPU test checks hover transitions,
 unchanged output while hover is off, and no halo from bright body pixels.
-The purple picker backgrounds are separate UI artwork; the large preview moves
-the native thumbnail gently without recolouring or deforming the Imp.
+The picker shows only Imp cards, names and a category dropdown. Its purple
+backgrounds are separate UI artwork; the native thumbnails retain their aspect
+ratio and colours. Version 1.0.4 changes the picker only, not the renderer.
 
 Runtime state is stored under `%LOCALAPPDATA%/Dreams Imp`; it is excluded from the
 packages. `MANIFEST.sha256` identifies shipped files. Nothing is published by the

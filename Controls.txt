@@ -26,6 +26,6 @@ These gestures do not consume your mouse input or change the underlying app.
 They associate game-specific animations with desktop actions; they do not
 recreate Dreams' editing tools on Windows.
 
-Open Dreams Imp.exe, choose a preset, then click Set as cursor.
-Browsing presets does not change the active cursor.
+Open Dreams Imp.exe and click an Imp card to set it as your cursor.
+The category dropdown filters cards without changing the active cursor.
 Minimize the picker to keep using the cursor. Close the picker to quit.

@@ -15,10 +15,10 @@ from tkinter import ttk, messagebox
 from PIL import Image, ImageTk
 
 from app_paths import ROOT, STATE, READY, ERROR, write_json
-from space_preview import card_image, SpacePreview
+from space_preview import card_image
 
 TITLE = 'Dreams Imp'
-VERSION = '1.0.3'
+VERSION = '1.0.4'
 BG, PANEL, FG, MUTED, ACCENT = '#170f26', '#291a40', '#f4edff', '#bfafd2', '#d8b3ff'
 
 def named_handle(name):
@@ -72,7 +72,7 @@ class App:
         if self.selected not in self.by_id: self.selected = '00_default'
         root.title(TITLE)
         root.geometry('970x700')
-        root.minsize(800, 620)
+        root.minsize(340, 360)
         root.configure(bg=BG)
         root.protocol('WM_DELETE_WINDOW', self.close)
         try: root.iconbitmap(str(ROOT/'app.ico'))
@@ -80,32 +80,18 @@ class App:
         style = ttk.Style()
         style.theme_use('clam')
         style.configure('.', font=('Segoe UI', 11), background=BG, foreground=FG)
-        style.configure('TButton', padding=(15, 10), background='#49325e', borderwidth=0)
-        style.map('TButton', background=[('active', '#654678'), ('disabled', '#31283c')])
-        style.configure('Accent.TButton', background=ACCENT, foreground='#271335', font=('Segoe UI Semibold',11))
-        style.map('Accent.TButton', background=[('active','#ead4ff'),('disabled','#655273')])
-        style.configure('TEntry', fieldbackground=PANEL, foreground=FG, padding=8)
         style.configure('TCombobox', fieldbackground=PANEL, foreground=FG, padding=8)
         style.map('TCombobox', fieldbackground=[('readonly',PANEL)], foreground=[('readonly',FG)])
-        head = tk.Frame(root,bg=BG)
-        head.pack(fill='x',padx=26,pady=(22,18))
-        tk.Label(head,text='Dreams Imp',font=('Segoe UI Semibold',25),fg=FG,bg=BG).pack(anchor='w')
-        tk.Label(head,text='Choose your Imp, then click Set as cursor.',font=('Segoe UI',12),
-                 fg=MUTED,bg=BG).pack(anchor='w',pady=(5,0))
         body = tk.Frame(root,bg=BG)
-        body.pack(fill='both',expand=True,padx=26)
-        body.columnconfigure(0,weight=1); body.columnconfigure(1,weight=1)
-        body.rowconfigure(2,weight=1)
-        self.query = tk.StringVar()
+        body.pack(fill='both',expand=True,padx=18,pady=18)
+        body.columnconfigure(0,weight=1)
+        body.rowconfigure(1,weight=1)
         self.group = tk.StringVar(value='All Imps')
-        self.search = ttk.Entry(body,textvariable=self.query)
-        self.search.grid(row=0,column=0,sticky='ew',padx=(0,22))
-        self.search.insert(0,'')
         groups = ['All Imps','Classic Imps','Halloween',"Art’s Dream",'Special editions','Internal presets']
         ttk.Combobox(body,textvariable=self.group,values=groups,state='readonly').grid(
-            row=1,column=0,sticky='ew',pady=(8,10),padx=(0,22))
+            row=0,column=0,sticky='ew',pady=(0,12))
         listframe = tk.Frame(body,bg=PANEL)
-        listframe.grid(row=2,column=0,sticky='nsew',padx=(0,22))
+        listframe.grid(row=1,column=0,sticky='nsew')
         self.gallery = tk.Canvas(listframe,bg=BG,highlightthickness=0)
         scrollbar = ttk.Scrollbar(listframe,orient='vertical',command=self.gallery.yview)
         self.gallery.configure(yscrollcommand=scrollbar.set)
@@ -115,34 +101,15 @@ class App:
         self.gallery.bind('<Configure>',self.resize_cards)
         self.card_frame.bind('<Configure>',lambda _:self.gallery.configure(scrollregion=self.gallery.bbox('all')))
         self.gallery.bind('<MouseWheel>',self.scroll_cards)
-        preview = tk.Frame(body,bg=PANEL)
-        preview.grid(row=0,column=1,rowspan=3,sticky='nsew')
-        self.name = tk.Label(preview,text='',bg=PANEL,fg=FG,font=('Segoe UI Semibold',18),wraplength=350)
-        self.name.pack(padx=18,pady=(22,3))
-        self.collection = tk.Label(preview,text='',bg=PANEL,fg=ACCENT,font=('Segoe UI',10))
-        self.collection.pack()
-        self.picture = SpacePreview(preview)
-        self.picture.pack(fill='both',expand=True,padx=12,pady=8)
-        tk.Label(preview,text='Live native animation · 5× cursor\n50% animation speed · 120 Hz drawing',
-                 bg=PANEL,fg=MUTED,font=('Segoe UI',10),justify='center').pack(pady=(0,18))
-        self.use_button=ttk.Button(preview,text='Set as cursor',style='Accent.TButton',command=self.start)
-        self.use_button.pack(fill='x',padx=24,pady=(0,24))
-        self.count = tk.StringVar()
-        tk.Label(root,textvariable=self.count,bg=BG,fg=MUTED,font=('Segoe UI',10)).pack(anchor='w',padx=26,pady=(8,10))
-        self.status = tk.StringVar(value='Choose an Imp above. Your cursor changes only when you click Set as cursor.')
-        tk.Label(root,textvariable=self.status,bg=BG,fg=MUTED,font=('Segoe UI',10),wraplength=900,
-                 justify='left').pack(fill='x',padx=26,pady=(0,18),anchor='w')
-        self.query.trace_add('write',self.refresh)
         self.group.trace_add('write',self.refresh)
-        self.refresh();self.show(self.selected)
+        self.refresh()
         root.after(200,self.poll)
 
     def refresh(self,*_):
         for card in self.cards.values():card.destroy()
         self.cards.clear()
-        q = self.query.get().casefold().strip(); group = self.group.get()
-        visible = [i for i in self.items if (group=='All Imps' or category(i['id'])==group)
-                   and (q in display_name(i).casefold() or q in i['id'].casefold())]
+        group = self.group.get()
+        visible = [i for i in self.items if group=='All Imps' or category(i['id'])==group]
         visible.sort(key=lambda i:(i['id']!='00_default',display_name(i).casefold()))
         for item in visible:
             ident=item['id']
@@ -153,16 +120,21 @@ class App:
                 command=lambda ident=ident:self.select(ident),bg=PANEL,fg=FG,activebackground='#52346b',
                 activeforeground=FG,font=('Segoe UI',10),wraplength=118,relief='flat',borderwidth=0,
                 highlightthickness=2,highlightbackground=PANEL,highlightcolor=ACCENT,padx=6,pady=8,
-                cursor='hand2',takefocus=True)
+                cursor='hand2',takefocus=True,state='disabled' if self.changing else 'normal')
             card.bind('<MouseWheel>',self.scroll_cards)
             self.cards[ident]=card
-        self.count.set(f'{len(visible)} shown · {len(self.items)} game presets, including 2 internal presets')
         self.layout_cards()
         self.highlight_selected()
         self.gallery.yview_moveto(0)
 
     def select(self,ident):
+        if self.changing or self.closing:return
         self.show(ident)
+        self.start()
+
+    def enable_cards(self,enabled):
+        for card in self.cards.values():
+            card.configure(state='normal' if enabled else 'disabled')
 
     def highlight_selected(self):
         for ident,card in self.cards.items():
@@ -189,10 +161,6 @@ class App:
     def show(self,ident):
         self.selected=ident
         self.highlight_selected()
-        self.name.configure(text=display_name(self.by_id[ident]))
-        self.collection.configure(text=category(ident))
-        with Image.open(ROOT/'thumbnails'/(ident+'.png')) as image:
-            self.picture.set_imp(image)
 
     def signal_stop(self):
         return runpy.run_path(str(ROOT/'win-imp-overlay.py'))['stop']()
@@ -202,8 +170,7 @@ class App:
         if self.worker and self.worker.poll() is None and self.selected==self.active_character:return
         self.changing=True;self.ready_seen=False
         self.pending_character=self.selected
-        self.use_button.configure(state='disabled')
-        self.status.set('Starting '+display_name(self.by_id[self.pending_character])+'…')
+        self.enable_cards(False)
         self.signal_stop()
         self.wait_then_launch(time.monotonic()+10)
 
@@ -212,16 +179,12 @@ class App:
         if named_handle('Local\\DreamsStandaloneImp.Active'):
             if time.monotonic()<deadline:
                 self.root.after(100,lambda:self.wait_then_launch(deadline));return
-            self.changing=False
-            self.use_button.configure(state='normal')
-            self.status.set('The previous Imp is still closing. Click Set as cursor to retry.');return
+            self.fail('The previous Imp is still closing. Click its card to retry.');return
         # Reap the previous renderer before replacing its process handle.
         if self.worker and self.worker.poll() is None:
             if time.monotonic()<deadline:
                 self.root.after(100,lambda:self.wait_then_launch(deadline));return
-            self.changing=False
-            self.use_button.configure(state='normal')
-            self.status.set('The previous Imp is still closing. Click Set as cursor to retry.');return
+            self.fail('The previous Imp is still closing. Click its card to retry.');return
         if self.log:self.log.close()
         self.log=(STATE/'renderer.log').open('w',encoding='utf-8')
         READY.unlink(missing_ok=True);ERROR.unlink(missing_ok=True)
@@ -236,13 +199,12 @@ class App:
             self.fail(str(error));return
         self.changing=False
         self.pending_character=None
-        self.use_button.configure(state='normal')
+        self.enable_cards(True)
 
     def fail(self,detail):
         self.changing=False;self.active_character=None
         self.pending_character=None
-        self.use_button.configure(state='normal')
-        self.status.set('The Imp could not start. Details are saved in '+str(STATE))
+        self.enable_cards(True)
         summary=detail.strip().splitlines()[-1] if detail.strip() else 'The cursor renderer exited unexpectedly.'
         messagebox.showerror(TITLE,summary[:600]+'\n\nLog folder: '+str(STATE),parent=self.root)
 
@@ -256,13 +218,11 @@ class App:
                 if result:
                     detail=ERROR.read_text(encoding='utf-8') if ERROR.exists() else (STATE/'renderer.log').read_text(encoding='utf-8')
                     self.fail(detail[-2500:] or f'Renderer exited with code {result}.')
-                elif not self.changing:self.status.set('Stopped. Your Windows cursor is restored.')
             elif not self.ready_seen and READY.exists():
                 try:
                     ready=json.loads(READY.read_text(encoding='utf-8'))
                     if ready['pid']==self.worker.pid:
                         self.ready_seen=True
-                        self.status.set(display_name(self.by_id[ready['character']])+' is your cursor. Minimize this window to keep it; close it to quit.')
                 except (ValueError,OSError,KeyError):pass
         self.root.after(200,self.poll)
 

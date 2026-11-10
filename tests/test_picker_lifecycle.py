@@ -21,9 +21,9 @@ class PickerLifecycle(unittest.TestCase):
         self.paths = patch.multiple(picker,STATE=self.state,READY=self.state/'ready.json',ERROR=self.state/'error.txt')
         self.paths.start()
         self.app=picker.App.__new__(picker.App)
-        self.app.root=Mock();self.app.status=Mock();self.app.worker=None;self.app.log=None
+        self.app.root=Mock();self.app.worker=None;self.app.log=None
         self.app.closing=False;self.app.changing=False;self.app.ready_seen=False
-        self.app.pending_character=None;self.app.active_character='00_default';self.app.use_button=Mock()
+        self.app.pending_character=None;self.app.active_character='00_default';self.app.cards={}
         self.app.selected='33_clown';self.app.settings={}
         self.app.config_path=self.state/'settings.json'
         self.app.by_id={'00_default':{'id':'00_default'},'33_clown':{'id':'33_clown'},'H21_Pag_Clown':{'id':'H21_Pag_Clown'}}
@@ -31,10 +31,14 @@ class PickerLifecycle(unittest.TestCase):
     def tearDown(self):
         if self.app.log:self.app.log.close()
         self.paths.stop();self.temp.cleanup()
-    def test_browsing_presets_does_not_activate_a_cursor(self):
+    def test_clicking_a_card_explicitly_activates_that_imp(self):
         self.app.show=Mock();self.app.start=Mock();self.app.select('33_clown')
-        self.app.show.assert_called_once_with('33_clown');self.app.start.assert_not_called()
+        self.app.show.assert_called_once_with('33_clown');self.app.start.assert_called_once_with()
         self.app.root.after.assert_not_called();self.app.signal_stop.assert_not_called()
+    def test_card_click_during_handover_cannot_replace_pending_imp(self):
+        self.app.changing=True;self.app.show=Mock();self.app.start=Mock()
+        self.app.select('33_clown')
+        self.app.show.assert_not_called();self.app.start.assert_not_called()
     def test_launching_app_only_schedules_polling(self):
         root=picker.tk.Tk();root.withdraw()
         try:
@@ -42,6 +46,16 @@ class PickerLifecycle(unittest.TestCase):
                 picker.App(root)
             start.assert_not_called()
             self.assertEqual([call.args[1].__name__ for call in schedule.call_args_list],['poll'])
+        finally:root.destroy()
+    def test_category_filter_does_not_activate_or_switch_the_cursor(self):
+        root=picker.tk.Tk();root.withdraw()
+        try:
+            with patch.object(picker.App,'start') as start:
+                app=picker.App(root)
+                app.group.set('Halloween')
+                self.assertTrue(app.cards)
+                self.assertTrue(all(picker.category(ident)=='Halloween' for ident in app.cards))
+                start.assert_not_called()
         finally:root.destroy()
     def test_browsing_during_handover_keeps_the_explicitly_confirmed_imp(self):
         with patch.object(picker,'named_handle',return_value=True):self.app.start()

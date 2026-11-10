@@ -1,14 +1,15 @@
-Dreams Imp for Windows — 1.0.3
+Dreams Imp for Windows — 1.0.4
 
 Extract the whole ZIP, then double-click Dreams Imp.exe.
-Choose an Imp, then click Set as cursor. Opening the app and browsing presets
-do not change your cursor. Minimize the picker to keep using the cursor; close it to
+Click an Imp card to set it as your cursor. The dropdown filters categories.
+Opening the app or filtering categories does not change your cursor.
+Minimize the picker to keep using the cursor; close it to
 quit and restore the Windows cursor. No commands, Python installation, emulator,
 or running copy of Dreams are needed.
 
 149 presets from the available Dreams game revision are included: 147 named
-Imps/specials plus 2 labelled internal presets. Search for Clown to find the
-classic Clown and Halloween Clown. Other collections include Art's Dream,
+Imps/specials plus 2 labelled internal presets. Classic Imps includes Clown;
+Halloween includes Halloween Clown. Other collections include Art's Dream,
 Halloween, Dream Queen and the Impys. Later game revisions may contain more.
 
 This uses extracted Dreams animation data, native motion/particle routines and
@@ -16,7 +17,7 @@ ported original shaders. Windows mouse events drive the reactions. It is a
 live, click-through cursor overlay, not a GIF. The render area is padded for
 movement; the Imp is approximately 5 times the original cursor size. Animation
 and morph speed are 50%; drawing targets 120 Hz, subject to GPU/CPU load.
-The picker presents the Imps in purple space with a floating preview. Original
+The picker contains Imp cards, their names and a category dropdown. Original
 Imp lighting and colours are retained; added bloom is confined to the antenna tip.
 
 Requirements
