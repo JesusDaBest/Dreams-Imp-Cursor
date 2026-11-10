@@ -1,0 +1,29 @@
+Mapped executable ranges included with the Imp runtime
+
+0x06f12000    4096 bytes
+0x06f42000    8192 bytes
+0x06f5a000    4096 bytes
+0x075a2000    8192 bytes
+0x075b2000    8192 bytes
+0x075b7000   40960 bytes
+0x075c1000    8192 bytes
+0x075c3000    4096 bytes
+0x075c6000   16384 bytes
+0x075cc000    8192 bytes
+0x075cd000    4096 bytes
+0x075eb000   16384 bytes
+0x0760a000    8192 bytes
+0x07788000    4096 bytes
+0x0778a000    4096 bytes
+0x077a6000    4096 bytes
+0x077a7000    4096 bytes
+0x077cd0c0       4 bytes
+0x077fc000    4096 bytes
+0x077fd000    4096 bytes
+0x077fe000    4096 bytes
+0x077ff000    4096 bytes
+0x07805000    4096 bytes
+0x07809000    4096 bytes
+0x07866000    4096 bytes
+
+One 4 KiB data page at 0x08a75000 is included for the native Imp motion routine.

@@ -1,0 +1,30 @@
+Dreams Imp — mouse reactions
+
+Move: native body/antenna motion and directional looks.
+Screen edges: the native edge response acts on the body.
+Left click / double click: selection reactions.
+Left drag / hold / release: grab, pulling, hold and drop reactions.
+Right click / hold: menu and menu-hold reactions.
+Right/middle drag: movement reactions; release: drop.
+Scroll: look up/down; horizontal scroll: look sideways.
+Ctrl + scroll: resize reactions.
+Mouse Back / Forward: undo / redo reactions.
+Ctrl / Shift while dragging: clone/hold variants.
+Hover an interactive Windows control: pointer glow, when detected by Windows
+accessibility or the application's standard link cursor.
+Text, busy, resize, move, unavailable, link, help and other standard Windows
+cursor roles select their corresponding Dreams animation.
+Idle: blinking and alternating original idle/emote clips.
+
+Additional original Dreams clips can be triggered with Alt + a mouse-button
+drag in one of four directions. Repeating a gesture cycles its variants:
+  Alt + left drag: up stamp; down subtract; left paint; right doodle/mouth.
+  Alt + right drag: up style; down outfit; left custom-hover; right animation.
+  Alt + middle drag: up audio; down calibration; left curious; right spin/squash.
+These gestures do not consume your mouse input or change the underlying app.
+They associate game-specific animations with desktop actions; they do not
+recreate Dreams' editing tools on Windows.
+
+Open Dreams Imp.exe, choose a preset, then click Set as cursor.
+Browsing presets does not change the active cursor.
+Minimize the picker to keep using the cursor. Close the picker to quit.

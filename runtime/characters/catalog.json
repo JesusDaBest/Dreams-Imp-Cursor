@@ -1,0 +1,1790 @@
+[
+  {
+    "id": "000_alpha",
+    "name": "alpha",
+    "file": "000_alpha.bin",
+    "source_sha256": "25dd0619a59b2cb188b47693757afd2c154b3a1be2b39581d4f56c0e21940841",
+    "sha256": "6b8f1bb70a30984d4d166a6ad4d66a9679448a1bcc129e49f0f20742d9d9733b",
+    "version": 1608,
+    "decorations": [
+      5,
+      0
+    ]
+  },
+  {
+    "id": "000_beta",
+    "name": "alpha",
+    "file": "000_beta.bin",
+    "source_sha256": "bb157b556bcc149b81e2a8d541171f21ebdae7f7f5510e61bd812ffff6e7eb58",
+    "sha256": "a90181826b665ec84af3f8cfb233c01fef664e6f401b2d22a96e35c36e57314f",
+    "version": 1608,
+    "decorations": [
+      5,
+      0
+    ]
+  },
+  {
+    "id": "000_blue",
+    "name": "tight_hairy",
+    "file": "000_blue.bin",
+    "source_sha256": "f6ac2bda29f8c39bc87b8513827cccf7c01783d7d52e5dc2476936263faf432d",
+    "sha256": "8230870ddd8a2a590a0768e9ef9aad63998d1f1b97287c89ea77eac99a304dc9",
+    "version": 1608,
+    "decorations": [
+      5,
+      0
+    ]
+  },
+  {
+    "id": "000_green",
+    "name": "tight_hatch",
+    "file": "000_green.bin",
+    "source_sha256": "db70a87df5e4463602ed2f395c9b89f96684909017ce8999f5e4ef8508f19a8e",
+    "sha256": "d6080e19ec1b889c84ee955a5fc339fa48c08b8bf1eb2605c8c5b55e29769d26",
+    "version": 1368,
+    "decorations": [
+      5,
+      0
+    ]
+  },
+  {
+    "id": "000_orange",
+    "name": "tight_curly",
+    "file": "000_orange.bin",
+    "source_sha256": "fb764bfca3ba182e2d5240b073110dc175a0d59d1f425b68a61d0f8d9353fc93",
+    "sha256": "a2db54468cb3a2bcd61445a50f1b318f3a75954fb893592ec9ea7129c8e4f280",
+    "version": 1608,
+    "decorations": [
+      5,
+      0
+    ]
+  },
+  {
+    "id": "000_pink",
+    "name": "tight_zigzag",
+    "file": "000_pink.bin",
+    "source_sha256": "ea104ffe661c446ab0c240d84bced1ed2effce4d920a9ba5df52be257b6e8f98",
+    "sha256": "c6e6591066148469ff6efbddda097c78ecdf43abfb79421dc5c887b21d1d3f68",
+    "version": 1608,
+    "decorations": [
+      5,
+      0
+    ]
+  },
+  {
+    "id": "000_purple",
+    "name": "tight_spotty",
+    "file": "000_purple.bin",
+    "source_sha256": "f1a3e025eb4f4e923fde67471b4ca3ccc628c983f7b39dd83c9d9f2f8ea6a003",
+    "sha256": "9c469cca5c7c2fae2c89074a7909d38f13cec3d38250717f8957921fb6aa0f61",
+    "version": 1608,
+    "decorations": [
+      5,
+      0
+    ]
+  },
+  {
+    "id": "000_red",
+    "name": "tight_tufts",
+    "file": "000_red.bin",
+    "source_sha256": "cf035224ac478376cb1cc265b237bfe2dad9da661858eda8185260f91228adde",
+    "sha256": "d1cf7823623e4544942085413e2d6dddb0eaaf3e412f74336d39da5d6d61bb9e",
+    "version": 1368,
+    "decorations": [
+      5,
+      0
+    ]
+  },
+  {
+    "id": "000_yellow",
+    "name": "tight_hexagon",
+    "file": "000_yellow.bin",
+    "source_sha256": "bc09abced24f12c79173e6fea3255bca6d996f4d9d0a1f3225b107e7805a72b6",
+    "sha256": "74f551dcb6c7925cebfef27f2ddb593fe26f2de79ec7a9911ec11b874c620730",
+    "version": 1608,
+    "decorations": [
+      5,
+      0
+    ]
+  },
+  {
+    "id": "00_default",
+    "name": "default",
+    "file": "00_default.bin",
+    "source_sha256": "ed90ecdf69b7b062cb8ae58e1bf53c4553bf60a95ef40bfd816216462cd9eaa5",
+    "sha256": "a5f76db21ac208988d0feb3b5f93beead2fc6f84101c40f578f252dde1148780",
+    "version": 1184,
+    "decorations": [
+      5,
+      0
+    ]
+  },
+  {
+    "id": "01_fish",
+    "name": "heart",
+    "file": "01_fish.bin",
+    "source_sha256": "4e17da5e7cd74012b086ac45fe1d780e11473f1bc535bedf173ad7cb53eb64cb",
+    "sha256": "26753e5931cf69443024a6d33cfd4742ec2921e5fe76552c1b67fdae2e15b4fa",
+    "version": 1608,
+    "decorations": [
+      26,
+      210
+    ]
+  },
+  {
+    "id": "02_cool",
+    "name": "default",
+    "file": "02_cool.bin",
+    "source_sha256": "cde16c06ec41657d74479fdb4a5835e0a42fd6485331d19ddd90a769f7ae9acd",
+    "sha256": "6c8c910fc48f70bf141ce2f2f65cbd1c57463bfe8dfe949940f423aefdbad498",
+    "version": 1608,
+    "decorations": [
+      5,
+      216
+    ]
+  },
+  {
+    "id": "03_kitty",
+    "name": "tight_kitty",
+    "file": "03_kitty.bin",
+    "source_sha256": "2247a48ceea8717bb67d787cfadd268288e70ecc28ae25885a4733ecc4c356ad",
+    "sha256": "96e532a0d2d2e35d7d25f5ad9aa32f54d87536a022ef302ca6e1e1e6726c9d78",
+    "version": 1608,
+    "decorations": [
+      0,
+      81
+    ]
+  },
+  {
+    "id": "04_brains",
+    "name": "default",
+    "file": "04_brains.bin",
+    "source_sha256": "a5169dab1f6d4cd5ea812c68950972631218ba5ca4df27869c46333039fa94a4",
+    "sha256": "909a45ebea0a25a0703a727c5d3fae7245575cdfc4bee01ff8c25fde9626407f",
+    "version": 1608,
+    "decorations": [
+      5,
+      138
+    ]
+  },
+  {
+    "id": "05_cute",
+    "name": "hatch",
+    "file": "05_cute.bin",
+    "source_sha256": "ec62555c8a7011ea587ad3f404d77207565b9c214b8d442a84fdd106409e511e",
+    "sha256": "09bd75793250090298062fe2b273417571004e1a8b5faa75abbed2ead5a516b2",
+    "version": 1608,
+    "decorations": [
+      5,
+      71
+    ]
+  },
+  {
+    "id": "06_music",
+    "name": "zap02",
+    "file": "06_music.bin",
+    "source_sha256": "e3b84330fca3409475cfdc2420df84ccc2f8a27f2016ca07e9c8a4db94b05fca",
+    "sha256": "3bffabe77ad746633a74a24ddb3953ce6186f0529733018d6809ef9c749adb9d",
+    "version": 1608,
+    "decorations": [
+      5,
+      394
+    ]
+  },
+  {
+    "id": "07_80s",
+    "name": "curly",
+    "file": "07_80s.bin",
+    "source_sha256": "aeba61325d019ce069fd87402d7273340b98b3a8e3f04eb4c4a4bde15d6debd8",
+    "sha256": "7752a61d33fdf7911dff9c752838bba3321cb909cd23242a144c28ee3f968f49",
+    "version": 1608,
+    "decorations": [
+      0,
+      360
+    ]
+  },
+  {
+    "id": "08_spider",
+    "name": "geometric2",
+    "file": "08_spider.bin",
+    "source_sha256": "740612fa983e3e14c8e429cb83e4269359a693459a5c258ff543cb669d635d1d",
+    "sha256": "25d887ae148f025a8a228d86b66b9ac3834aa47940a0a84fdbf0d17157a10a4f",
+    "version": 1608,
+    "decorations": [
+      0,
+      213
+    ]
+  },
+  {
+    "id": "09_devil",
+    "name": "ziggy02",
+    "file": "09_devil.bin",
+    "source_sha256": "251d9a6242e76ca190a8ef132ad754cafa86e39e74eab67b2785e6d5a0e15103",
+    "sha256": "d52ff5faae45f6ccb65bb6343b7d8f7713838c79be494049da76d87123181acd",
+    "version": 1608,
+    "decorations": [
+      10,
+      129
+    ]
+  },
+  {
+    "id": "100_sheriff",
+    "name": "tight_curly",
+    "file": "100_sheriff.bin",
+    "source_sha256": "e8f9c1123de03332ac7554fba89d6ee622c00ccfde92df5ef2842de05dc47cd4",
+    "sha256": "3ef6f0fe71e0a0c5b447ddba4e128aad86f35cfa4db596c69dd424779fc1869e",
+    "version": 1525,
+    "decorations": [
+      5,
+      432
+    ]
+  },
+  {
+    "id": "101_snowflake",
+    "name": "alpha",
+    "file": "101_snowflake.bin",
+    "source_sha256": "5043991d70044ab6d497446c914ecfc3753375b8be70a88d7dae617a24740b68",
+    "sha256": "af4ecc5df08e143282981860e2552aa0f3bbb3a3f25ebcd77cb6cd7944b01d43",
+    "version": 1525,
+    "decorations": [
+      5,
+      417
+    ]
+  },
+  {
+    "id": "102_stag",
+    "name": "spiral",
+    "file": "102_stag.bin",
+    "source_sha256": "6729252ea8df6be589f3e49efe50d6ee906d5fa40c80d8b9aa1016ea59fee220",
+    "sha256": "51e83673605d43b2fa6475f830d618a0a032d5a0fde427656aaeb795e97d1685",
+    "version": 1525,
+    "decorations": [
+      5,
+      261
+    ]
+  },
+  {
+    "id": "103_stagbeetle",
+    "name": "spiral",
+    "file": "103_stagbeetle.bin",
+    "source_sha256": "3afb69c6a032d6fac6beac2e32d4b439dcbdd9bfa4b412dba0e6b9349449cf52",
+    "sha256": "519e7e9db31bb254a1975592677b247df341f0f77aa92d5a74797a3c62378ff2",
+    "version": 1525,
+    "decorations": [
+      5,
+      426
+    ]
+  },
+  {
+    "id": "104_star",
+    "name": "spiral",
+    "file": "104_star.bin",
+    "source_sha256": "84a01207451a29a37e7f9b97d96459ffaf5ac33b9c03a243a379801c92b72abd",
+    "sha256": "312bc6f45f627435c4f92582eabf8fdb86a255d94c6bc7c58987f8d0d32f5880",
+    "version": 1525,
+    "decorations": [
+      5,
+      167
+    ]
+  },
+  {
+    "id": "105_sunflower",
+    "name": "tight_fluff",
+    "file": "105_sunflower.bin",
+    "source_sha256": "84ee038a89ac8cc5ef11a8b6123c706d1bad41e71a435e372c6828202d2562cc",
+    "sha256": "bc18f3b1ebe6553e770eb96a093c23aa5befa332a170be303c9460b3d9eb43c3",
+    "version": 1525,
+    "decorations": [
+      5,
+      380
+    ]
+  },
+  {
+    "id": "106_teapot",
+    "name": "spiral",
+    "file": "106_teapot.bin",
+    "source_sha256": "7ea7bc1be8d9931d29d3d93523df97c535dcbbb8b5f9c946e168f4beafa3ecf2",
+    "sha256": "a393d956b8ab8c188ff30da1b4c5147bb99675934978fcd1e6e32ece2e0a9c51",
+    "version": 1525,
+    "decorations": [
+      5,
+      417
+    ]
+  },
+  {
+    "id": "107_tennisball",
+    "name": "spiral",
+    "file": "107_tennisball.bin",
+    "source_sha256": "45c441e5aee806165109d895a8aad407a9a356500edc11a98074f43263550835",
+    "sha256": "e28b343a0a289e3047834967a7b2a603d8816d2783433d6d788de02fd6e703bc",
+    "version": 1525,
+    "decorations": [
+      5,
+      110
+    ]
+  },
+  {
+    "id": "108_treefrog",
+    "name": "tight_fluff",
+    "file": "108_treefrog.bin",
+    "source_sha256": "0e2860249cfc4eb00dde62750a2392301405a61282725065ce16aa839263ccd0",
+    "sha256": "9cc9183f57f89ea23617b5d2b69c85f252c57367828fe63ce70edaf51e8c3778",
+    "version": 1525,
+    "decorations": [
+      0,
+      258
+    ]
+  },
+  {
+    "id": "109_pablos",
+    "name": "fluff",
+    "file": "109_pablos.bin",
+    "source_sha256": "3efe3ef52fcccc8743abbf482fc28a7b47ca7aa13d26d56890f01f4598c3ace4",
+    "sha256": "27b5658db37d91671a2e5f60274cdf6e33fd180ce231870ecf097d5b3eb0c552",
+    "version": 1543,
+    "decorations": [
+      19,
+      399
+    ]
+  },
+  {
+    "id": "10_angel",
+    "name": "spiral_02",
+    "file": "10_angel.bin",
+    "source_sha256": "d2d75c5434db12b1606fb749ae22feec4fb3c43e4002169b69ab5d35302fdbfb",
+    "sha256": "f98a101da7a185536807ddb3f6c9028efd73459771aee2fffdfc1d5294776e27",
+    "version": 1608,
+    "decorations": [
+      5,
+      141
+    ]
+  },
+  {
+    "id": "110_stars",
+    "name": "tight_fluff",
+    "file": "110_stars.bin",
+    "source_sha256": "67b6bd6e9a18ed9973bd283ccddc528d9d2352efbf021aa3bb93a75f7189e828",
+    "sha256": "a7aad45d3c5d2a94775e2cf5bb21c4359e51108e1cb778a4d39228a93e444b3c",
+    "version": 1609,
+    "decorations": [
+      5,
+      479
+    ]
+  },
+  {
+    "id": "11_glasses",
+    "name": "default",
+    "file": "11_glasses.bin",
+    "source_sha256": "5f875c4c7e2d553cd5f46c6bff11c5a14673427cee25692b3adae6eac5829edc",
+    "sha256": "703c52507c6eb03cb84cc20dca58accc47af16e6acbb8e53ef8252b4647df858",
+    "version": 1608,
+    "decorations": [
+      5,
+      169
+    ]
+  },
+  {
+    "id": "12_alien",
+    "name": "star",
+    "file": "12_alien.bin",
+    "source_sha256": "331cfb7241a2b4168fb59bca027bbd1c9f8e1f48bab6c48c3fca557e0d2a6338",
+    "sha256": "fdf880f8f090c9b2f1dc6d3967e910aff39b9d378f39d79eba5eba27de21cada",
+    "version": 1608,
+    "decorations": [
+      10,
+      141
+    ]
+  },
+  {
+    "id": "13_mosquito",
+    "name": "star",
+    "file": "13_mosquito.bin",
+    "source_sha256": "f2597fb715fd1893eb06616485fbdd02be85f221e27e8e8ee0e3762adddcb6e5",
+    "sha256": "80407131243f5ccb2c07c50b8a66b12d408c0ee0bbc9c9113cae2c400874f4b8",
+    "version": 1608,
+    "decorations": [
+      0,
+      336
+    ]
+  },
+  {
+    "id": "14_grumpy",
+    "name": "hatch",
+    "file": "14_grumpy.bin",
+    "source_sha256": "0b17260e1303ff666f9d84206bdf27e9907d0106378f8d15d11c9def9f671846",
+    "sha256": "b79985ac38e22e7745eef760007eab6f6622a11904073228785f30bf58fe20b7",
+    "version": 1608,
+    "decorations": [
+      13,
+      42
+    ]
+  },
+  {
+    "id": "15_flower",
+    "name": "geometric2",
+    "file": "15_flower.bin",
+    "source_sha256": "f9685adc35acaada0aa5746a7288c122bba0008cb81455108c8aca6c9904444f",
+    "sha256": "cd8043fa430bb05fffb0854137259c41db3bb5efcaff20ee47b0e73e3dbfa391",
+    "version": 1608,
+    "decorations": [
+      8,
+      189
+    ]
+  },
+  {
+    "id": "16_tree",
+    "name": "default",
+    "file": "16_tree.bin",
+    "source_sha256": "58622d17444a06d2579a300fe553683f9e9e065b07f2efe9d0acaa22baf6269a",
+    "sha256": "8d0438f583b363db5bc5ff4937cd9c4d579ee27a61edce564527a6258c9e81cc",
+    "version": 1608,
+    "decorations": [
+      5,
+      278
+    ]
+  },
+  {
+    "id": "17_skull",
+    "name": "geometric2",
+    "file": "17_skull.bin",
+    "source_sha256": "04177f098359e14d72103bdf94c161d5aa081bcf2b733fb0e469da0f255b7e95",
+    "sha256": "e5bad1800b49484d728b1013159652756fba8b89e41955218a5e5b043c1f91eb",
+    "version": 1608,
+    "decorations": [
+      12,
+      420
+    ]
+  },
+  {
+    "id": "18_apple",
+    "name": "spiral",
+    "file": "18_apple.bin",
+    "source_sha256": "73524508edc42ba945a6009c2bbd96318125a2feab8f9846c599f41da04f606d",
+    "sha256": "257e4a37a593c39ce36da9fa0ea8abed736461b45633e84c22816120eb10ca18",
+    "version": 1608,
+    "decorations": [
+      11,
+      58
+    ]
+  },
+  {
+    "id": "19_dead",
+    "name": "fluff",
+    "file": "19_dead.bin",
+    "source_sha256": "d79472276c0f94890dcf0ea8792c7d83f1c9ddc11c70c8d19c32d285e6d403b1",
+    "sha256": "af3c8b14eeef24ed96e838c2679591c7607bea78acd0324cc1bac6bed53caf00",
+    "version": 1222,
+    "decorations": [
+      12,
+      247
+    ]
+  },
+  {
+    "id": "20_sun",
+    "name": "default",
+    "file": "20_sun.bin",
+    "source_sha256": "04a946f4a8bb4887430cd0b8f1b1998830a2760ac265f98afd9266b343648343",
+    "sha256": "de978f7cc11e75e7b2d53b772c972071494a339957d4fc90805162bd0698a3f9",
+    "version": 1222,
+    "decorations": [
+      5,
+      91
+    ]
+  },
+  {
+    "id": "21_spikey",
+    "name": "fluff",
+    "file": "21_spikey.bin",
+    "source_sha256": "95f094ad2ac325c04496a7718d5440a2b5b6623e4e69a4652ee50897105809dc",
+    "sha256": "1be5226a02e96c06394ec85a982610b11f9772edcc17e03aeab43f1049b3983e",
+    "version": 1222,
+    "decorations": [
+      10,
+      210
+    ]
+  },
+  {
+    "id": "22_icecream",
+    "name": "fluff",
+    "file": "22_icecream.bin",
+    "source_sha256": "e8a0541f774a9c520a3ebd9dc67a85c2389833197e07764fc54c93ecb98071f1",
+    "sha256": "04ce6fe4666f387002ad3112e60b36abec962b73a4d1011d60ca34a8ad994fb7",
+    "version": 1222,
+    "decorations": [
+      5,
+      221
+    ]
+  },
+  {
+    "id": "23_dog",
+    "name": "scribble",
+    "file": "23_dog.bin",
+    "source_sha256": "81e8e7bf5621ba09ab44d6bf387af2468187daa029106bd203fac19ad2d07c59",
+    "sha256": "b7f8e638d3b247faf4a4fa18f0a43ca28fa8630c3afcd3d7de71ece3b1afef0b",
+    "version": 1222,
+    "decorations": [
+      10,
+      219
+    ]
+  },
+  {
+    "id": "24_panda",
+    "name": "fluff2",
+    "file": "24_panda.bin",
+    "source_sha256": "e8e3e21ffa18a6e5dc665af5b343782877bcbb4eabe9b2c5eb445fe8602fd281",
+    "sha256": "091b338538333923e2eb392976bf9343b9bccdfa52a0cc211fb05db36ed0e164",
+    "version": 1368,
+    "decorations": [
+      10,
+      236
+    ]
+  },
+  {
+    "id": "25_lion",
+    "name": "hex",
+    "file": "25_lion.bin",
+    "source_sha256": "c1bc13ef94660eff656c1bfd179cdcce74e194863fc8d27c04e54b9e02c3afec",
+    "sha256": "2048153ba60469ec313e4962a90d908a2e5cb0709a49b49874810ee457005e6c",
+    "version": 1222,
+    "decorations": [
+      10,
+      88
+    ]
+  },
+  {
+    "id": "26_rabbit",
+    "name": "fluff",
+    "file": "26_rabbit.bin",
+    "source_sha256": "9074af73849197eb2e0ce5194a3228d2158105358d8afa894551f29afc236c76",
+    "sha256": "0cda84a7710cea3bdce1daaf899f84296c221dcf7db056d71b5b1f6f3e4cd6f0",
+    "version": 1222,
+    "decorations": [
+      14,
+      78
+    ]
+  },
+  {
+    "id": "27_owl",
+    "name": "dreads2",
+    "file": "27_owl.bin",
+    "source_sha256": "f812531d0d7f8e117904a1e1edf9f6b99579d5a621403163418a834152b67f48",
+    "sha256": "08917b904c3d4d2a651a5dd90ea2e6430e103e02e1d62484ba8809fa1b418fda",
+    "version": 1515,
+    "decorations": [
+      24,
+      147
+    ]
+  },
+  {
+    "id": "28_bug",
+    "name": "default",
+    "file": "28_bug.bin",
+    "source_sha256": "a41f672342c50393edac4b09f85b203a65a451820c7eeccd78ce2a2af621ca1b",
+    "sha256": "de5bcfbb4a632fe3593e7e0f02d19deedf32f753a12e4421c7166708f5a0bdd7",
+    "version": 1222,
+    "decorations": [
+      1,
+      398
+    ]
+  },
+  {
+    "id": "29_pirate",
+    "name": "default",
+    "file": "29_pirate.bin",
+    "source_sha256": "bf34f449d6c428e9f66ac1dd803f84804b4a77c5fee26a16cd6fed0c3ca61b6a",
+    "sha256": "ac1aa2c72440bfc193c68d5ad4f652ce40d172570b43046d2364318dfa681682",
+    "version": 1222,
+    "decorations": [
+      10,
+      261
+    ]
+  },
+  {
+    "id": "30_dragon",
+    "name": "heart",
+    "file": "30_dragon.bin",
+    "source_sha256": "432fefe79e17a5ae8a4507063b4a8df1af1ee891f7d33e34377e7108d27017fb",
+    "sha256": "a07057a95644c003f35ce89336d3a250a75aa5d6f6da09be18e42a8b63a6eba0",
+    "version": 1222,
+    "decorations": [
+      14,
+      200
+    ]
+  },
+  {
+    "id": "31_bat",
+    "name": "fluff",
+    "file": "31_bat.bin",
+    "source_sha256": "8d70c5de027531fea9723adc04406c0402f071cdaa085b33e743e305ec04eee4",
+    "sha256": "eda45619b1568a9f5336dea2f217046736a563a95625d9a241b1ea15c8840d2b",
+    "version": 1222,
+    "decorations": [
+      5,
+      186
+    ]
+  },
+  {
+    "id": "32_monster",
+    "name": "star",
+    "file": "32_monster.bin",
+    "source_sha256": "0db5d140a504abf56c27665c3108c8aa0a95e4b4c12002a0c8c2e45ae12922dd",
+    "sha256": "b84cfd2629a3625e6bda2f01486f6bd6c87a1d3521b422dd448c2bf5e103078b",
+    "version": 1222,
+    "decorations": [
+      10,
+      152
+    ]
+  },
+  {
+    "id": "33_clown",
+    "name": "default",
+    "file": "33_clown.bin",
+    "source_sha256": "0efab179ca41d4c74b36c734f26713fd0a36b7b1cbfdf9cae9b7f0e223c4bb22",
+    "sha256": "a641772f3b0bfcf30af610475b23211445c04d02948dfd1e40d4a1b46e888739",
+    "version": 1222,
+    "decorations": [
+      30,
+      245
+    ]
+  },
+  {
+    "id": "34_frog",
+    "name": "fluff",
+    "file": "34_frog.bin",
+    "source_sha256": "8183d2fe37c9fa17fa5f9175b951345df7b9c4ea3271c72ab3308f96d57bd2bb",
+    "sha256": "ba1714eacf8f7dc3a03e65ad75b28da9dabefd5c8e0efcee3086b710f4a110f5",
+    "version": 1222,
+    "decorations": [
+      12,
+      482
+    ]
+  },
+  {
+    "id": "35_cactus",
+    "name": "stubble",
+    "file": "35_cactus.bin",
+    "source_sha256": "e7d5fe5236ae3a6a148f4873567e673bac7970e464e15db188bb4c49c8dbe53e",
+    "sha256": "72d7659e57833f0583eeac25b6536b6e828fa7b6b54ffe1c62eba7a3b51596c2",
+    "version": 1222,
+    "decorations": [
+      12,
+      190
+    ]
+  },
+  {
+    "id": "36_king",
+    "name": "default",
+    "file": "36_king.bin",
+    "source_sha256": "efef6b0fd469ebad47c9e9ca494a7380da9096cf672be1591d9ac7cd87fb2a75",
+    "sha256": "305a5e82287f1721a22d4494462df0735836429d563a051e05dde49254dcdc17",
+    "version": 1222,
+    "decorations": [
+      5,
+      426
+    ]
+  },
+  {
+    "id": "37_monocle",
+    "name": "tight_curly",
+    "file": "37_monocle.bin",
+    "source_sha256": "912609792c66b62fc4c93c4a57439e2e3cb5526d1382b9bd5bd136e0d74edfe1",
+    "sha256": "3b7e8704fd9d774f6bf180fc2001343ff1628bf8dd9159a26d98a0fe9c6c14c2",
+    "version": 1466,
+    "decorations": [
+      0,
+      175
+    ]
+  },
+  {
+    "id": "38_bow",
+    "name": "fluff2",
+    "file": "38_bow.bin",
+    "source_sha256": "f4257eaaa3b0abdc1979cf408135dd0c8a0945ec5043e59ce1d5ce6dcda5d9ae",
+    "sha256": "916ec2e9f66bd2b6a5920486b57b42f50b2fe3d2e342b461f446796656b45d59",
+    "version": 1368,
+    "decorations": [
+      5,
+      473
+    ]
+  },
+  {
+    "id": "39_curly",
+    "name": "fluff",
+    "file": "39_curly.bin",
+    "source_sha256": "3bb162bdcc9b97d87c8e25e44c3c94bae992e92ffff76c8ff05558916a9d62bb",
+    "sha256": "d429f57af4fd1c8ea8239d7d3e505e8711c3d7c1cff0a2d462439ced2f08f2a0",
+    "version": 1222,
+    "decorations": [
+      5,
+      198
+    ]
+  },
+  {
+    "id": "40_cowboy",
+    "name": "tight_curly",
+    "file": "40_cowboy.bin",
+    "source_sha256": "7aecd702d5c01c340e009be20d162a290a7fd1f81ca920a50c55e2e73b1d390f",
+    "sha256": "1b80f873cfb24ff797aad0c5d9cffd01e876a65e09e4dbf077e7c78ce8b847fa",
+    "version": 1466,
+    "decorations": [
+      5,
+      499
+    ]
+  },
+  {
+    "id": "41_handlebar",
+    "name": "tight_fluff",
+    "file": "41_handlebar.bin",
+    "source_sha256": "d5c1ad4cdac35df67d5f291ccc4cd29b8cd9500d0f9c228a76b5bd42934eefbd",
+    "sha256": "0d44bfbe5c70c5c24be3df48e857c7151ca9cda52ff05494f5a86c9707def752",
+    "version": 1466,
+    "decorations": [
+      5,
+      290
+    ]
+  },
+  {
+    "id": "42_robot",
+    "name": "hex",
+    "file": "42_robot.bin",
+    "source_sha256": "2dd3dcf5d69d3fbd2281e0a327c9575abc9eae5843d9ff592dece5b6c0ff8b48",
+    "sha256": "b6a8cb4913cbd3a3ac8ef87786af9e98a844556a02ebef2d85b56121fa1bea49",
+    "version": 1222,
+    "decorations": [
+      10,
+      461
+    ]
+  },
+  {
+    "id": "43_cake",
+    "name": "fluff",
+    "file": "43_cake.bin",
+    "source_sha256": "d883fbacb915a749c6fa254d2248d078b002d89cee827fae3a4c20e735f00246",
+    "sha256": "12f5af2b5b472af18d30e59bdabcdd0dbb3de76cd7fc61cf61dd01b2b7366678",
+    "version": 1222,
+    "decorations": [
+      5,
+      487
+    ]
+  },
+  {
+    "id": "44_pigtails",
+    "name": "fluff",
+    "file": "44_pigtails.bin",
+    "source_sha256": "8bdb7aeb7ba26efe708a44648529f37679b66442dd37cc70759639e198ad3e8c",
+    "sha256": "77ee82709c467d3d53554136d5eb3ec9ec62d6b65f337abaaf9922578740ffe8",
+    "version": 1222,
+    "decorations": [
+      5,
+      340
+    ]
+  },
+  {
+    "id": "45_elf",
+    "name": "spiral_02",
+    "file": "45_elf.bin",
+    "source_sha256": "24d184ee2145ba153917c210514b6e9d2244915aa020224eefe0b12c689e8d25",
+    "sha256": "efcf23c0d031bcc77d4b676403920452c611ea5b204bc01bf0ece8f068e5b3bd",
+    "version": 1466,
+    "decorations": [
+      5,
+      266
+    ]
+  },
+  {
+    "id": "46_hero",
+    "name": "hex",
+    "file": "46_hero.bin",
+    "source_sha256": "7dc9badf5379a428b4a63dc910fb1b81f9289606483763d420c852225147380a",
+    "sha256": "389e62acc5ca5775007faab69f0b4333a35478034d0ea31279f1c11fdbec2086",
+    "version": 1326,
+    "decorations": [
+      5,
+      202
+    ]
+  },
+  {
+    "id": "47_horns",
+    "name": "fluff",
+    "file": "47_horns.bin",
+    "source_sha256": "7ede4bba68078de58c1467d2c6a51d0cdc138ab28d311076151bd3911d06ceed",
+    "sha256": "adbc25bf50244096a531a5278c4ecf383bed7dfb73eb071e5cd6211a9aaeb1df",
+    "version": 1222,
+    "decorations": [
+      10,
+      360
+    ]
+  },
+  {
+    "id": "48_bird",
+    "name": "geometric2",
+    "file": "48_bird.bin",
+    "source_sha256": "bb431f7e47bb3843f3fb48807960aa130c80bb4f09cfb3ee22d049a6ea370a5f",
+    "sha256": "ba9b4ba6fd8f07c5ab6054732166212088c443ec65ac3f49972769d176f6486f",
+    "version": 1222,
+    "decorations": [
+      14,
+      229
+    ]
+  },
+  {
+    "id": "49_viking",
+    "name": "zap",
+    "file": "49_viking.bin",
+    "source_sha256": "da0d016a09116f195f7fb2e0156fd7b15e212321ee7479c1ea9a8ed35afafcc6",
+    "sha256": "74fc7d96cd30519686e5a7cfc7cd479621c822708a17a37152abd710268bde02",
+    "version": 1326,
+    "decorations": [
+      5,
+      462
+    ]
+  },
+  {
+    "id": "50_xmas_elf",
+    "name": "spiral",
+    "file": "50_xmas_elf.bin",
+    "source_sha256": "004cf26adbf02e268cf4facda66468fb1f489a46ca03b6b6c37a22ac058c731e",
+    "sha256": "6372970ad39d815ca9deb508aefda9e579fb1e076ac4d7aca910e821c1cd1c84",
+    "version": 1222,
+    "decorations": [
+      5,
+      298
+    ]
+  },
+  {
+    "id": "51_atoi",
+    "name": "spiral_02",
+    "file": "51_atoi.bin",
+    "source_sha256": "9723e94b8bfd15ba944b714f17f87248a783d0e4e26709b037e3f17b9a72f767",
+    "sha256": "ce78f4b189c9ca6795027931612918dc2f01c3b1f96480c1591ca06aee6cda44",
+    "version": 1326,
+    "decorations": [
+      5,
+      483
+    ]
+  },
+  {
+    "id": "52_surfer",
+    "name": "default",
+    "file": "52_surfer.bin",
+    "source_sha256": "4601e5e60d25067339e7cfa9b4a99cb1d8b776a566b7ece9fd6c08b7eb4d5d72",
+    "sha256": "9f6462c284c788b2c87476f54943ab98a5c6b16dc4d2ed899325f6790c5b0321",
+    "version": 1608,
+    "decorations": [
+      5,
+      374
+    ]
+  },
+  {
+    "id": "53_policeman",
+    "name": "curly",
+    "file": "53_policeman.bin",
+    "source_sha256": "e52d7481597d2c57786eb730f76bc988edbb2cc20836b2c2341ee52bcb977489",
+    "sha256": "eccd3e274d73cd200eeae77f80a0a1ce5f491439d3f38348904bb22e064411d4",
+    "version": 1608,
+    "decorations": [
+      0,
+      132
+    ]
+  },
+  {
+    "id": "54_cuthbert",
+    "name": "tight_curly",
+    "file": "54_cuthbert.bin",
+    "source_sha256": "adf0b8ef75732794662a19cee59786ffd8ee08e02f22cf65cfaabeb18a5eda79",
+    "sha256": "9d3547a5613d47d2565cfd572cd53a0fab884ab5fd982bb45e57e346fe04b93c",
+    "version": 1428,
+    "decorations": [
+      5,
+      22
+    ]
+  },
+  {
+    "id": "54_cuthbert_h",
+    "name": "tight_curly",
+    "file": "54_cuthbert_h.bin",
+    "source_sha256": "4dc2e15eae2570dfa517eb5fa18b22d4be248ef227b0a8c37a65411268c23c18",
+    "sha256": "c64a2ae10d108e7e09f353abd40bc32d228386326f849336136467928a17db76",
+    "version": 1466,
+    "decorations": [
+      5,
+      22
+    ]
+  },
+  {
+    "id": "54_cuthbert_happy",
+    "name": "tight_curly",
+    "file": "54_cuthbert_happy.bin",
+    "source_sha256": "31bd647cf11047f7b8f0538fb9c421cc136e3fd9c99b40d8c20b1e811b100701",
+    "sha256": "c64a2ae10d108e7e09f353abd40bc32d228386326f849336136467928a17db76",
+    "version": 1428,
+    "decorations": [
+      5,
+      22
+    ]
+  },
+  {
+    "id": "55_trafficlight",
+    "name": "tight_curly",
+    "file": "55_trafficlight.bin",
+    "source_sha256": "7969b99254b906cfc6c89395d1f4cc300606e6a8a10bacb523c425cbf03ce352",
+    "sha256": "0678893cb589fd533d70dd9dab931a0ee81973cbb63651f32dfea6fb3dbb7b17",
+    "version": 1608,
+    "decorations": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "56_90s",
+    "name": "tight_fluff",
+    "file": "56_90s.bin",
+    "source_sha256": "7766f6d22a60e3fa4b473918830ef8fe44b170bfdf50ce57a917b6ec17f7c3e6",
+    "sha256": "679ebdecfaf4256e54c1887c28b6fa9197d9694db6d10791f56ad63d1fdcc280",
+    "version": 1608,
+    "decorations": [
+      10,
+      442
+    ]
+  },
+  {
+    "id": "57_android",
+    "name": "tight_zigzag",
+    "file": "57_android.bin",
+    "source_sha256": "e43b63f1b340c342b2cad94a0cf26d07f84fc31473afa72104958d33636e2743",
+    "sha256": "535b6ce8054ca4ff807e81f54da5a7bc85e4727022e034bcc56c8868b64fdd4a",
+    "version": 1524,
+    "decorations": [
+      5,
+      461
+    ]
+  },
+  {
+    "id": "58_astronaut",
+    "name": "tight_zigzag",
+    "file": "58_astronaut.bin",
+    "source_sha256": "69b78c1131acb582aab01520c59f06d51b67788392630789a498c3623bf43272",
+    "sha256": "2fe25a87d81ee3f3b633e2fa6c72bcb6500bd1b9c7fed44e46afaa02066d3543",
+    "version": 1525,
+    "decorations": [
+      5,
+      307
+    ]
+  },
+  {
+    "id": "59_balloon",
+    "name": "spiral",
+    "file": "59_balloon.bin",
+    "source_sha256": "c462b5f2ee5c7c80f1fa1dfef1859d1e9a0604a44e2acaa65f26945fd1016f67",
+    "sha256": "a6baa601028a7590837e6a0cdf559fb36407297409c0001839dafdf5f4ceef45",
+    "version": 1525,
+    "decorations": [
+      5,
+      20
+    ]
+  },
+  {
+    "id": "60_basketball",
+    "name": "spiral",
+    "file": "60_basketball.bin",
+    "source_sha256": "394edcf48485592401be4df7f8a54972c73dace67d887c16b44d6477d3f0a8fd",
+    "sha256": "8b94d200b10cadf92d2e8de48e2cdb2091cb315668557ac319d308fef05e4b47",
+    "version": 1525,
+    "decorations": [
+      10,
+      395
+    ]
+  },
+  {
+    "id": "61_bee",
+    "name": "tight_curly",
+    "file": "61_bee.bin",
+    "source_sha256": "70c257ceca4ac1bc066150eadad4ab81922d24133d528f5720e23a850d3b9660",
+    "sha256": "99837b34886924972345647b6172421c68f920c6310d5f7c6bbad0d38249442f",
+    "version": 1524,
+    "decorations": [
+      5,
+      421
+    ]
+  },
+  {
+    "id": "62_bunny",
+    "name": "tight_curly",
+    "file": "62_bunny.bin",
+    "source_sha256": "6597002c473fa033df00ee7b8b2351dc9fa380813f880e012da5934eb4a52e8a",
+    "sha256": "0c26983e14233fd7859da56bc6f647a5c4a2ae3e4920ea453770b509b7a51360",
+    "version": 1608,
+    "decorations": [
+      0,
+      184
+    ]
+  },
+  {
+    "id": "63_butterfly",
+    "name": "spiral",
+    "file": "63_butterfly.bin",
+    "source_sha256": "2ef8f2f6f1ac59dccb7bf2093f6c4ce8ee29e0b3520272b748a0560decd661f1",
+    "sha256": "8797be0fe27485ea4131b60d5ff58c6946caba55bdc942a1c3f8adc76d0aeeb8",
+    "version": 1525,
+    "decorations": [
+      5,
+      135
+    ]
+  },
+  {
+    "id": "64_camera",
+    "name": "spiral",
+    "file": "64_camera.bin",
+    "source_sha256": "0109495d9a5f3279fbe442ea29158ad10e383226477e5d3882e1ec9b3fd6abca",
+    "sha256": "db4a083b0d463826ae161dc40e7e5ed3dc98184fbf9a528e90bf1ee5132b9fb6",
+    "version": 1525,
+    "decorations": [
+      0,
+      387
+    ]
+  },
+  {
+    "id": "65_cat",
+    "name": "tight_zigzag",
+    "file": "65_cat.bin",
+    "source_sha256": "6f2eb32f49818713fdea25b756462bb7c65c4e30d104d7a7e60301c9b86f6208",
+    "sha256": "ad4070d42cba150394a7e8af8e1d6fd35896abe7e9b0a4f2898696015d094aa9",
+    "version": 1525,
+    "decorations": [
+      10,
+      137
+    ]
+  },
+  {
+    "id": "66_cheeky",
+    "name": "heart",
+    "file": "66_cheeky.bin",
+    "source_sha256": "d333a817eeddc5b06b2efbb2274a251f2c7a487f96f3aaa1ae05651296d19064",
+    "sha256": "12105fee43afc890e6695d4157d235ee257c3f19f3ac8bc1993ac1c7e7b8fd21",
+    "version": 1608,
+    "decorations": [
+      5,
+      105
+    ]
+  },
+  {
+    "id": "67_clock",
+    "name": "spiral",
+    "file": "67_clock.bin",
+    "source_sha256": "11864accb891bb903d3c367350dd9dfa04cb520e54ed60a661b1167649066fea",
+    "sha256": "90e6bc40d7a619e00fe5d514da372f6070080b20c837a8678f1d44a3b729b078",
+    "version": 1525,
+    "decorations": [
+      0,
+      372
+    ]
+  },
+  {
+    "id": "68_cloud",
+    "name": "spiral",
+    "file": "68_cloud.bin",
+    "source_sha256": "ac0a8ea1c4186ae56dbfd9db10191c9545f4b039da213b8ba23b543b0a4af6fc",
+    "sha256": "fc6f8edc0e4cbbd102cdb26f9d338ddef327438222c31cd2b1f98d0e28fb019d",
+    "version": 1525,
+    "decorations": [
+      5,
+      96
+    ]
+  },
+  {
+    "id": "69_cow",
+    "name": "spiral",
+    "file": "69_cow.bin",
+    "source_sha256": "d2c34ec0aeece62c1766faee81eb7116f6ab3fcf7af4b2a2a11813ccdc293605",
+    "sha256": "96dc89a0f827ac62fdd1ebe146c94786af3a4d871d445c24a30be13d67a7ba32",
+    "version": 1525,
+    "decorations": [
+      0,
+      320
+    ]
+  },
+  {
+    "id": "70_cupoftea",
+    "name": "tight_fluff",
+    "file": "70_cupoftea.bin",
+    "source_sha256": "8f6f946ff60b30f13afc2a25612ff2f883bfde3d5d12e5ed856bf2256089da56",
+    "sha256": "140a0b9a1e190f5324a59effca17215a32eb84e3c6700ba373386cc0b1d29268",
+    "version": 1525,
+    "decorations": [
+      5,
+      387
+    ]
+  },
+  {
+    "id": "71_doctor",
+    "name": "tight_zigzag",
+    "file": "71_doctor.bin",
+    "source_sha256": "d531576b69948ef474951c47ac5c939699faf6a64a5cefe14c725d5d4bf99a4e",
+    "sha256": "74308ffb6798f651e95708eaf551e7a2e6225d2a6067afd2a8c2dc11948280e0",
+    "version": 1525,
+    "decorations": [
+      0,
+      379
+    ]
+  },
+  {
+    "id": "72_dragon",
+    "name": "tight_spotty",
+    "file": "72_dragon.bin",
+    "source_sha256": "82fd8fc18b9f352fd16c01cbd2bc3e160b0aa1fe8d67f0f8295326946192099f",
+    "sha256": "46127a3005f96f3f390b764abc150b5a2f445f39b0088eef5bbc82cb630e54e7",
+    "version": 1525,
+    "decorations": [
+      0,
+      470
+    ]
+  },
+  {
+    "id": "73_firefighter",
+    "name": "spiral",
+    "file": "73_firefighter.bin",
+    "source_sha256": "911f6d0f078a22a3e45411ae49602538b3e6b544d019cf21a390b2144358a75c",
+    "sha256": "e2f11012ebadd4f0cc203f8b1679740ecef9ea764f98a646acbb5ef71af19be8",
+    "version": 1525,
+    "decorations": [
+      5,
+      293
+    ]
+  },
+  {
+    "id": "74__firefly",
+    "name": "spiral",
+    "file": "74__firefly.bin",
+    "source_sha256": "355bc314e1ebeffcaa4fb82a53d08d47a93e5ad53518acdb36f687737ec7f853",
+    "sha256": "1e29f8e769cbc9019e1efa9280f5635f5d8f64472c0e14402420ea25a24ac34e",
+    "version": 1525,
+    "decorations": [
+      5,
+      328
+    ]
+  },
+  {
+    "id": "75_firehair",
+    "name": "spiral",
+    "file": "75_firehair.bin",
+    "source_sha256": "f92db6f349447e97b85cade21576cfde63eb70dff5e3210915fc4b6e8174bb71",
+    "sha256": "7e9de69c89cedca073d4fcb009387dbcb935548d4ae8f285cab247e2f81fc5c2",
+    "version": 1525,
+    "decorations": [
+      5,
+      138
+    ]
+  },
+  {
+    "id": "76__football",
+    "name": "spiral",
+    "file": "76__football.bin",
+    "source_sha256": "17ec9e591ec67d9ee8cfd88f55aeba0d32ded2f790be1d1854fb4702084df892",
+    "sha256": "c16173a0cb1319368127eafb74d34b957954cc3248295154d05ac89c6e0b245e",
+    "version": 1525,
+    "decorations": [
+      0,
+      458
+    ]
+  },
+  {
+    "id": "77_fox",
+    "name": "tight_fluff",
+    "file": "77_fox.bin",
+    "source_sha256": "9d0636ebb450b0a68ff59e1744032b28f13cdcf162c955490ea6ff3a6c501869",
+    "sha256": "faf83d7744f4deaa25d0dc070131677903bbbd69a4dcafba13b587e64cb13597",
+    "version": 1525,
+    "decorations": [
+      5,
+      512
+    ]
+  },
+  {
+    "id": "78_ghost",
+    "name": "spiral",
+    "file": "78_ghost.bin",
+    "source_sha256": "96ad6ddd5c160081365ceb80165328c8231b2a5d54ca602d0ec131f946d70298",
+    "sha256": "8a286d10b7f1c23cfe3259c4937c51c3dac2e67f3a182696a059069ad7b2670e",
+    "version": 1525,
+    "decorations": [
+      0,
+      350
+    ]
+  },
+  {
+    "id": "79_horse",
+    "name": "hex",
+    "file": "79_horse.bin",
+    "source_sha256": "1fab1da486b383e8699983ec163d2b14cf2573f1ffcc588363dc5feb7186ea97",
+    "sha256": "4022c2e7128aab9c1192f1b57e33848d1c337f79c31772a1d60f232b6df6ff5b",
+    "version": 1525,
+    "decorations": [
+      0,
+      360
+    ]
+  },
+  {
+    "id": "80_hotairballoon",
+    "name": "spiral",
+    "file": "80_hotairballoon.bin",
+    "source_sha256": "7c88df21f958c17c63e865939dd95cc01ff25a30c0a445c3eb813648d75c3e37",
+    "sha256": "3f4ee21721b94b435ffba22313d57e62053ec60592dad79522dd7bde1949369b",
+    "version": 1525,
+    "decorations": [
+      5,
+      332
+    ]
+  },
+  {
+    "id": "81_icelolly",
+    "name": "tight_fluff",
+    "file": "81_icelolly.bin",
+    "source_sha256": "8c53ea2e926057ec69d1cf24bb81ae5ae296794c8694966716b80be7e3fa7e8c",
+    "sha256": "f9300e28774747e3de759d72f8212d16144253123d4fd52c131f48a06961ae70",
+    "version": 1608,
+    "decorations": [
+      26,
+      199
+    ]
+  },
+  {
+    "id": "82_knight",
+    "name": "tight_fluff",
+    "file": "82_knight.bin",
+    "source_sha256": "61fb92b665a678a441fd7563da590128d211e06978829df34b586ef89d3a70ea",
+    "sha256": "9ba2abce6a2980d13b24f3eef9f64921bd51376926432a7605e904979fd4d3ab",
+    "version": 1525,
+    "decorations": [
+      5,
+      306
+    ]
+  },
+  {
+    "id": "83_ladybird",
+    "name": "spiral",
+    "file": "83_ladybird.bin",
+    "source_sha256": "b6bdca97a6ef0720bcf6b47314e8dfb6caea34a756b79d55bc5dac911383d781",
+    "sha256": "376be5759f1d5e08b43f9a03ab06332ccf823bfc97d8107d8be3926169eaa064",
+    "version": 1525,
+    "decorations": [
+      5,
+      370
+    ]
+  },
+  {
+    "id": "84_lightbulb",
+    "name": "fluff",
+    "file": "84_lightbulb.bin",
+    "source_sha256": "cc24a4f332c8b83d64a5f8d162f1d46b632cb365082f95c1cc6e757dc0257447",
+    "sha256": "f383d252fae88938e07272ee0cd385d294bd2256d9ab98db6c154a89de40fbfd",
+    "version": 1525,
+    "decorations": [
+      12,
+      232
+    ]
+  },
+  {
+    "id": "85_llama",
+    "name": "tight_zigzag",
+    "file": "85_llama.bin",
+    "source_sha256": "092c41f5c18531fa2880466617db78a4658d119f7dcf13135e987e1a3936ea0d",
+    "sha256": "f227297b787d66a0fd8aa0df1050d0295e54e6fa9ef500e1b04a8f385d7afc2e",
+    "version": 1525,
+    "decorations": [
+      5,
+      71
+    ]
+  },
+  {
+    "id": "86_monkey",
+    "name": "tight_zigzag",
+    "file": "86_monkey.bin",
+    "source_sha256": "5c7694658ebf68b60e14b6ce39d044d7d55cc7fb928d9d385ab3c4a7d2def4f1",
+    "sha256": "f8d63c0ec417e2c1e989988375ceb060d40ad1abd057f82cc8aff7060152532e",
+    "version": 1525,
+    "decorations": [
+      5,
+      298
+    ]
+  },
+  {
+    "id": "87_nurse",
+    "name": "fluff",
+    "file": "87_nurse.bin",
+    "source_sha256": "e921277e83c6df249166942700241f28bfc879265d4557d18fb04cf72e2c4a2c",
+    "sha256": "3545cb59cc020de57e68ec855bc37e29864fdb7d842419e191d75d67e5ea91fd",
+    "version": 1525,
+    "decorations": [
+      0,
+      415
+    ]
+  },
+  {
+    "id": "88_party",
+    "name": "tight_fluff",
+    "file": "88_party.bin",
+    "source_sha256": "269e5a516c83c9e1d29348cf31dfb70ce06f955e092e76968ffe2fb6053c2f9d",
+    "sha256": "cc072f7d452f1778f8538875a339360970359c37903fbee0f54eeafc126b1cd7",
+    "version": 1525,
+    "decorations": [
+      5,
+      315
+    ]
+  },
+  {
+    "id": "89_pig",
+    "name": "tight_curly",
+    "file": "89_pig.bin",
+    "source_sha256": "bcf918866d19bb0378d008a96393a22bc97d882ffdb742be007f2192866c2244",
+    "sha256": "1fff7fa67179466424fd6050854f8aa710ad303c47fc221ebfba5b1815533907",
+    "version": 1524,
+    "decorations": [
+      5,
+      144
+    ]
+  },
+  {
+    "id": "90_pilot",
+    "name": "tight_fluff",
+    "file": "90_pilot.bin",
+    "source_sha256": "5ec7d9f562183eeb7f77e5982281cb19e505cca68efafd32105d4897f1d0b32a",
+    "sha256": "1a3a6fabda1db32e683c4597e782b6ef88c3fb1c7157048026188a6315a7d657",
+    "version": 1525,
+    "decorations": [
+      5,
+      451
+    ]
+  },
+  {
+    "id": "91_pirate",
+    "name": "tight_spotty",
+    "file": "91_pirate.bin",
+    "source_sha256": "d3a389e398d6eb4a3a502aae5461131696fef69ba6c26d27014c552b1116e944",
+    "sha256": "dbbd1e9cb750f12e23a6dac44caf8d71d9ad725dfa65abfcb463213082841a24",
+    "version": 1525,
+    "decorations": [
+      5,
+      286
+    ]
+  },
+  {
+    "id": "92_pixie",
+    "name": "tight_fluff",
+    "file": "92_pixie.bin",
+    "source_sha256": "2e23aeae1c6e61e2c9de95bad428551f67d47dc7162be9be7a740a9309e67325",
+    "sha256": "57c38d1f3479bd52a0efe61ff74094bc343291a57c2269c80873c749acae5880",
+    "version": 1525,
+    "decorations": [
+      5,
+      209
+    ]
+  },
+  {
+    "id": "93_pufferfish",
+    "name": "tight_curly",
+    "file": "93_pufferfish.bin",
+    "source_sha256": "c32405c8a4769c3b18b4ace6ccf35b09cb599129179b1c282ac5076bdd6c7c60",
+    "sha256": "3331b7c8e21bbde952a830172bbf674575c0984f06330069533b85ae6880eb5e",
+    "version": 1608,
+    "decorations": [
+      20,
+      279
+    ]
+  },
+  {
+    "id": "94_puppy",
+    "name": "spiral",
+    "file": "94_puppy.bin",
+    "source_sha256": "43ecc28fedfb9174a775a5d35e54b0b624807146c78052570e0e9d388aa5b71d",
+    "sha256": "d13f24333d9cdb8a1db608c219d42366c61627490ed222d7fab6bc6972e44dcc",
+    "version": 1525,
+    "decorations": [
+      0,
+      220
+    ]
+  },
+  {
+    "id": "95_queen",
+    "name": "tight_hatch",
+    "file": "95_queen.bin",
+    "source_sha256": "ec3cfba9a839217af64cd89bc4e610a2f6f463587e84ae01a862a9024a815a33",
+    "sha256": "b9515ff0720db33c13037c31c969c3fffc2c26c12db136c4465584714ed29725",
+    "version": 1525,
+    "decorations": [
+      5,
+      432
+    ]
+  },
+  {
+    "id": "96_rocket",
+    "name": "spiral",
+    "file": "96_rocket.bin",
+    "source_sha256": "41904229ee25bcaa552939b4437a53f1b3c7f456f63dcc763e816196bb7ff8f7",
+    "sha256": "1f0e9ad8a70f8d24891debad49535e70148d499d8247443bbfadd0c27adbdf29",
+    "version": 1525,
+    "decorations": [
+      5,
+      263
+    ]
+  },
+  {
+    "id": "97_rockstar",
+    "name": "tight_fluff",
+    "file": "97_rockstar.bin",
+    "source_sha256": "5401192514a2b13d8f40bf3a5b55ba65b9e40862e238852addd474d8022f07dd",
+    "sha256": "955e1b78b141d72b49a727f0dfa8016114fdc512b494abcfa89c6004366451dc",
+    "version": 1525,
+    "decorations": [
+      5,
+      78
+    ]
+  },
+  {
+    "id": "98_saturn",
+    "name": "tight_spotty",
+    "file": "98_saturn.bin",
+    "source_sha256": "dc2a597b3ec7b32c012d16e10ccc9b1a6eb4cb979bc836cbe8404bde76b17d26",
+    "sha256": "43d1ed1f4bf18b17c3ee4cdd3bcac03181a33c97c742b5e44d3b4b0cae9323ff",
+    "version": 1525,
+    "decorations": [
+      5,
+      285
+    ]
+  },
+  {
+    "id": "99_sheep",
+    "name": "default",
+    "file": "99_sheep.bin",
+    "source_sha256": "691f9221f299f246cdf3f470314364cf8d7b4461eac0eee923a748be3b368214",
+    "sha256": "a32cc11a031c4b10309b20b3a17257448905ad4a395414ff9d12afed321954e2",
+    "version": 1525,
+    "decorations": [
+      0,
+      187
+    ]
+  },
+  {
+    "id": "AD_Carnivorous Plant",
+    "name": "zap02",
+    "file": "AD_Carnivorous Plant.bin",
+    "source_sha256": "3a2d243f1cc6433f095ef202b84412fe151bba85444bf0ec472a682c3333ab4a",
+    "sha256": "c310927d631b37f9298519421c84fadd11c91ee8710b30ff348b94b75099351c",
+    "version": 1840,
+    "decorations": [
+      0,
+      472
+    ]
+  },
+  {
+    "id": "AD_Dragon Imp",
+    "name": "tight_zigzag",
+    "file": "AD_Dragon Imp.bin",
+    "source_sha256": "8ef73cfb3294c070746f18f1264f777bfe62bb66f2d84a21b53819082f0f5e8c",
+    "sha256": "d3a5981941800a4422c1e872f428e37af54e7b2be0eaadaaaa4bb6b62c777497",
+    "version": 1840,
+    "decorations": [
+      0,
+      386
+    ]
+  },
+  {
+    "id": "AD_Gabbro",
+    "name": "tight_tufts",
+    "file": "AD_Gabbro.bin",
+    "source_sha256": "c9acea27e3004b343421a1c5969d03f08c676511d818559f10e1df95518db912",
+    "sha256": "95a1f65fa2b7bd47087c735c0b6baaa9c9417a9288f396f70bbed3db45761769",
+    "version": 1840,
+    "decorations": [
+      0,
+      371
+    ]
+  },
+  {
+    "id": "AD_Herb",
+    "name": "tight_zigzag",
+    "file": "AD_Herb.bin",
+    "source_sha256": "cdfd16532fd1dc5f2d162d8a845ef93682712d4486ac4f78944b9afbb4caf21d",
+    "sha256": "1f9eca39aa72d198dfe6c1c40580d1beeebe86c98464edcc26f7e56c800f61ec",
+    "version": 1840,
+    "decorations": [
+      0,
+      305
+    ]
+  },
+  {
+    "id": "AD_Scoria",
+    "name": "tight_fluff",
+    "file": "AD_Scoria.bin",
+    "source_sha256": "60f1d1de095d4e8f92bd5f5dd2fab6548d44a54fd6a12b157438468407e7cf91",
+    "sha256": "60c17592de8eb9d6e2af271176a3ca7f66da4b39356db5f6d5433e22ed54bdf7",
+    "version": 1840,
+    "decorations": [
+      5,
+      512
+    ]
+  },
+  {
+    "id": "H20_Bella",
+    "name": "geometric2",
+    "file": "H20_Bella.bin",
+    "source_sha256": "c6fdcd42c733536c331ce7205265b3f282e5793db14fe10dca5745ddb8bcb98d",
+    "sha256": "006b74abe26e3ef69cc253b3ece273a85dc233d8b31931e24cbde81546580f66",
+    "version": 1690,
+    "decorations": [
+      8,
+      131
+    ]
+  },
+  {
+    "id": "H20_Boo",
+    "name": "fluff",
+    "file": "H20_Boo.bin",
+    "source_sha256": "60f82b6dce3f4308ee5d83eaccc6b7ebc87ac3e2885fe250e9e1bc14ece354f7",
+    "sha256": "f43d32a414150009183d86fcdbe4c152d651844be0ee77f108ab22a7a835a3bd",
+    "version": 1690,
+    "decorations": [
+      5,
+      281
+    ]
+  },
+  {
+    "id": "H20_Dan",
+    "name": "fluff",
+    "file": "H20_Dan.bin",
+    "source_sha256": "6f5f093ffebd554c80391b6d4bc099ad6350343af1990e9d20d30695cae47730",
+    "sha256": "18c5a0184c0fcda1b2bd25ba4255c7f6e231bda3e9dcf338de62a0e526db64e5",
+    "version": 1690,
+    "decorations": [
+      0,
+      385
+    ]
+  },
+  {
+    "id": "H20_Iris",
+    "name": "spiral",
+    "file": "H20_Iris.bin",
+    "source_sha256": "5870e5d3fb2aea86e899cb06dff76f927ba58adc97f56d5e82ed1b96d2f4092e",
+    "sha256": "f4ae8024172b9528d7909820cec6b8fd439c27ed979a128753513cb66124154e",
+    "version": 1690,
+    "decorations": [
+      0,
+      473
+    ]
+  },
+  {
+    "id": "H20_Jacko",
+    "name": "tight_tufts",
+    "file": "H20_Jacko.bin",
+    "source_sha256": "6b5d77b20853c2b66018e4c60095c9c37dead042b4b8aef5471161ae1bf38e94",
+    "sha256": "19b852ce3bd8347eb8a9b1a8ee9e7f2f2be781bcd071fc9e54fc7b5d2ed55538",
+    "version": 1690,
+    "decorations": [
+      94,
+      161
+    ]
+  },
+  {
+    "id": "H20_Theo",
+    "name": "fluff",
+    "file": "H20_Theo.bin",
+    "source_sha256": "9080847bc447aed7d6f32a5c10328ca2ac3703f39f6271cd861b5aa7af4165f9",
+    "sha256": "df5cb26a70d99f2776564c5a174f697dfc729a726f5392a7e3ab3c241e01697e",
+    "version": 1690,
+    "decorations": [
+      203,
+      152
+    ]
+  },
+  {
+    "id": "H20_Vic",
+    "name": "tight_kitty",
+    "file": "H20_Vic.bin",
+    "source_sha256": "a64465f59cdafe8620b607effbe5d63f7172fd027068d84ce3333197ef9f78aa",
+    "sha256": "d30154bad02917bb0fdffda946de5e8d5b21ff63f281a2716846cfadf8ae0515",
+    "version": 1699,
+    "decorations": [
+      10,
+      264
+    ]
+  },
+  {
+    "id": "H21_Coco_Scrow",
+    "name": "tight_hairy",
+    "file": "H21_Coco_Scrow.bin",
+    "source_sha256": "b62b42d70bc820113b24f19ca1851e14dd8c029f2e59d604c065f20e463702d0",
+    "sha256": "84dddeae7d780856b600a119a25d2f447bffea260edefd1d5de0ed9c9abc6b0f",
+    "version": 1700,
+    "decorations": [
+      0,
+      432
+    ]
+  },
+  {
+    "id": "H21_Doc_Science",
+    "name": "tight_kitty",
+    "file": "H21_Doc_Science.bin",
+    "source_sha256": "fd1a48b778a668de55c92aa67f314ecdd68996248427f18a2da5835ee8ab38d2",
+    "sha256": "1df31ee2597aa497e50952c341e81927ff9d00e7e5de59d14964b4a3ba497c0c",
+    "version": 1700,
+    "decorations": [
+      5,
+      450
+    ]
+  },
+  {
+    "id": "H21_Pag_Clown",
+    "name": "geometric2",
+    "file": "H21_Pag_Clown.bin",
+    "source_sha256": "2892ba89e90b447f0f06458aa57fe9ae86e44a7b741da76a33d7a083fd87cfc4",
+    "sha256": "de2ca99d25b827bee82c9a4631886004009e7aaebe98dd7405623565cd4c2044",
+    "version": 1700,
+    "decorations": [
+      0,
+      426
+    ]
+  },
+  {
+    "id": "Impys21_Fitz",
+    "name": "tight_fluff",
+    "file": "Impys21_Fitz.bin",
+    "source_sha256": "9aecb08764751cf03aa13e033f6f439f8faa7990d3186303f168c704f7c9d5be",
+    "sha256": "34fc08180579087c4bffa4d144674fdb4f066684dc9268e444da24ce0bc27fd3",
+    "version": 1700,
+    "decorations": [
+      5,
+      480
+    ]
+  },
+  {
+    "id": "Impys21_Renee",
+    "name": "heart",
+    "file": "Impys21_Renee.bin",
+    "source_sha256": "d2d661267ae749339b0e7ac0af7fadb6e4d014d2994aaf7b3d9d73d37ae40547",
+    "sha256": "8abd227383e967b7e166524e7890764e94d058c4de238896aab4eef93215f535",
+    "version": 1700,
+    "decorations": [
+      5,
+      454
+    ]
+  },
+  {
+    "id": "impys_brandon",
+    "name": "tight_fluff",
+    "file": "impys_brandon.bin",
+    "source_sha256": "f0fe88cd05319fe574ac6c2d106e3219a8ddb32e81fd004e2356e1cac06e55fb",
+    "sha256": "b4bfdd356c6375a472499ada55ce86d7165ddcdfed0a95c48919ee290b78f0f5",
+    "version": 1871,
+    "decorations": [
+      0,
+      372
+    ]
+  },
+  {
+    "id": "impys_gerry",
+    "name": "tight_zigzag",
+    "file": "impys_gerry.bin",
+    "source_sha256": "8e8223795d67ed09e20b5d8b780074942e2ac2606be05d255d5fa8f9544fd31a",
+    "sha256": "f0f2bfaf8db7856385b757e18493bc04088fdc7b0335bf8cf656835ae2bf0536",
+    "version": 1871,
+    "decorations": [
+      0,
+      476
+    ]
+  },
+  {
+    "id": "impys_luna",
+    "name": "spiral",
+    "file": "impys_luna.bin",
+    "source_sha256": "4596c3a003a7431d1dae442e40d1c7782f9d98274dba0c4d5d4295959a77e6ac",
+    "sha256": "c4f730c1f3dabfb3ff66865422db134eb6e182401e740e557837e68e4a40997f",
+    "version": 1871,
+    "decorations": [
+      0,
+      488
+    ]
+  },
+  {
+    "id": "MM_dreamqueen",
+    "name": "alpha",
+    "file": "MM_dreamqueen.bin",
+    "source_sha256": "87ed82b0a5d7b4b3f7408644d520e86036572b2ad872959d0e560fcca0fe0187",
+    "sha256": "1ed9a249f95e67de1743db0b76393d7f1182078cb2f7c93d042f647d77864a15",
+    "version": 1608,
+    "decorations": [
+      13,
+      385
+    ]
+  },
+  {
+    "id": "MM_earlyaccess",
+    "name": "alpha",
+    "file": "MM_earlyaccess.bin",
+    "source_sha256": "142469e52fa76ded341b2001b514869660e056c870ae9e9625d6c641cc92b0be",
+    "sha256": "1cfe37062fb7034c7b454289f6b75c6f04f5d2e75fc0d215b50dcf0f37def6f2",
+    "version": 1608,
+    "decorations": [
+      7,
+      504
+    ]
+  },
+  {
+    "id": "MM_IMP",
+    "name": "MMBody",
+    "file": "MM_IMP.bin",
+    "source_sha256": "85e3e71e6ffe0d7702d30dec44fc96b35850513af410658db4e1db03ce5b22e0",
+    "sha256": "5cd7d5a2e4285291878d90955aa7054e2c615578fbd1736641d7ead11a0af7b3",
+    "version": 1608,
+    "decorations": [
+      5,
+      0
+    ]
+  },
+  {
+    "id": "MM_impygold",
+    "name": "tight_fluff",
+    "file": "MM_impygold.bin",
+    "source_sha256": "44eab9bd04154d6379644698c70a9bc4cfa6da2deb8b5fe25f98f5fac9fbd6c0",
+    "sha256": "ed0b00b84615ae71fa91be5cdcfa476fb88463a44fcf89cf95e52547487fea43",
+    "version": 1609,
+    "decorations": [
+      5,
+      470
+    ]
+  },
+  {
+    "id": "MM_impysilver",
+    "name": "tight_fluff",
+    "file": "MM_impysilver.bin",
+    "source_sha256": "4f4233880913b9dfe6cc29185d8bc1b76857c805536f8bcb93ce3f68ff68f9d1",
+    "sha256": "5d2dc83fec52da9a8d63957d86c64070748756a046a822f9f96b40a0742a3d99",
+    "version": 1608,
+    "decorations": [
+      5,
+      300
+    ]
+  },
+  {
+    "id": "zzz_delete",
+    "name": "tight_fluff",
+    "file": "zzz_delete.bin",
+    "source_sha256": "b95eb29801d0489697997bf2874eb25dbf74402d54e581cef4b25f3fdd99cca6",
+    "sha256": "ed0b00b84615ae71fa91be5cdcfa476fb88463a44fcf89cf95e52547487fea43",
+    "version": 1611,
+    "decorations": [
+      5,
+      470
+    ]
+  },
+  {
+    "id": "zzz_temp",
+    "name": "tight_curly",
+    "file": "zzz_temp.bin",
+    "source_sha256": "912609792c66b62fc4c93c4a57439e2e3cb5526d1382b9bd5bd136e0d74edfe1",
+    "sha256": "3b7e8704fd9d774f6bf180fc2001343ff1628bf8dd9159a26d98a0fe9c6c14c2",
+    "version": 1466,
+    "decorations": [
+      0,
+      175
+    ]
+  }
+]

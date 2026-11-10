@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+*.obj
+*.res
+*.lib
+*.exp
+*.pdb
+*.dll
+*.exe
+runtime/python/
+build-output/
+release/

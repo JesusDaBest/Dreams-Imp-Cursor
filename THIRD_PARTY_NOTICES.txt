@@ -1,0 +1,18 @@
+Dreams Imp — third-party materials
+
+This is unofficial fan software. Dreams and its character artwork, textures,
+animation banks, extracted native routines and game-derived shaders belong to
+their respective rights holders, including Sony Interactive Entertainment and
+Media Molecule. No ownership, endorsement or redistribution license for those
+materials is asserted or granted by this package. They are identified as
+game-derived runtime/native-code, standalone-assets, reference-state, characters,
+thumbnails and shaders. Check the necessary permissions before public release.
+
+Python 3.12 is distributed under the Python Software Foundation License and
+included third-party notices. See runtime/python/LICENSE.txt.
+Tcl/Tk licensing is included under runtime/python/tcl.
+Pillow licensing is included under runtime/python/Lib/site-packages.
+
+Vulkan headers/tools and nlohmann/json are build dependencies, not supplied
+runtime libraries. The Vulkan loader is supplied by the installed graphics
+driver. Native Vulkan helper code is supplied in the source package.

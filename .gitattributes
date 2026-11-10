@@ -1,0 +1,6 @@
+* text=auto
+*.bin binary
+*.bindings binary
+*.spv binary
+*.png binary
+*.ico binary
