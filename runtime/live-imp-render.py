@@ -28,10 +28,13 @@ class LiveFrames(C.Structure):
         ('bloom_particles', Eyes), ('bloom_present', Present),
     ]
 
+class GalleryFrames(C.Structure):
+    _fields_ = [('active', C.POINTER(C.c_uint8)), ('count', C.c_uint), ('index', Eyes)]
+
 
 def render(particles, present, stick_particles=lambda: (b'', b''), eye_count=lambda: 0,
            *, responsive_history=None, appearance=lambda: (1., 1., 1.),
-           tip_count=None, present_tip=None):
+           tip_count=None, present_tip=None, gallery=None):
     errors = []
     rgb = (C.c_float * 3)()
 
@@ -129,14 +132,21 @@ def render(particles, present, stick_particles=lambda: (b'', b''), eye_count=lam
     view_bytes[16:28] = body['stock_body_parameters']()[0x40:0x4c]
     view.write_bytes(view_bytes)
     lib = C.CDLL(str(ROOT/'imp-renderer.dll'))
-    loop = lib.imp_render_loop
-    loop.argtypes = (C.c_char_p,)*5 + (C.POINTER(LiveFrames), C.c_void_p, C.c_size_t)
+    loop = lib.imp_gallery_render_loop if gallery is not None else lib.imp_render_loop
+    extra = ()
+    if gallery is not None:
+        active, index = gallery
+        get_index = Eyes(lambda _: index())
+        gallery_frames = GalleryFrames(active, len(active), get_index)
+        extra = (C.byref(gallery_frames),)
+    loop.argtypes = (C.c_char_p,)*5 + (C.POINTER(LiveFrames),) + (
+        (C.POINTER(GalleryFrames),) if gallery is not None else ()) + (C.c_void_p, C.c_size_t)
     loop.restype = C.c_int
     error = C.create_string_buffer(512)
     try:
         result = loop(path(SHADERS/'PrimImpVS-0.spv'), path(SHADERS/'PrimImpOverBokehPS-desktop-draw.spv'),
                       path(ROOT/'standalone-assets'/'imp_alpha_texture.dds'),
-                      path(ROOT/'test-blue-noise-r8.bin'), path(view), C.byref(f), error, len(error))
+                      path(ROOT/'test-blue-noise-r8.bin'), path(view), C.byref(f), *extra, error, len(error))
     finally:
         view.unlink(missing_ok=True)
     if errors:

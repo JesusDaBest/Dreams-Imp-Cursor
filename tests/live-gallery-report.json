@@ -1,0 +1,51 @@
+[
+  {
+    "visible": 3,
+    "frames": 12,
+    "first_frame_seconds": 1.9689999999827705,
+    "elapsed": 2.2189999999827705,
+    "all_images_change": true
+  },
+  {
+    "visible": 32,
+    "frames": 128,
+    "first_frame_seconds": 0.0779999999795109,
+    "elapsed": 2.577999999979511,
+    "all_images_change": true
+  },
+  {
+    "visible": 32,
+    "frames": 128,
+    "first_frame_seconds": 0.18700000003445894,
+    "elapsed": 2.8589999999967404,
+    "all_images_change": true
+  },
+  {
+    "visible": 32,
+    "frames": 128,
+    "first_frame_seconds": 0.20300000003771856,
+    "elapsed": 2.875,
+    "all_images_change": true
+  },
+  {
+    "visible": 32,
+    "frames": 128,
+    "first_frame_seconds": 0.20300000003771856,
+    "elapsed": 2.875,
+    "all_images_change": true
+  },
+  {
+    "visible": 21,
+    "frames": 84,
+    "first_frame_seconds": 0.20300000003771856,
+    "elapsed": 1.9839999999967404,
+    "all_images_change": true
+  },
+  {
+    "visible": 2,
+    "frames": 8,
+    "first_frame_seconds": 0.0940000000409782,
+    "elapsed": 0.26600000000325963,
+    "all_images_change": true
+  }
+]

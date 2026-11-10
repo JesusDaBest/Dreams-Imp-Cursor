@@ -10,6 +10,11 @@ ROOT=Path(__file__).resolve().parents[1]
 OUT=ROOT/'release'/'Dreams Imp'
 OUT.mkdir(parents=True,exist_ok=True)
 
+def copy_changed(source,dest):
+    if dest.exists() and source.read_bytes()==dest.read_bytes():return
+    dest.parent.mkdir(parents=True,exist_ok=True)
+    shutil.copy2(source,dest)
+
 def include(relative):
     parts=relative.parts
     if '__pycache__' in parts or relative.suffix in ('.pyc','.lib','.exp','.pdb'):return False
@@ -22,9 +27,10 @@ for original in (ROOT/'runtime').rglob('*'):
     if not original.is_file():continue
     relative=original.relative_to(ROOT)
     if not include(relative):continue
-    dest=OUT/relative;dest.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(original,dest)
+    if relative.as_posix()=='runtime/imp-renderer.dll':continue
+    copy_changed(original,OUT/relative)
 for relative in ('Dreams Imp.exe','runtime/imp-renderer.dll'):
-    shutil.copy2(ROOT/'build-output'/relative,OUT/relative)
+    copy_changed(ROOT/'build-output'/relative,OUT/relative)
 for name in ('README.txt','Controls.txt','THIRD_PARTY_NOTICES.txt'):
     shutil.copy2(ROOT/name,OUT/name)
 files=sorted(p for p in OUT.rglob('*') if p.is_file() and p.name!='MANIFEST.sha256')
@@ -46,13 +52,15 @@ for archive in archives:
                 for p in sorted((ROOT/directory).rglob('*')):
                     if p.is_file() and p.suffix not in ('.obj','.res','.exe','.pyc') and '__pycache__' not in p.parts and p.name!='build-local.cmd':
                         z.write(p,Path('Dreams Imp')/p.relative_to(ROOT))
-            for filename in ('test_picker_lifecycle.py','test_desktop_access.py','test_portable_render.py','test_tip_bloom.py','portable-render-log.txt','catalog-render.json','character-counts.json','appearance-sheet.png'):
+            for filename in ('test_picker_lifecycle.py','test_desktop_access.py','test_portable_render.py','test_tip_bloom.py','test_live_gallery.py','test_gallery_history.py','live-gallery-report.json','gallery-history-report.json','portable-render-log.txt','catalog-render.json','character-counts.json','appearance-sheet.png'):
                 z.write(ROOT/'tests'/filename,'Dreams Imp/tests/'+filename)
     with zipfile.ZipFile(archive) as z:
         bad=z.testzip()
         if bad:raise RuntimeError('Corrupt archive member: '+bad)
         names=set(z.namelist())
         assert 'Dreams Imp/Dreams Imp.exe' in names
+        assert 'Dreams Imp/runtime/python/DLLs/_multiprocessing.pyd' in names
+        assert 'Dreams Imp/runtime/fonts/SourceSansPro-Regular.ttf' in names
         assert not any(name.endswith(('Start Imp.exe','Stop Imp.exe','renderer.log','settings.json')) for name in names)
         catalog=json.loads(z.read('Dreams Imp/runtime/characters/catalog.json'))
         assert len(catalog)==149

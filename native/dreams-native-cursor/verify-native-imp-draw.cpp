@@ -1,6 +1,7 @@
 // Offline draw test for the original Dreams body vertex and fleck pixel shaders.
 #include <vulkan/vulkan.h>
 #include <cmath>
+#include <map>
 #include <immintrin.h>
 #define NOMINMAX
 #include <UIAutomation.h>
@@ -111,6 +112,13 @@ struct LiveFrames {
     PresentFrame bloom_present;
 };
 
+// Separate entry point keeps the desktop cursor ABI and draw path unchanged.
+struct GalleryFrames {
+    const uint8_t* active;
+    unsigned count;
+    int (*index)(void*);
+};
+
 struct TemporalResolve {
     Context& context;
     const VkExtent2D extent;
@@ -124,6 +132,7 @@ struct TemporalResolve {
     VkPipeline pipeline{};
     VkSampler sample{};
     unsigned ping{};
+    float draw_time{};
     const void* push;
 
     TemporalResolve(Context& c, VkExtent2D size, const DrawImage& draw, const LiveFrames& live,
@@ -134,6 +143,7 @@ struct TemporalResolve {
           depth(c, size.width, size.height, 1, 1, VK_FORMAT_R32_SFLOAT,
                 VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT),
           push(live.push) {
+        draw_time = static_cast<const float*>(live.vertex_constants)[50];
         std::memcpy(flat.data, live.constants, 256);
         auto* flat_u = static_cast<uint32_t*>(flat.data);
         auto* flat_f = static_cast<float*>(flat.data);
@@ -271,7 +281,8 @@ struct TemporalResolve {
 
 static void draw(Context& c, const char* vs, const char* ps, const char* fleck,
                  const char* noise_file, const char* particle_file, const char* view_file,
-                 const char* output, const LiveFrames* live = nullptr) {
+                 const char* output, const LiveFrames* live = nullptr,
+                 const GalleryFrames* gallery = nullptr) {
     const VkExtent2D extent = live ? VkExtent2D{176, 256} : VkExtent2D{512, 512};
     const auto [width, height] = extent;
     const auto pixel_count = width * height;
@@ -516,8 +527,9 @@ static void draw(Context& c, const char* vs, const char* ps, const char* fleck,
 
     std::unique_ptr<TemporalResolve> temporal;
     std::unique_ptr<TemporalResolve> tip_temporal;
+    std::map<unsigned, std::unique_ptr<TemporalResolve>> gallery_history;
     if (live) {
-        temporal = std::make_unique<TemporalResolve>(c, extent, target, *live, cmd);
+        if (!gallery) temporal = std::make_unique<TemporalResolve>(c, extent, target, *live, cmd);
         if (tip_bloom)
             tip_temporal = std::make_unique<TemporalResolve>(c, extent, *tip_target, *live, cmd);
         check(vkEndCommandBuffer(cmd));
@@ -547,6 +559,7 @@ static void draw(Context& c, const char* vs, const char* ps, const char* fleck,
     auto tip_previous = VK_IMAGE_LAYOUT_UNDEFINED;
     bool was_blooming = false;
     do {
+        TemporalResolve* resolve = temporal.get();
         const int count = live ? live->next(particles.data, capacity/2, live->user) : int(particle_bytes.size()/136);
         if (count == 0) break;
         if (live && live->appearance_rgb) std::memcpy(static_cast<uint8_t*>(view.data) + 16, live->appearance_rgb, 12);
@@ -566,6 +579,21 @@ static void draw(Context& c, const char* vs, const char* ps, const char* fleck,
             body_vertex[49] = body_vertex[50];
             body_vertex[50] += 1.0f / 30;
             c.begin(0);
+            if (gallery) {
+                const int slot = gallery->index(live->user);
+                require(slot >= 0 && unsigned(slot) < gallery->count && gallery->active[slot],
+                        "invalid gallery history slot");
+                // The previous submission finished before next() changes active slots.
+                for (auto it = gallery_history.begin(); it != gallery_history.end();) {
+                    if (!gallery->active[it->first]) it = gallery_history.erase(it);
+                    else ++it;
+                }
+                auto& history = gallery_history[unsigned(slot)];
+                if (!history) history = std::make_unique<TemporalResolve>(c, extent, target, *live, cmd);
+                resolve = history.get();
+                body_vertex[49] = history->draw_time;
+                body_vertex[50] = history->draw_time += 1.0f / 30;
+            }
         }
         target.barrier(cmd, previous, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, 1, 1);
         depth.barrier(cmd, previous == VK_IMAGE_LAYOUT_UNDEFINED ? VK_IMAGE_LAYOUT_UNDEFINED :
@@ -586,7 +614,7 @@ static void draw(Context& c, const char* vs, const char* ps, const char* fleck,
         vkCmdEndRendering(cmd);
         previous = live ? VK_IMAGE_LAYOUT_GENERAL : VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
         target.barrier(cmd, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, previous, 1, 1);
-        if (temporal) temporal->record(cmd, readback, copy, live->constants);
+        if (resolve) resolve->record(cmd, readback, copy, live->constants);
         else vkCmdCopyImageToBuffer(cmd, target.image, previous, readback.handle, 1, &copy);
         if (tips) {
             // Reuse the original eye/tip shaders and the exact last native records.
@@ -648,6 +676,22 @@ extern "C" __declspec(dllexport) int imp_render_loop(
     try {
         Context ctx(false);
         draw(ctx, vs, ps, fleck, noise, nullptr, view, nullptr, frames);
+        return 0;
+    } catch (const std::exception& ex) {
+        if (error_size) strncpy_s(error, error_size, ex.what(), _TRUNCATE);
+        return 1;
+    }
+}
+
+extern "C" __declspec(dllexport) int imp_gallery_render_loop(
+    const char* vs, const char* ps, const char* fleck, const char* noise, const char* view,
+    const LiveFrames* frames, const GalleryFrames* gallery, char* error, size_t error_size) {
+    try {
+        require(frames && gallery && gallery->active && gallery->index && gallery->count,
+                "missing gallery inputs");
+        require(!frames->bloom_particles && !frames->bloom_present, "gallery does not add bloom");
+        Context ctx(false);
+        draw(ctx, vs, ps, fleck, noise, nullptr, view, nullptr, frames, gallery);
         return 0;
     } catch (const std::exception& ex) {
         if (error_size) strncpy_s(error, error_size, ex.what(), _TRUNCATE);

@@ -13,6 +13,10 @@ included third-party notices. See runtime/python/LICENSE.txt.
 Tcl/Tk licensing is included under runtime/python/tcl.
 Pillow licensing is included under runtime/python/Lib/site-packages.
 
+Source Sans Pro 3.006R, Copyright 2010-2018 Adobe, is bundled under the SIL
+Open Font License 1.1. The unmodified font and license are in runtime/fonts/.
+Source: https://github.com/adobe-fonts/source-sans/releases/tag/3.006R
+
 Vulkan headers/tools and nlohmann/json are build dependencies, not supplied
 runtime libraries. The Vulkan loader is supplied by the installed graphics
 driver. Native Vulkan helper code is supplied in the source package.

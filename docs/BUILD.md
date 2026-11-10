@@ -24,6 +24,11 @@ The Source ZIP on the release page includes the built shaders and all runtime de
 ## Source map
 
 - `runtime/app.py`: explicit cursor activation, appearance selection and settings.
+- `runtime/picker_controls.py`: Source Sans Pro category and grid controls.
+- `runtime/gallery_client.py`, `runtime/gallery_worker.py`: viewport-only live
+  previews in a separate process, using original animation/particle routines
+  and shaders. Every visible Imp has its own simulation and temporal history;
+  the render context and shader resources are shared. Minimized pickers pause.
 - `runtime/desktop-imp.py`: mouse reactions, timing and desktop render loop.
 - `runtime/native-imp-motion.py`: bindings to Dreams' original CPU routines.
 - `runtime/verify-native-imp-*.py`: native animation, body and face bindings.
@@ -35,6 +40,9 @@ The Source ZIP on the release page includes the built shaders and all runtime de
   the SPIR-V actually loaded by the renderer.
 - `runtime/characters/`: 149 decoded game presets and native face bindings.
 - `tools/render_catalog.py`: offscreen GPU rendering test for all presets.
+- `tests/test_live_gallery.py`: all-preset live rendering, viewport changes,
+  minimize and shutdown checks. `tests/test_gallery_history.py` compares
+  interleaved previews byte-for-byte with independent cursor shader draws.
 - `tools/decode_characters.py`, `tools/prepare_character_bindings.py`: extraction
   provenance; these require local game/research inputs and are not user setup.
 
