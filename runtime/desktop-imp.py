@@ -310,6 +310,7 @@ class Imp:
                         round(PROJECTION_SIZE*(0.66-0.245*tip_y)) + VERTICAL_PADDING)
         self.stick = self._previous('antenna-mesh', antenna_mesh)
         tip = self._tip_particles(points[165], tip_controls)
+        self.tip_count = len(tip)//136
         self.eye_count = (len(eyes)+len(mouth)+len(decorations)+len(tip))//136
         return (body + self._previous('antenna-flecks', antenna_flecks)
                 + self._previous('eyes', eyes) + self._previous('mouth', mouth)
@@ -325,16 +326,16 @@ def _renderer():
 def _cursor_decoder(glow):
     lib = _renderer()
     convert = lib.imp_decode_cursor_bgra if glow else lib.imp_decode_bgra
-    convert.argtypes = (C.c_void_p, C.c_void_p, C.c_uint, C.c_uint) if glow else (
+    convert.argtypes = (C.c_void_p, C.c_void_p, C.c_void_p, C.c_uint, C.c_uint) if glow else (
         C.c_void_p, C.c_void_p, C.c_uint)
     convert.restype = None
     return convert
 
 
-def decode(raw, *, glow=False):
+def decode(raw, *, glow=False, tip=None):
     pixels = C.create_string_buffer(WIDTH * HEIGHT * 4)
-    if glow:
-        _cursor_decoder(True)(raw, pixels, WIDTH, HEIGHT)
+    if glow and tip is not None:
+        _cursor_decoder(True)(raw, tip, pixels, WIDTH, HEIGHT)
     else:
         _cursor_decoder(False)(raw, pixels, WIDTH * HEIGHT)
     return pixels
@@ -693,6 +694,7 @@ def desktop(seconds, expression, replace_arrow=False, character=None, owner_pid=
     index = 0
     state = None
     presented = []
+    tip_frame = None
     try:
         if owner_pid:
             # An unexpected picker exit must not leave a hidden system cursor behind.
@@ -734,7 +736,7 @@ def desktop(seconds, expression, replace_arrow=False, character=None, owner_pid=
 
         def present(raw, width, height):
             nonlocal index, deadline
-            pixels = decode(raw, glow=hover.at(*state[:3]))
+            pixels = decode(raw, glow=tip_frame is not None, tip=tip_frame)
             if not index and max(pixels.raw[3::4]) < 20:
                 raise ValueError('The first cursor frame was empty')
             window.present(pixels, state[:2], imp.hotspot, state[2])
@@ -750,8 +752,14 @@ def desktop(seconds, expression, replace_arrow=False, character=None, owner_pid=
                 time.sleep(remaining)
             return True
 
+        def receive_tip(raw):
+            nonlocal tip_frame
+            tip_frame = raw
+
         GPU['render'](particles, present, lambda: (imp.stick, imp.antenna_path), lambda: imp.eye_count,
                       appearance=lambda: imp.motion.body_color,
+                      tip_count=lambda: imp.tip_count if hover.at(*state[:3]) else 0,
+                      present_tip=receive_tip,
                       responsive_history=lambda: (reaction.clip != 'idle' or
                           reaction.last_update - reaction.last_motion <= .10))
     finally:

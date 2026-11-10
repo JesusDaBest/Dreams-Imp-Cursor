@@ -107,6 +107,8 @@ struct LiveFrames {
     const void* eye_constants;
     int (*eyes)(void*);
     const float* appearance_rgb;
+    int (*bloom_particles)(void*);
+    PresentFrame bloom_present;
 };
 
 struct TemporalResolve {
@@ -242,6 +244,17 @@ struct TemporalResolve {
         ping ^= 1;
     }
 
+    void reset(VkCommandBuffer cmd) {
+        const VkImageSubresourceRange range{VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1};
+        const VkClearColorValue zero{};
+        for (auto* image : {&frame0, &frame1}) {
+            image->barrier(cmd, VK_IMAGE_LAYOUT_GENERAL, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, 1);
+            vkCmdClearColorImage(cmd, image->image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, &zero, 1, &range);
+            image->barrier(cmd, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_GENERAL, 1, 1);
+        }
+        ping = 0;
+    }
+
     ~TemporalResolve() {
         auto d = context.device;
         vkDestroyPipeline(d, pipeline, nullptr);
@@ -272,7 +285,8 @@ static void draw(Context& c, const char* vs, const char* ps, const char* fleck,
     require(live || (particle_bytes.size() % 136 == 0 && !particle_bytes.empty()), "invalid particles");
     Buffer particles(c, live ? capacity * 136 : particle_bytes.size());
     if (!live) std::memcpy(particles.data, particle_bytes.data(), particle_bytes.size());
-    Buffer readback(c, pixel_count * 8);
+    const bool tip_bloom = live && live->bloom_particles && live->bloom_present;
+    Buffer readback(c, pixel_count * 8 * (tip_bloom ? 2 : 1));
     Buffer vflat(c, 300), pflat(c, 336), stick_flat(c, 328), stick_path(c, 4096),
            planes(c, 256), pagetable(c, 256), fault(c, 256), stick_fault(c, 256),
            eye_flat(c, 300), eye_fault(c, 256);
@@ -336,6 +350,10 @@ static void draw(Context& c, const char* vs, const char* ps, const char* fleck,
     DrawImage target(c, width, height, 1, 1, output_format,
                      VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT |
                      VK_IMAGE_USAGE_SAMPLED_BIT);
+    std::unique_ptr<DrawImage> tip_target;
+    if (tip_bloom)
+        tip_target = std::make_unique<DrawImage>(c, width, height, 1, 1, output_format,
+            VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT);
     constexpr auto depth_format = VK_FORMAT_D32_SFLOAT;
     DrawImage depth(c, width, height, 1, 1, depth_format, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT);
     std::vector<VkBufferImageCopy> copies;
@@ -497,8 +515,11 @@ static void draw(Context& c, const char* vs, const char* ps, const char* fleck,
     require(sync_errors + other_errors == 0, "graphics pipeline validation failed");
 
     std::unique_ptr<TemporalResolve> temporal;
+    std::unique_ptr<TemporalResolve> tip_temporal;
     if (live) {
         temporal = std::make_unique<TemporalResolve>(c, extent, target, *live, cmd);
+        if (tip_bloom)
+            tip_temporal = std::make_unique<TemporalResolve>(c, extent, *tip_target, *live, cmd);
         check(vkEndCommandBuffer(cmd));
         c.submit(0, 1, true);
     }
@@ -523,12 +544,14 @@ static void draw(Context& c, const char* vs, const char* ps, const char* fleck,
     copy.imageSubresource = {VK_IMAGE_ASPECT_COLOR_BIT, 0, 0, 1};
     copy.imageExtent = {width, height, 1};
     auto previous = VK_IMAGE_LAYOUT_UNDEFINED;
+    auto tip_previous = VK_IMAGE_LAYOUT_UNDEFINED;
+    bool was_blooming = false;
     do {
         const int count = live ? live->next(particles.data, capacity/2, live->user) : int(particle_bytes.size()/136);
         if (count == 0) break;
         if (live && live->appearance_rgb) std::memcpy(static_cast<uint8_t*>(view.data) + 16, live->appearance_rgb, 12);
         require(count > 0 && (!live || count <= int(capacity)), "invalid particle count from host");
-        int sticks = 0, eyes = 0;
+        int sticks = 0, eyes = 0, tips = 0;
         if (live) {
             sticks = live->stick(static_cast<uint8_t*>(particles.data) + (capacity/2)*136,
                                  capacity/2, stick_path.data, live->user);
@@ -537,6 +560,8 @@ static void draw(Context& c, const char* vs, const char* ps, const char* fleck,
             static_cast<uint32_t*>(stick_flat.data)[29] = uint32_t(sticks + capacity/2);
             eyes = live->eyes(live->user);
             require(eyes >= 0 && eyes < count, "invalid eye record count");
+            tips = tip_bloom ? live->bloom_particles(live->user) : 0;
+            require(tips >= 0 && tips <= eyes, "invalid tip record count");
             auto* body_vertex = static_cast<float*>(vflat.data);
             body_vertex[49] = body_vertex[50];
             body_vertex[50] += 1.0f / 30;
@@ -563,6 +588,30 @@ static void draw(Context& c, const char* vs, const char* ps, const char* fleck,
         target.barrier(cmd, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, previous, 1, 1);
         if (temporal) temporal->record(cmd, readback, copy, live->constants);
         else vkCmdCopyImageToBuffer(cmd, target.image, previous, readback.handle, 1, &copy);
+        if (tips) {
+            // Reuse the original eye/tip shaders and the exact last native records.
+            // Only this image feeds bloom; body, eyes and decorations are excluded.
+            if (!was_blooming) tip_temporal->reset(cmd);
+            tip_target->barrier(cmd, tip_previous, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, 1, 1);
+            depth.barrier(cmd, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+                          VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, 1, 1);
+            auto tip_color = color;
+            tip_color.imageView = tip_target->view;
+            auto tip_rendering = ri;
+            tip_rendering.pColorAttachments = &tip_color;
+            vkCmdBeginRendering(cmd, &tip_rendering);
+            vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, eye_pipeline);
+            vkCmdBindDescriptorSets(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, layout, 0, 1, &set, 0, nullptr);
+            vkCmdPushConstants(cmd, layout, stages, 0, uint32_t(push.size() * sizeof(uint32_t)), push.data());
+            vkCmdDraw(cmd, 4, uint32_t(tips), 0, uint32_t(count - tips));
+            vkCmdEndRendering(cmd);
+            tip_target->barrier(cmd, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_GENERAL, 1, 1);
+            tip_previous = VK_IMAGE_LAYOUT_GENERAL;
+            auto tip_copy = copy;
+            tip_copy.bufferOffset = pixel_count * 8;
+            tip_temporal->record(cmd, readback, tip_copy, live->constants);
+        }
+        was_blooming = tips != 0;
         VkMemoryBarrier host{VK_STRUCTURE_TYPE_MEMORY_BARRIER};
         host.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
         host.dstAccessMask = VK_ACCESS_HOST_READ_BIT;
@@ -572,6 +621,8 @@ static void draw(Context& c, const char* vs, const char* ps, const char* fleck,
         c.submit(0, 1, true);
         require(sync_errors + other_errors == 0, "frame validation failed");
         if (live) {
+            if (tip_bloom && !live->bloom_present(tips ? static_cast<uint8_t*>(readback.data) + pixel_count*8 : nullptr,
+                                                  width, height, live->user)) break;
             if (!live->present(readback.data, width, height, live->user)) break;
         } else {
             const auto* result = static_cast<const uint64_t*>(readback.data);
@@ -738,14 +789,15 @@ void bloom_up(const BloomImage& in, BloomImage& out) {
 } // namespace
 
 extern "C" __declspec(dllexport) void imp_decode_cursor_bgra(
-    const uint16_t* source, uint8_t* destination, unsigned width, unsigned height) {
+    const uint16_t* source, const uint16_t* tip_source, uint8_t* destination, unsigned width, unsigned height) {
+    if (!tip_source) { imp_decode_bgra(source, destination, width*height); return; }
     // The captured 1920x1080 UI chain reduces eight times (ending at 8x5).
     thread_local std::array<BloomImage, 9> pyramid;
     pyramid.front().resize(width, height);
     auto& image = pyramid.front().pixels;
     BloomRect bounds{static_cast<int>(width), static_cast<int>(height), -1, -1};
     for (size_t i = 0; i < image.size(); ++i) {
-        const auto* pixel = source + 4 * i;
+        const auto* pixel = tip_source + 4 * i;
         const float y = _cvtsh_ss(pixel[0]), co = _cvtsh_ss(pixel[1]), cg = _cvtsh_ss(pixel[2]);
         const float a = _cvtsh_ss(pixel[3]);
         if (!(a > 0.0f) || !std::isfinite(a) || !std::isfinite(y) ||
@@ -762,14 +814,28 @@ extern "C" __declspec(dllexport) void imp_decode_cursor_bgra(
         bounds.right = std::max(bounds.right, column);
         bounds.bottom = std::max(bounds.bottom, row);
     }
+    if (bounds.right < 0) { imp_decode_bgra(source, destination, width*height); return; }
     for (size_t level = 1; level < pyramid.size(); ++level) {
         const auto& previous = pyramid[level - 1];
         auto& current = pyramid[level];
         current.resize((previous.width + 1) / 2, (previous.height + 1) / 2);
         bloom_down(previous, current, level == 1, bounds);
     }
-    for (size_t level = pyramid.size() - 1; level > 0; --level)
+    for (size_t level = pyramid.size() - 1; level > 1; --level)
         bloom_up(pyramid[level], pyramid[level - 1]);
+    // Use the complete original Imp as the base, but add only the tip's halo.
+    for (size_t i = 0; i < image.size(); ++i) {
+        const auto* pixel = source + 4*i;
+        const float y = _cvtsh_ss(pixel[0]), co = _cvtsh_ss(pixel[1]), cg = _cvtsh_ss(pixel[2]);
+        const float a = _cvtsh_ss(pixel[3]);
+        if (!(a > 0) || !std::isfinite(a) || !std::isfinite(y) || !std::isfinite(co) || !std::isfinite(cg)) {
+            image[i] = _mm_setzero_ps();
+            continue;
+        }
+        const float scale = 1/std::max(1-std::abs(y), .0001f);
+        image[i] = _mm_setr_ps((y-co-cg)*scale, (y+cg)*scale, (y+co-cg)*scale, a);
+    }
+    bloom_up(pyramid[1], pyramid[0]);
     for (size_t i = 0; i < image.size(); ++i, destination += 4) {
         // DoPost (c77d5c09) after the additive bloom, in the original SDR colour curve.
         const auto x = _mm_max_ps(_mm_sub_ps(image[i], _mm_set1_ps(0.004f)), _mm_setzero_ps());

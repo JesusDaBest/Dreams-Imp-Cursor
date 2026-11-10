@@ -16,6 +16,27 @@ Present = C.CFUNCTYPE(C.c_int, C.c_void_p, C.c_uint, C.c_uint, C.c_void_p)
 Eyes = C.CFUNCTYPE(C.c_int, C.c_void_p)
 
 
+def cursor_view(captured):
+    if len(captured) != 208:
+        raise ValueError('Unrecognized Imp view layout')
+    view = bytearray(captured)
+    # PrimImpOverBokehPS adds view[47] * body colour * its internal-light
+    # profile to the surface colour. The captured scene had this gain at
+    # 1.5 even at rest. A desktop Imp must not emit that body glow.
+    # The captured scene-light coefficients (view[12:39]) are all zero. Do
+    # not mix that absent scene lighting over the native surface colour:
+    # the original shader uses view[39] as that blend weight. Otherwise
+    # removing emission leaves a black body lit only by the old glow.
+    # Its base-light endpoints at view[8:10] were 0.05/0.28, relying on the
+    # removed internal light for visibility. Set both to neutral illumination
+    # (1), so the original pigment colour remains visible without emission.
+    # These are original shader inputs, not a substitute shader or colour LUT.
+    struct.pack_into('<2f', view, 8 * 4, 1.0, 1.0)
+    struct.pack_into('<f', view, 39 * 4, 0.0)
+    struct.pack_into('<f', view, 47 * 4, 0.0)
+    return view
+
+
 class LiveFrames(C.Structure):
     _fields_ = [
         ('shader', C.c_char_p), ('constants', C.c_void_p), ('push', C.c_void_p),
@@ -25,11 +46,13 @@ class LiveFrames(C.Structure):
         ('eye_shader', C.c_char_p), ('vertex_constants', C.c_void_p),
         ('eye_constants', C.c_void_p), ('eyes', Eyes),
         ('appearance_rgb', C.POINTER(C.c_float)),
+        ('bloom_particles', Eyes), ('bloom_present', Present),
     ]
 
 
 def render(particles, present, stick_particles=lambda: (b'', b''), eye_count=lambda: 0,
-           *, responsive_history=None, appearance=lambda: (1., 1., 1.)):
+           *, responsive_history=None, appearance=lambda: (1., 1., 1.),
+           tip_count=None, present_tip=None):
     errors = []
     rgb = (C.c_float * 3)()
 
@@ -81,6 +104,22 @@ def render(particles, present, stick_particles=lambda: (b'', b''), eye_count=lam
     def number_of_eyes(_):
         return eye_count()
 
+    @Eyes
+    def number_of_tips(_):
+        try:return tip_count()
+        except BaseException as exc:
+            errors.append(exc)
+            return -1
+
+    @Present
+    def tip_ready(pixels,width,height,_):
+        try:
+            present_tip(C.string_at(pixels,width*height*8) if pixels else None)
+            return 1
+        except BaseException as exc:
+            errors.append(exc)
+            return 0
+
     flat = (ORIGINAL/'e0002-flat.bin').read_bytes()
     if len(flat) != 212:
         raise ValueError('Unrecognized resolve constant layout')
@@ -101,10 +140,12 @@ def render(particles, present, stick_particles=lambda: (b'', b''), eye_count=lam
                    C.addressof(constants), C.addressof(push), next_frame, frame_ready, None,
                    C.addressof(draw), C.addressof(anatomy), path(ROOT/'stick-desktop.spv'),
                    C.addressof(stick), next_stick, path(ROOT/'eye-desktop.spv'),
-                   C.addressof(vertex), C.addressof(eye), number_of_eyes, rgb)
+                   C.addressof(vertex), C.addressof(eye), number_of_eyes, rgb,
+                   number_of_tips if tip_count and present_tip else Eyes(),
+                   tip_ready if tip_count and present_tip else Present())
     import tempfile
     view = Path(tempfile.gettempdir())/f'dreams-imp-lighting-{os.getpid()}.bin'
-    view_bytes = bytearray((captures/'stage-0-buffer1.bin').read_bytes()[:208])
+    view_bytes = cursor_view((captures/'stage-0-buffer1.bin').read_bytes()[:208])
     body = runpy.run_path(str(ROOT/'verify-native-imp-body.py'))
     view_bytes[16:28] = body['stock_body_parameters']()[0x40:0x4c]
     view.write_bytes(view_bytes)

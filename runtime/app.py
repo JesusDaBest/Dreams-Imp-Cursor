@@ -15,10 +15,11 @@ from tkinter import ttk, messagebox
 from PIL import Image, ImageTk
 
 from app_paths import ROOT, STATE, READY, ERROR, write_json
+from space_preview import card_image, SpacePreview
 
 TITLE = 'Dreams Imp'
-VERSION = '1.0.1'
-BG, PANEL, FG, MUTED, ACCENT = '#10141f', '#1b2333', '#edf2fc', '#9eabc2', '#87ebcf'
+VERSION = '1.0.2'
+BG, PANEL, FG, MUTED, ACCENT = '#170f26', '#291a40', '#f4edff', '#bfafd2', '#d8b3ff'
 
 def named_handle(name):
     kernel = C.WinDLL('kernel32', use_last_error=True)
@@ -79,10 +80,10 @@ class App:
         style = ttk.Style()
         style.theme_use('clam')
         style.configure('.', font=('Segoe UI', 11), background=BG, foreground=FG)
-        style.configure('TButton', padding=(15, 10), background='#2d3b53', borderwidth=0)
-        style.map('TButton', background=[('active', '#3c4e6b'), ('disabled', '#242b38')])
-        style.configure('Accent.TButton', background=ACCENT, foreground='#12251e', font=('Segoe UI Semibold',11))
-        style.map('Accent.TButton', background=[('active','#b0f5df'),('disabled','#425e58')])
+        style.configure('TButton', padding=(15, 10), background='#49325e', borderwidth=0)
+        style.map('TButton', background=[('active', '#654678'), ('disabled', '#31283c')])
+        style.configure('Accent.TButton', background=ACCENT, foreground='#271335', font=('Segoe UI Semibold',11))
+        style.map('Accent.TButton', background=[('active','#ead4ff'),('disabled','#655273')])
         style.configure('TEntry', fieldbackground=PANEL, foreground=FG, padding=8)
         style.configure('TCombobox', fieldbackground=PANEL, foreground=FG, padding=8)
         style.map('TCombobox', fieldbackground=[('readonly',PANEL)], foreground=[('readonly',FG)])
@@ -120,8 +121,8 @@ class App:
         self.name.pack(padx=18,pady=(22,3))
         self.collection = tk.Label(preview,text='',bg=PANEL,fg=ACCENT,font=('Segoe UI',10))
         self.collection.pack()
-        self.picture = tk.Label(preview,bg=PANEL)
-        self.picture.pack(expand=True,pady=8)
+        self.picture = SpacePreview(preview)
+        self.picture.pack(fill='both',expand=True,padx=12,pady=8)
         tk.Label(preview,text='Live native animation · 5× cursor\n50% animation speed · 120 Hz drawing',
                  bg=PANEL,fg=MUTED,font=('Segoe UI',10),justify='center').pack(pady=(0,18))
         self.use_button=ttk.Button(preview,text='Set as cursor',style='Accent.TButton',command=self.start)
@@ -147,9 +148,9 @@ class App:
             ident=item['id']
             if ident not in self.card_images:
                 with Image.open(ROOT/'thumbnails'/(ident+'.png')) as image:
-                    self.card_images[ident]=ImageTk.PhotoImage(image.resize((110,160),Image.Resampling.LANCZOS))
+                    self.card_images[ident]=ImageTk.PhotoImage(card_image(image))
             card=tk.Button(self.card_frame,text=display_name(item),image=self.card_images[ident],compound='top',
-                command=lambda ident=ident:self.select(ident),bg=PANEL,fg=FG,activebackground='#304f61',
+                command=lambda ident=ident:self.select(ident),bg=PANEL,fg=FG,activebackground='#52346b',
                 activeforeground=FG,font=('Segoe UI',10),wraplength=118,relief='flat',borderwidth=0,
                 highlightthickness=2,highlightbackground=PANEL,highlightcolor=ACCENT,padx=6,pady=8,
                 cursor='hand2',takefocus=True)
@@ -166,7 +167,7 @@ class App:
     def highlight_selected(self):
         for ident,card in self.cards.items():
             card.configure(highlightbackground=ACCENT if ident==self.selected else PANEL,
-                           bg='#263c49' if ident==self.selected else PANEL)
+                           bg='#49305f' if ident==self.selected else PANEL)
 
     def resize_cards(self,event):
         self.gallery.itemconfigure(self.gallery_window,width=event.width)
@@ -175,7 +176,7 @@ class App:
 
     def layout_cards(self):
         self.card_layout_job=None
-        columns=max(1,self.gallery.winfo_width()//142)
+        columns=max(1,self.gallery.winfo_width()//150)
         for column in range(max(columns,self.card_frame.grid_size()[0])):
             self.card_frame.columnconfigure(column,weight=1 if column<columns else 0)
         for index,card in enumerate(self.cards.values()):
@@ -191,8 +192,7 @@ class App:
         self.name.configure(text=display_name(self.by_id[ident]))
         self.collection.configure(text=category(ident))
         with Image.open(ROOT/'thumbnails'/(ident+'.png')) as image:
-            self.image=ImageTk.PhotoImage(image.resize((220,320),Image.Resampling.LANCZOS))
-        self.picture.configure(image=self.image)
+            self.picture.set_imp(image)
 
     def signal_stop(self):
         return runpy.run_path(str(ROOT/'win-imp-overlay.py'))['stop']()
