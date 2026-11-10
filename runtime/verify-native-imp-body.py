@@ -1,6 +1,7 @@
 """Exercise Dreams' original body particle generator against its Imp mesh."""
 
 import ctypes as C
+from functools import lru_cache
 import math
 import runpy
 import struct
@@ -11,6 +12,15 @@ ROOT = Path(__file__).resolve().parent
 NATIVE = runpy.run_path(str(ROOT / 'verify-native-imp-animation.py'))
 RECORD_BYTES = 0x88
 STOCK_CHARACTER = ROOT / 'standalone-assets' / '00_default.unpacked.bin'
+
+
+@lru_cache(maxsize=1)
+def native_sincos():
+    library = C.CDLL(str(ROOT/'imp-renderer.dll'))
+    function = library.imp_sincos
+    function.argtypes = (C.POINTER(C.c_float), C.POINTER(C.c_float), C.c_float)
+    function.restype = None
+    return function
 
 
 def stock_body_parameters():
@@ -72,11 +82,7 @@ class BodyTest(NATIVE['NativeEvaluator']):
                 self.put(0xebd29e0, struct.pack('<960i', *faces))
             self.protect(begin, end, 0x20 if executable else 0x02)
 
-        @C.WINFUNCTYPE(None, C.POINTER(C.c_float), C.POINTER(C.c_float), C.c_float)
-        def sincos(sine, cosine, angle):
-            sine[0] = math.sin(angle)
-            cosine[0] = math.cos(angle)
-
+        sincos = native_sincos()
         self.sincos = sincos
         self.protect(0x75b3000, 0x75b4000, 0x04)
         self.protect(0x7de6000, 0x7de9000, 0x04)

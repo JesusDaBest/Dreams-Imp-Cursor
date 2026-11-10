@@ -11,6 +11,13 @@
 #pragma comment(lib, "uiautomationcore.lib")
 #pragma comment(lib, "user32.lib")
 
+// Same double-precision math and float stores as the former ctypes callback.
+// Native Imp routines call this thousands of times; do not re-enter Python/GIL.
+extern "C" __declspec(dllexport) void imp_sincos(float* sine, float* cosine, float angle) {
+    *sine = static_cast<float>(std::sin(static_cast<double>(angle)));
+    *cosine = static_cast<float>(std::cos(static_cast<double>(angle)));
+}
+
 static VkResult CreateDrawDevice(VkPhysicalDevice physical, const VkDeviceCreateInfo* info,
                                  const VkAllocationCallbacks* allocator, VkDevice* device) {
     // The shared compute harness does not otherwise need the DrawParameters feature.

@@ -20,7 +20,7 @@ from picker_controls import GROUPS, pill, category_panel
 from gallery_client import GalleryClient
 
 TITLE = 'Dreams Imp'
-VERSION = '1.0.6'
+VERSION = '1.0.7'
 BG, PANEL, FG, MUTED, ACCENT = '#170f26', '#291a40', '#f4edff', '#bfafd2', '#d8b3ff'
 
 def named_handle(name):
@@ -85,8 +85,7 @@ class App:
             self.settings = {}
         self.selected = self.settings.get('character', '00_default')
         if self.selected not in self.by_id: self.selected = '00_default'
-        self.grid_size=self.settings.get('grid_size',1)
-        if self.grid_size not in (1,2,3,4):self.grid_size=1
+        self.grid_size=1
         root.title(TITLE)
         root.geometry('970x700')
         root.minsize(340, 360)
@@ -113,7 +112,7 @@ class App:
         self.group.trace_add('write',self.refresh)
         self.refresh()
         root.after(200,self.poll)
-        self.preview_job=root.after(33,self.poll_previews)
+        self.preview_job=root.after(16,self.poll_previews)
 
     def refresh(self,*_):
         self.cancel_snap()
@@ -138,15 +137,6 @@ class App:
         self.show(ident)
         self.start()
         if self.grid_size==1:self.snap_to(list(self.cards).index(ident))
-
-    def cycle_grid(self):
-        self.cancel_snap()
-        self.grid_size=self.grid_size%4+1
-        self.settings['grid_size']=self.grid_size
-        write_json(self.config_path,self.settings)
-        self.menu_open=False
-        self.gallery.xview_moveto(0);self.gallery.yview_moveto(0)
-        self.layout_cards()
 
     def resize_cards(self,event):
         if self.card_layout_job:self.root.after_cancel(self.card_layout_job)
@@ -186,9 +176,8 @@ class App:
         for item,_,_ in self.chrome_items:self.gallery.delete(item)
         self.chrome_items=[];self.chrome_images=[];self.control_bounds=[]
         category_width=min(284,width-112)
-        left=(width-category_width-94)/2
+        left=(width-category_width)/2
         self.add_control(pill(category_width,56,self.group.get(),expanded=self.menu_open),left,14,('category',None))
-        self.add_control(pill(84,56,grid=self.grid_size),left+category_width+10,14,('grid',None))
         if self.menu_open:
             panel=category_panel(category_width,self.group.get())
             self.add_control(panel,left,76,None)
@@ -210,7 +199,6 @@ class App:
     def activate_control(self,action):
         kind,value=action
         if kind=='category':self.menu_open=not self.menu_open;self.draw_controls()
-        elif kind=='grid':self.cycle_grid()
         elif kind=='group':self.group.set(value)
 
     def scroll_changed(self,*_):
@@ -235,11 +223,11 @@ class App:
         self.cancel_snap()
         if self.grid_size!=1 or not self.cards:return
         index=max(0,min(len(self.cards)-1,index))
-        start=self.gallery.canvasx(0);target=index*self.spacing;began=time.monotonic()
+        start=self.gallery.canvasx(0);target=index*self.spacing;began=time.perf_counter()
         def step():
             self.snap_job=None
             if self.closing:return
-            t=min(1,(time.monotonic()-began)/.18)
+            t=min(1,(time.perf_counter()-began)/.18)
             value=start+(target-start)*(1-(1-t)**3)
             self.gallery.xview_moveto(value/self.content_width)
             if t<1:self.snap_job=self.root.after(16,step)
@@ -290,6 +278,7 @@ class App:
         self.selected=ident
 
     def poll_previews(self):
+        began=time.perf_counter()
         self.preview_job=None
         if self.closing or self.preview_failed:return
         visible=[];aim={}
@@ -314,7 +303,7 @@ class App:
                     '\n\nLog: '+str(STATE/'gallery.log'),parent=self.root)
                 return
         if self.preview is not None:
-            self.preview.request(visible,aim)
+            self.preview.request(visible,aim,size=self.image_size)
             frames,error=self.preview.take()
             for ident in list(self.card_images):
                 if ident not in visible:
@@ -322,11 +311,13 @@ class App:
                     del self.card_images[ident]
             for ident,(width,height,pixels) in frames.items():
                 if ident not in visible:continue
-                image=Image.frombytes('RGBA',(width,height),pixels).resize(self.image_size,Image.Resampling.LANCZOS)
-                if ident in self.card_images:self.card_images[ident].paste(image)
-                else:
-                    self.card_images[ident]=ImageTk.PhotoImage(image)
-                    self.gallery.itemconfigure(self.cards[ident],image=self.card_images[ident])
+                if (width,height)!=self.image_size:continue
+                image=Image.frombytes('RGBA',(width,height),pixels)
+                # Pasting into an image already displayed by Tk forces expensive
+                # synchronous canvas updates. Prepare the next image off-canvas.
+                photo=ImageTk.PhotoImage(image)
+                self.gallery.itemconfigure(self.cards[ident],image=photo)
+                self.card_images[ident]=photo
             if error or not self.preview.process.is_alive():
                 self.preview_failed=True
                 self.preview.close();self.preview=None
@@ -334,7 +325,7 @@ class App:
                     (error.strip().splitlines()[-1] if error else 'Renderer process exited.')+
                     '\n\nLog: '+str(STATE/'gallery.log'),parent=self.root)
                 return
-        self.preview_job=self.root.after(33,self.poll_previews)
+        self.preview_job=self.root.after(max(1,round(1000*(1/60-(time.perf_counter()-began)))),self.poll_previews)
 
     def signal_stop(self):
         return runpy.run_path(str(ROOT/'win-imp-overlay.py'))['stop']()

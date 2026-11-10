@@ -102,6 +102,7 @@ class PickerLifecycle(unittest.TestCase):
             positions=[app.gallery.coords(item) for item in app.cards.values()]
             self.assertEqual(len({y for _,y in positions}),1)
             self.assertTrue(all(b[0]>a[0] for a,b in zip(positions,positions[1:])))
+            self.assertEqual(app.spacing,app.image_size[0]+90)
             x,y=map(round,positions[0]);before=app.gallery.xview()[0]
             app.press_gallery(SimpleNamespace(x=x,y=y))
             app.drag_gallery(SimpleNamespace(x=x-240,y=y+10))
@@ -110,15 +111,12 @@ class PickerLifecycle(unittest.TestCase):
             app.release_gallery(SimpleNamespace(x=x-240,y=y+10))
             app.start.assert_not_called();app.cancel_snap()
         finally:root.destroy()
-    def test_grid_button_cycles_all_sizes_without_changing_cursor(self):
+    def test_only_original_size_one_layout_is_exposed(self):
         root=picker.tk.Tk();root.withdraw()
         try:
-            app=picker.App(root);app.start=Mock();app.grid_size=1
-            actual=[]
-            for _ in range(4):
-                app.activate_control(('grid',None));actual.append(app.grid_size)
-            self.assertEqual(actual,[2,3,4,1])
-            self.assertEqual(json.loads(app.config_path.read_text())['grid_size'],1)
+            app=picker.App(root);app.start=Mock()
+            self.assertEqual(app.grid_size,1)
+            self.assertEqual([action[0] for _,action in app.control_bounds],['category'])
             app.start.assert_not_called()
         finally:root.destroy()
     def test_category_popup_filters_without_selecting_an_imp(self):

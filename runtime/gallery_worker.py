@@ -64,14 +64,14 @@ def run(connection, log_path):
                     for ident in wanted:active[indexes[ident]] = 1
                 if not order:return None
                 if next_index == 0:
-                    delay = next_cycle-time.monotonic()
+                    delay = next_cycle-time.perf_counter()
                     if delay > 0:
                         with condition:condition.wait(timeout=delay)
                         continue
-                    next_cycle = time.monotonic()+1/30
+                    next_cycle = time.perf_counter()+1/60
                 ident = order[next_index]
                 next_index = (next_index+1)%len(order)
-                now = time.monotonic()
+                now = time.perf_counter()
                 if ident not in imps:
                     imp = api['Imp'](ident)
                     imps[ident] = [imp, now, now-1/30]

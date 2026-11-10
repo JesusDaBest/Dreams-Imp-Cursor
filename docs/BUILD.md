@@ -24,7 +24,7 @@ The Source ZIP on the release page includes the built shaders and all runtime de
 ## Source map
 
 - `runtime/app.py`: explicit cursor activation, appearance selection and settings.
-- `runtime/picker_controls.py`: Source Sans Pro category and grid controls.
+- `runtime/picker_controls.py`: Source Sans Pro category selector.
 - `runtime/gallery_client.py`, `runtime/gallery_worker.py`: viewport-only live
   previews in a separate process, using original animation/particle routines
   and shaders. Every visible Imp has its own simulation and temporal history;
@@ -43,6 +43,11 @@ The Source ZIP on the release page includes the built shaders and all runtime de
 - `tests/test_live_gallery.py`: all-preset live rendering, viewport changes,
   minimize and shutdown checks. `tests/test_gallery_history.py` compares
   interleaved previews byte-for-byte with independent cursor shader draws.
+- `tests/test_gallery_motion.py`: 540 original particle/antenna frames verify
+  the native math shim against the former Python callback. The game solver
+  and shaders are unchanged; the shim avoids repeatedly entering Python.
+- `tests/profile_picker.py`: bounded live redraw and UI responsiveness measurement,
+  with no desktop input or cursor activation.
 - `tools/decode_characters.py`, `tools/prepare_character_bindings.py`: extraction
   provenance; these require local game/research inputs and are not user setup.
 

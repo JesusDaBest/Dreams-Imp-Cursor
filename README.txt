@@ -1,9 +1,9 @@
-Dreams Imp for Windows — 1.0.6
+Dreams Imp for Windows — 1.0.7
 
 Extract the whole ZIP, then double-click Dreams Imp.exe.
 Tap or click an Imp to set it as your cursor. The dropdown filters categories.
-The grid button cycles sizes 1–4. Size 1 is a sideways Imp carousel; larger
-sizes scroll vertically. Drag with one finger, or use the mouse wheel.
+The original size-1 sideways Imp carousel is the only layout.
+Drag with one finger, or use the mouse wheel.
 Opening the app or filtering categories does not change your cursor.
 Minimize the picker to keep using the cursor; close it to
 quit and restore the Windows cursor. No commands, Python installation, emulator,
@@ -19,12 +19,14 @@ ported original shaders. Windows mouse events drive the reactions. It is a
 live, click-through cursor overlay, not a GIF. The render area is padded for
 movement; the Imp is approximately 5 times the original cursor size. Animation
 and morph speed are 50%; drawing targets 120 Hz, subject to GPU/CPU load.
-The picker contains live Imps in purple space, a rounded category selector and
-a grid-size button, using bundled Source Sans Pro. Each visible Imp is simulated
+The picker contains live Imps in purple space and a rounded category selector,
+using bundled Source Sans Pro. Each visible Imp is simulated
 and drawn by the original game routines and shaders, with its own frame history.
 Offscreen Imps stop rendering; minimizing the picker pauses its renderer.
 Original Imp lighting and colours are retained. The picker adds no glow.
 Cursor hover bloom remains confined to the antenna tip.
+The picker uses high-resolution frame timing and prepares images outside its
+scroll/input loop. Original native morph calculations and shader pixels are retained.
 
 Requirements
   Windows 10/11 x64, an AVX2-capable CPU and a current Vulkan 1.3 graphics driver.
