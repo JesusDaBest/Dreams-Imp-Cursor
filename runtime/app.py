@@ -15,10 +15,10 @@ from tkinter import ttk, messagebox
 from PIL import Image, ImageTk
 
 from app_paths import ROOT, STATE, READY, ERROR, write_json
-from space_preview import card_image
+from space_preview import space_image
 
 TITLE = 'Dreams Imp'
-VERSION = '1.0.4'
+VERSION = '1.0.5'
 BG, PANEL, FG, MUTED, ACCENT = '#170f26', '#291a40', '#f4edff', '#bfafd2', '#d8b3ff'
 
 def named_handle(name):
@@ -61,6 +61,9 @@ class App:
         self.cards = {}
         self.card_images = {}
         self.card_layout_job = None
+        self.press_position = None
+        self.pressed_character = None
+        self.dragging = False
         self.items = json.loads((ROOT/'characters/catalog.json').read_text(encoding='utf-8'))
         self.by_id = {i['id']: i for i in self.items}
         self.config_path = STATE/'settings.json'
@@ -82,32 +85,34 @@ class App:
         style.configure('.', font=('Segoe UI', 11), background=BG, foreground=FG)
         style.configure('TCombobox', fieldbackground=PANEL, foreground=FG, padding=8)
         style.map('TCombobox', fieldbackground=[('readonly',PANEL)], foreground=[('readonly',FG)])
-        body = tk.Frame(root,bg=BG)
-        body.pack(fill='both',expand=True,padx=18,pady=18)
-        body.columnconfigure(0,weight=1)
-        body.rowconfigure(1,weight=1)
+        head = tk.Frame(root,bg=BG)
+        head.pack(fill='x',padx=18,pady=(14,10))
         self.group = tk.StringVar(value='All Imps')
         groups = ['All Imps','Classic Imps','Halloween',"Art’s Dream",'Special editions','Internal presets']
-        ttk.Combobox(body,textvariable=self.group,values=groups,state='readonly').grid(
-            row=0,column=0,sticky='ew',pady=(0,12))
-        listframe = tk.Frame(body,bg=PANEL)
-        listframe.grid(row=1,column=0,sticky='nsew')
-        self.gallery = tk.Canvas(listframe,bg=BG,highlightthickness=0)
-        scrollbar = ttk.Scrollbar(listframe,orient='vertical',command=self.gallery.yview)
-        self.gallery.configure(yscrollcommand=scrollbar.set)
-        scrollbar.pack(side='right',fill='y');self.gallery.pack(fill='both',expand=True)
-        self.card_frame=tk.Frame(self.gallery,bg=BG)
-        self.gallery_window=self.gallery.create_window((0,0),window=self.card_frame,anchor='nw')
+        ttk.Combobox(head,textvariable=self.group,values=groups,state='readonly').pack(fill='x')
+        self.gallery = tk.Canvas(root,bg=BG,highlightthickness=0,yscrollincrement=1)
+        self.gallery.pack(fill='both',expand=True)
+        self.background_item=self.gallery.create_image(0,0,anchor='nw')
+        self.background_size=None
+        self.gallery.configure(yscrollcommand=self.scroll_changed)
         self.gallery.bind('<Configure>',self.resize_cards)
-        self.card_frame.bind('<Configure>',lambda _:self.gallery.configure(scrollregion=self.gallery.bbox('all')))
         self.gallery.bind('<MouseWheel>',self.scroll_cards)
+        # Windows promotes single-finger touch to these mouse events. Begin
+        # scrolling after a small movement; activate an Imp only on a tap.
+        self.gallery.bind('<ButtonPress-1>',self.press_gallery)
+        self.gallery.bind('<B1-Motion>',self.drag_gallery)
+        self.gallery.bind('<ButtonRelease-1>',self.release_gallery)
+        self.gallery.tag_bind('imp','<Enter>',lambda _:self.gallery.configure(cursor='hand2'))
+        self.gallery.tag_bind('imp','<Leave>',lambda _:self.gallery.configure(cursor=''))
         self.group.trace_add('write',self.refresh)
         self.refresh()
         root.after(200,self.poll)
 
     def refresh(self,*_):
-        for card in self.cards.values():card.destroy()
+        for card in self.cards.values():self.gallery.delete(card)
         self.cards.clear()
+        self.press_position=None
+        self.pressed_character=None
         group = self.group.get()
         visible = [i for i in self.items if group=='All Imps' or category(i['id'])==group]
         visible.sort(key=lambda i:(i['id']!='00_default',display_name(i).casefold()))
@@ -115,16 +120,12 @@ class App:
             ident=item['id']
             if ident not in self.card_images:
                 with Image.open(ROOT/'thumbnails'/(ident+'.png')) as image:
-                    self.card_images[ident]=ImageTk.PhotoImage(card_image(image))
-            card=tk.Button(self.card_frame,text=display_name(item),image=self.card_images[ident],compound='top',
-                command=lambda ident=ident:self.select(ident),bg=PANEL,fg=FG,activebackground='#52346b',
-                activeforeground=FG,font=('Segoe UI',10),wraplength=118,relief='flat',borderwidth=0,
-                highlightthickness=2,highlightbackground=PANEL,highlightcolor=ACCENT,padx=6,pady=8,
-                cursor='hand2',takefocus=True,state='disabled' if self.changing else 'normal')
-            card.bind('<MouseWheel>',self.scroll_cards)
-            self.cards[ident]=card
+                    artwork=image.convert('RGBA')
+                    artwork.thumbnail((110,160),Image.Resampling.LANCZOS)
+                    self.card_images[ident]=ImageTk.PhotoImage(artwork)
+            self.cards[ident]=self.gallery.create_image(0,0,image=self.card_images[ident],tags='imp')
+        self.imp_ids={item:ident for ident,item in self.cards.items()}
         self.layout_cards()
-        self.highlight_selected()
         self.gallery.yview_moveto(0)
 
     def select(self,ident):
@@ -132,35 +133,63 @@ class App:
         self.show(ident)
         self.start()
 
-    def enable_cards(self,enabled):
-        for card in self.cards.values():
-            card.configure(state='normal' if enabled else 'disabled')
-
-    def highlight_selected(self):
-        for ident,card in self.cards.items():
-            card.configure(highlightbackground=ACCENT if ident==self.selected else PANEL,
-                           bg='#49305f' if ident==self.selected else PANEL)
-
     def resize_cards(self,event):
-        self.gallery.itemconfigure(self.gallery_window,width=event.width)
         if self.card_layout_job:self.root.after_cancel(self.card_layout_job)
         self.card_layout_job=self.root.after(100,self.layout_cards)
 
     def layout_cards(self):
         self.card_layout_job=None
-        columns=max(1,self.gallery.winfo_width()//150)
-        for column in range(max(columns,self.card_frame.grid_size()[0])):
-            self.card_frame.columnconfigure(column,weight=1 if column<columns else 0)
+        width,height=self.gallery.winfo_width(),self.gallery.winfo_height()
+        columns=max(1,width//150)
         for index,card in enumerate(self.cards.values()):
-            card.grid(row=index//columns,column=index%columns,sticky='nsew',padx=4,pady=4)
+            self.gallery.coords(card,(index%columns+.5)*width/columns,100+(index//columns)*184)
+        rows=(len(self.cards)+columns-1)//columns
+        self.gallery.configure(scrollregion=(0,0,width,max(height,rows*184+32)))
+        if width>10 and height>10 and self.background_size!=(width,height):
+            self.background=ImageTk.PhotoImage(space_image(width,height))
+            self.gallery.itemconfigure(self.background_item,image=self.background)
+            self.background_size=(width,height)
+        self.scroll_changed()
+
+    def scroll_changed(self,*_):
+        self.gallery.coords(self.background_item,0,self.gallery.canvasy(0))
 
     def scroll_cards(self,event):
-        if event.delta:self.gallery.yview_scroll(-int(event.delta/120 or (1 if event.delta>0 else -1)),'units')
+        if event.delta:self.gallery.yview_scroll(-round(event.delta/120*72),'units')
+        return 'break'
+
+    def imp_at(self,x,y):
+        x,y=self.gallery.canvasx(x),self.gallery.canvasy(y)
+        for item in reversed(self.gallery.find_overlapping(x,y,x,y)):
+            if item in self.imp_ids:return self.imp_ids[item]
+        return None
+
+    def press_gallery(self,event):
+        self.press_position=(event.x,event.y)
+        self.pressed_character=self.imp_at(event.x,event.y)
+        self.dragging=False
+        self.gallery.scan_mark(event.x,event.y)
+        return 'break'
+
+    def drag_gallery(self,event):
+        if self.press_position is None:return 'break'
+        x,y=self.press_position
+        if max(abs(event.x-x),abs(event.y-y))>8:self.dragging=True
+        if self.dragging:self.gallery.scan_dragto(x,event.y,gain=1)
+        return 'break'
+
+    def release_gallery(self,event):
+        if self.press_position is None:return 'break'
+        x,y=self.press_position
+        is_tap=not self.dragging and max(abs(event.x-x),abs(event.y-y))<=8
+        ident=self.pressed_character
+        self.press_position=self.pressed_character=None
+        if is_tap and ident is not None and self.imp_at(event.x,event.y)==ident:
+            self.select(ident)
         return 'break'
 
     def show(self,ident):
         self.selected=ident
-        self.highlight_selected()
 
     def signal_stop(self):
         return runpy.run_path(str(ROOT/'win-imp-overlay.py'))['stop']()
@@ -170,7 +199,6 @@ class App:
         if self.worker and self.worker.poll() is None and self.selected==self.active_character:return
         self.changing=True;self.ready_seen=False
         self.pending_character=self.selected
-        self.enable_cards(False)
         self.signal_stop()
         self.wait_then_launch(time.monotonic()+10)
 
@@ -199,12 +227,10 @@ class App:
             self.fail(str(error));return
         self.changing=False
         self.pending_character=None
-        self.enable_cards(True)
 
     def fail(self,detail):
         self.changing=False;self.active_character=None
         self.pending_character=None
-        self.enable_cards(True)
         summary=detail.strip().splitlines()[-1] if detail.strip() else 'The cursor renderer exited unexpectedly.'
         messagebox.showerror(TITLE,summary[:600]+'\n\nLog folder: '+str(STATE),parent=self.root)
 

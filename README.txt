@@ -1,7 +1,8 @@
-Dreams Imp for Windows — 1.0.4
+Dreams Imp for Windows — 1.0.5
 
 Extract the whole ZIP, then double-click Dreams Imp.exe.
-Click an Imp card to set it as your cursor. The dropdown filters categories.
+Tap or click an Imp to set it as your cursor. The dropdown filters categories.
+Drag with one finger to scroll, or use the mouse wheel.
 Opening the app or filtering categories does not change your cursor.
 Minimize the picker to keep using the cursor; close it to
 quit and restore the Windows cursor. No commands, Python installation, emulator,
@@ -17,7 +18,7 @@ ported original shaders. Windows mouse events drive the reactions. It is a
 live, click-through cursor overlay, not a GIF. The render area is padded for
 movement; the Imp is approximately 5 times the original cursor size. Animation
 and morph speed are 50%; drawing targets 120 Hz, subject to GPU/CPU load.
-The picker contains Imp cards, their names and a category dropdown. Original
+The picker contains only Imps in purple space and a category dropdown. Original
 Imp lighting and colours are retained; added bloom is confined to the antenna tip.
 
 Requirements

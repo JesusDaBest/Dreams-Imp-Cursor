@@ -6,9 +6,9 @@ An animated Dreams Imp as your Windows mouse cursor.
 
 1. Download and extract the ZIP.
 2. Open **Dreams Imp.exe**.
-3. Click an Imp card to set it as your cursor.
+3. Tap or click an Imp to set it as your cursor.
 
-The category dropdown filters the cards. Opening the app or filtering categories leaves your cursor alone. Minimize the app to keep your Imp; close it to restore the Windows cursor. No commands, Python installation, or running copy of Dreams required.
+Drag with one finger to scroll, or use the mouse wheel. The category dropdown filters the Imps. Opening the app or filtering categories leaves your cursor alone. Minimize the app to keep your Imp; close it to restore the Windows cursor. No commands, Python installation, or running copy of Dreams required.
 
 Includes 147 named Imps and special editions, including Clown, Halloween Clown and Dream Queen, plus two labelled internal presets. Uses original game assets, animation routines and ported shaders, with live mouse reactions.
 

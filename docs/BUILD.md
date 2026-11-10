@@ -1,13 +1,13 @@
 # Dreams Imp
 
 Portable Windows cursor app using the original Dreams Imp assets, motion
-routines and ported Vulkan shaders. Click an Imp card to set it as your cursor.
+routines and ported Vulkan shaders. Tap or click an Imp to set it as your cursor.
 Opening the app or filtering categories does not activate or change the cursor.
 
 ## Run
 
-Extract the complete Windows package, open `Dreams Imp.exe`, and click an Imp
-card. Close the picker to restore the Windows cursor.
+Extract the complete Windows package, open `Dreams Imp.exe`, and tap an Imp.
+Drag with one finger to scroll. Close the picker to restore the Windows cursor.
 The included runtime contains Python, Tk and Pillow. No development tools are
 needed to run it, and Dreams does not need to be open.
 
@@ -52,7 +52,7 @@ spirv-as --target-env spv1.3 native/shaders/wave32-resolve.spvasm -o runtime/sha
 All 149 presets were decoded with the game loader and native face setup routines.
 The complete catalog passed 3,576 offscreen GPU frames on AMD Radeon 8060S.
 The desktop renderer reported its first displayed frame in the local live check.
-Nine startup, explicit-selection and process-handover tests passed. The packaged renderer also passed
+Twelve startup, gesture, explicit-selection and process-handover tests passed. The packaged renderer also passed
 96 offscreen frames covering eight motions/expressions for the Clown, launched
 from an unrelated working directory with the bundled Python runtime.
 Thirteen desktop-access and visibility tests reproduce Windows error 5, verify that unavailable
@@ -73,9 +73,11 @@ Displayed colours have not been compared against Dreams for every preset.
 Hover bloom now uses only a separate draw of the two native tip particles with the
 original eye shader and bloom math. A 64-frame GPU test checks hover transitions,
 unchanged output while hover is off, and no halo from bright body pixels.
-The picker shows only Imp cards, names and a category dropdown. Its purple
-backgrounds are separate UI artwork; the native thumbnails retain their aspect
-ratio and colours. Version 1.0.4 changes the picker only, not the renderer.
+The picker shows only Imps in purple space and a category dropdown. Its purple
+background is separate UI artwork; the native thumbnails retain their aspect
+ratio and colours. Version 1.0.5 changes the picker only, not the renderer.
+Windows single-finger touch promotion drives drag scrolling; selection occurs
+on a tap release, never during a scroll. Mouse-wheel scrolling is also available.
 
 Runtime state is stored under `%LOCALAPPDATA%/Dreams Imp`; it is excluded from the
 packages. `MANIFEST.sha256` identifies shipped files. Nothing is published by the

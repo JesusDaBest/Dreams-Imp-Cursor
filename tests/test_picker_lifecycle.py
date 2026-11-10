@@ -57,6 +57,41 @@ class PickerLifecycle(unittest.TestCase):
                 self.assertTrue(all(picker.category(ident)=='Halloween' for ident in app.cards))
                 start.assert_not_called()
         finally:root.destroy()
+    def test_finger_drag_scrolls_without_selecting_an_imp(self):
+        root=picker.tk.Tk();root.withdraw()
+        try:
+            app=picker.App(root);app.start=Mock()
+            with patch.object(app.gallery,'winfo_width',return_value=900),patch.object(app.gallery,'winfo_height',return_value=600):
+                app.layout_cards()
+            x,y=map(round,app.gallery.coords(next(iter(app.cards.values()))))
+            before=app.gallery.yview()[0]
+            app.press_gallery(SimpleNamespace(x=x,y=y))
+            app.drag_gallery(SimpleNamespace(x=x,y=y-200))
+            app.release_gallery(SimpleNamespace(x=x,y=y-200))
+            self.assertGreater(app.gallery.yview()[0],before)
+            app.start.assert_not_called()
+        finally:root.destroy()
+    def test_finger_tap_selects_only_on_release(self):
+        root=picker.tk.Tk();root.withdraw()
+        try:
+            app=picker.App(root);app.start=Mock()
+            with patch.object(app.gallery,'winfo_width',return_value=900),patch.object(app.gallery,'winfo_height',return_value=600):
+                app.layout_cards()
+            ident,item=next(iter(app.cards.items()));x,y=map(round,app.gallery.coords(item))
+            event=SimpleNamespace(x=x,y=y)
+            app.press_gallery(event);app.start.assert_not_called()
+            app.release_gallery(event)
+            app.start.assert_called_once_with();self.assertEqual(app.selected,ident)
+        finally:root.destroy()
+    def test_mouse_wheel_scrolls_without_selecting_an_imp(self):
+        root=picker.tk.Tk();root.withdraw()
+        try:
+            app=picker.App(root);app.start=Mock()
+            before=app.gallery.yview()[0]
+            app.scroll_cards(SimpleNamespace(delta=-120))
+            self.assertGreater(app.gallery.yview()[0],before)
+            app.start.assert_not_called()
+        finally:root.destroy()
     def test_browsing_during_handover_keeps_the_explicitly_confirmed_imp(self):
         with patch.object(picker,'named_handle',return_value=True):self.app.start()
         self.assertEqual(self.app.pending_character,'33_clown')
