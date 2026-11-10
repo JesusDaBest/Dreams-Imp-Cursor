@@ -15,6 +15,7 @@ accessibility or the application's standard link cursor.
 Text, busy, resize, move, unavailable, link, help and other standard Windows
 cursor roles select their corresponding Dreams animation.
 Idle: blinking and alternating original idle/emote clips.
+Mouse cursor hidden by an application: the Imp hides too, until it is shown again.
 
 Additional original Dreams clips can be triggered with Alt + a mouse-button
 drag in one of four directions. Repeating a gesture cycles its variants:

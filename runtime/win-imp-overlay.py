@@ -228,10 +228,12 @@ class Overlay:
                 if not self.input_available:
                     return MouseState(self.pos.x, self.pos.y, False, 0)
         role = self.roles.get(info.cursor, 0)
+        # Replacing a cursor's pixels with transparency does not hide it in
+        # Windows. Honour the application's actual cursor visibility state.
+        visible = bool(info.flags & CURSOR_SHOWING) and bool(info.cursor)
         if self.replace_arrow:
-            # When Windows draws no pointer, the Imp is the only visible cursor.
-            # Yield only to a visible cursor that this overlay did not replace.
-            visible = visible and (not info.flags & CURSOR_SHOWING or role in self.hidden_roles)
+            # Yield to custom cursors that this overlay did not replace.
+            visible = visible and role in self.hidden_roles
         left = self.win.GetAsyncKeyState(1)
         right = self.win.GetAsyncKeyState(2)
         middle = self.win.GetAsyncKeyState(4)

@@ -49,4 +49,41 @@ class DesktopAccess(unittest.TestCase):
         self.o.input_available=False;self.o.kernel.WaitForSingleObject.return_value=0
         self.assertIsNone(self.o.state());self.o.win.GetCursorInfo.assert_not_called()
 
+    def cursor(self,flags,handle=99):
+        def read(p):p._obj.cursor=handle;p._obj.flags=flags;return 1
+        self.o.win.GetCursorInfo.side_effect=read
+        self.o.win.GetCursorPos.return_value=1
+
+    def test_application_hidden_cursor_hides_imp(self):
+        self.cursor(0)
+        state=self.o.state()
+        self.assertFalse(state.visible)
+        self.o.present(None,state[:2],(0,0),state.visible)
+        self.o.win.ShowWindow.assert_called_once_with(99,0)
+        self.o.win.UpdateLayeredWindow.assert_not_called()
+
+    def test_touch_suppressed_cursor_hides_imp(self):
+        self.cursor(2)
+        self.assertFalse(self.o.state().visible)
+
+    def test_null_cursor_hides_imp(self):
+        self.cursor(0,None)
+        self.assertFalse(self.o.state().visible)
+
+    def test_nonreplacement_preview_respects_hidden_cursor(self):
+        self.o.replace_arrow=False;self.cursor(0)
+        self.assertFalse(self.o.state().visible)
+
+    def test_transparent_replacement_of_showing_arrow_keeps_imp(self):
+        self.cursor(overlay.CURSOR_SHOWING)
+        self.assertTrue(self.o.state().visible)
+
+    def test_visible_custom_cursor_is_not_duplicated(self):
+        self.cursor(overlay.CURSOR_SHOWING,100)
+        self.assertFalse(self.o.state().visible)
+
+    def test_imp_returns_when_application_shows_cursor(self):
+        self.cursor(0);self.assertFalse(self.o.state().visible)
+        self.cursor(overlay.CURSOR_SHOWING);self.assertTrue(self.o.state().visible)
+
 if __name__=='__main__':unittest.main()

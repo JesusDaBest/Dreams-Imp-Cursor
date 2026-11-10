@@ -55,9 +55,11 @@ The desktop renderer reported its first displayed frame in the local live check.
 Seven startup, explicit-selection and process-handover tests passed. The packaged renderer also passed
 96 offscreen frames covering eight motions/expressions for the Clown, launched
 from an unrelated working directory with the bundled Python runtime.
-Six desktop-access tests reproduce Windows error 5, verify that unavailable
+Thirteen desktop-access and visibility tests reproduce Windows error 5, verify that unavailable
 input hides/pauses the overlay, and confirm that input resumes through the same
 Windows API. It does not elevate or switch to a protected desktop.
+They also cover application-hidden, null and touch-suppressed cursors, normal
+transparent cursor replacements, custom cursors and hidden-to-visible transitions.
 The final manual picker interaction check was interrupted by Escape. NVIDIA and
 Intel hardware have not been physically tested; compatibility depends on driver
 features, not a vendor-name check. This is not a claim of exact behavior of every

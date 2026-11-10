@@ -1,4 +1,4 @@
-Dreams Imp for Windows — 1.0.0
+Dreams Imp for Windows — 1.0.1
 
 Extract the whole ZIP, then double-click Dreams Imp.exe.
 Choose an Imp, then click Set as cursor. Opening the app and browsing presets
@@ -29,6 +29,8 @@ Requirements
 Windows keeps control of the cursor on secure desktops and some exclusive
 fullscreen applications. The overlay does not bypass those restrictions.
 Custom cursors used by individual applications may still be visible there.
+The Imp hides when an application hides the mouse cursor and returns when the
+application shows it again.
 
 The app saves the selected Imp and diagnostic logs in:
   %LOCALAPPDATA%\Dreams Imp

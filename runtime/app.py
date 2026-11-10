@@ -17,7 +17,7 @@ from PIL import Image, ImageTk
 from app_paths import ROOT, STATE, READY, ERROR, write_json
 
 TITLE = 'Dreams Imp'
-VERSION = '1.0.0'
+VERSION = '1.0.1'
 BG, PANEL, FG, MUTED, ACCENT = '#10141f', '#1b2333', '#edf2fc', '#9eabc2', '#87ebcf'
 
 def named_handle(name):
