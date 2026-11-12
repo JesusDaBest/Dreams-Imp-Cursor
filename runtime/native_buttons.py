@@ -25,10 +25,12 @@ def layout(mode='imps',width=1920,height=1080):
 
 class NativeButtons:
  def __init__(self,log_path,*,validation=False):
-  self.log_path=Path(log_path);self.validation=validation;self.condition=threading.Condition();self.latest=None;self.frame=None;self.problem=None;self.stopping=False;self.process=None
+  self.log_path=Path(log_path);self.validation=validation;self.condition=threading.Condition();self.latest=None;self.frame=None;self.problem=None;self.stopping=False;self.paused=False;self.process=None
   self.thread=threading.Thread(target=self.run,name='Dreams native UI',daemon=True);self.thread.start()
  def request(self,*,hovered=None,mode='imps',previous=False,selected_x=None,selected_button=None):
-  with self.condition:self.latest=(hovered,mode,bool(previous),selected_x,selected_button);self.condition.notify()
+  with self.condition:self.paused=False;self.latest=(hovered,mode,bool(previous),selected_x,selected_button);self.condition.notify()
+ def pause(self):
+  with self.condition:self.paused=True;self.condition.notify()
  def take(self):
   with self.condition:frame=self.frame;self.frame=None;return frame,self.problem
  def close(self):
@@ -62,6 +64,8 @@ class NativeButtons:
    while True:
     with self.condition:
      if self.stopping:break
+     if self.paused:
+      self.condition.wait();last=deadline=time.perf_counter();continue
      if self.latest is not None:current=self.latest;self.latest=None
      if current is None:self.condition.wait(.05);continue
     now=time.perf_counter();dt=min(.1,max(0.,now-last));last=now;phase+=dt

@@ -9,7 +9,7 @@ sys.path.insert(0,str(ROOT/'runtime'))
 import pygame,runpy,sdl_picker as p
 from carousel_native import anchor_frame,crop_projection
 class State:
-    active=None; launches=0; stops=0; step=0; histories=[]; requests=[]
+    active=None; launches=0; stops=0; step=0; histories=[]; requests=[]; cloud_pauses=[]; button_pauses=0
 s=State()
 def stop():s.active=None;s.stops+=1
 runpy.run_path=lambda *a,**kw:{'stop':stop}
@@ -27,6 +27,7 @@ p.PickerWindow=Window
 class Clouds:
     problem=None
     def __init__(self,*a):pass
+    def pause(self,paused=True):s.cloud_pauses.append(paused)
     def take(self):return None
     def close(self):pass
 p.CloudBackground=Clouds
@@ -37,6 +38,7 @@ p.HoverBounds=Hover
 class Buttons:
     def __init__(self,*a):pass
     def request(self,**kw):s.histories.append(kw)
+    def pause(self):s.button_pauses+=1
     def take(self):return None,None
     def close(self):pass
 p.NativeButtons=Buttons
@@ -75,8 +77,15 @@ def events():
     if step==6:
         assert s.active is None and s.launches==1,'Click selected Imp restores cursor without relaunch'
         assert s.histories[-1]['selected_x'] is None,'Unselected Imp must not have checkmark'
+        return []
+    if step==7:
+        assert s.cloud_pauses[-1] and s.button_pauses==1
+        assert s.requests[-1]==[], 'Minimized picker must suspend all preview Imps'
+    if step==8:
+        assert s.cloud_pauses[-1] is False, 'Restored picker must resume backdrop'
         return [pygame.event.Event(pygame.QUIT)]
     return []
 pygame.event.get=events
+pygame.display.get_active=lambda:s.step!=7
 p.main()
 print('PASS initial hero only; no saved-selection checkmark; choose Imp; checkmark only while active; click again restores cursor')

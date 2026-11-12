@@ -168,8 +168,8 @@ class Imp:
         if len(old) != len(data):
             old = data
         adjusted = bytearray(data)
-        for start in range(0, len(data), 136):
-            adjusted[start+48:start+96] = old[start:start+48]
+        for component in range(48):
+            adjusted[48+component::136] = old[component::136]
         return adjusted
 
     def _blend_parameters(self, face, squash, tip, channels, time):
@@ -305,7 +305,11 @@ def _renderer():
 
 @lru_cache(maxsize=2)
 def _cursor_decoder(glow):
-    lib = _renderer()
+    if glow:
+        lib=_renderer()
+    else:
+        from frame_helpers import library
+        lib=library()
     convert = lib.imp_decode_cursor_bgra if glow else lib.imp_decode_bgra
     convert.argtypes = (C.c_void_p, C.c_void_p, C.c_void_p, C.c_uint, C.c_uint) if glow else (
         C.c_void_p, C.c_void_p, C.c_uint)
@@ -326,6 +330,7 @@ class InteractiveHover:
     def __init__(self):
         self.point = None
         self.hit = None
+        self.external_hit = None
         self.bounds = runpy.run_path(str(ROOT/'hover_bounds.py'))['HoverBounds']()
         self.last_target = None
         self.target_until = 0.0
@@ -340,12 +345,16 @@ class InteractiveHover:
         bounds = (C.c_long * 4)()
         while not self.stop.wait(1 / 30):
             point = self.point
-            hit = self.bounds.hit(*point) if point else None
-            self.hit = hit or ((time.monotonic(), *bounds) if point and self.probe(*point, C.byref(bounds))
-                               else None)
+            # UI Automation providers may stall; the app's own hit map is
+            # read directly by at(), independently of this external query.
+            if point and self.bounds.hit(*point):continue
+            self.external_hit = ((time.monotonic(), *bounds) if point and self.probe(*point, C.byref(bounds))
+                                 else None)
 
     def at(self, x, y, visible):
         self.point = (x, y) if visible else None
+        hit = self.bounds.hit(x,y) if visible else None
+        self.hit = hit or self.external_hit
         hit = self.hit
         if not visible or hit is None:
             return False
@@ -498,7 +507,8 @@ class Reactions:
                               edge_distances=distances if min(distances) < PROJECTION_SIZE else None,
                               gaze_offset=((self.look_target[0]-state.x)/(PROJECTION_SIZE*.245*self.cursor_scale),
                                            (state.y-self.look_target[1])/(PROJECTION_SIZE*.245*self.cursor_scale))
-                                          if self.look_target is not None else None)
+                                          if self.look_target is not None else
+                                          (0.,0.) if self.menu_transform is None else None)
 
     def next_expression(self):
         if not self.emote_queue:

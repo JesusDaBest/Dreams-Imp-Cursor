@@ -1,6 +1,14 @@
 """Offline original Dreams UI record packing; captured font lookup, no live hooks."""
 from native_ui_style import NativeUIStyle,ROOT,RUNTIME,base
 import ctypes as C,struct,json,hashlib,math
+from functools import lru_cache
+
+@lru_cache(maxsize=64)
+def glyph_bytes(glyph):
+    raw=(ROOT/f'pack-data/glyph-{glyph:x}.bin').read_bytes()
+    linked=(ROOT/f'pack-data/glyph-{glyph:x}-linked.bin').read_bytes() if struct.unpack_from('<Q',raw,8)[0] else None
+    return raw,linked
+
 class NativeUIPack(NativeUIStyle):
     def __init__(self):
         super().__init__()
@@ -54,9 +62,10 @@ class NativeUIPack(NativeUIStyle):
         self.protect(0x7788000,0x7789000,0x20);self.protect(0x778a000,0x778b000,0x20)
         self.packfn=C.CFUNCTYPE(C.c_uint64,C.c_void_p)(self.addr(0x76b9f00));self.frame=0;self.cache_slots={}
     def pack(self,raw,hover=0,dt=1/30):
-        glyph=struct.unpack_from('<I',raw)[0];self.glyph=C.create_string_buffer((ROOT/f'pack-data/glyph-{glyph:x}.bin').read_bytes())
-        if struct.unpack_from('<Q',self.glyph,8)[0]:
-            self.link=C.create_string_buffer((ROOT/f'pack-data/glyph-{glyph:x}-linked.bin').read_bytes());struct.pack_into('<Q',self.glyph,8,C.addressof(self.link))
+        glyph=struct.unpack_from('<I',raw)[0];glyph_raw,linked=glyph_bytes(glyph)
+        self.glyph=C.create_string_buffer(glyph_raw)
+        if linked is not None:
+            self.link=C.create_string_buffer(linked);struct.pack_into('<Q',self.glyph,8,C.addressof(self.link))
         self.protect(0x76d1000,0x76d2000,0x04);self.put(0x76d1880,b'\x48\xb8'+struct.pack('<Q',C.addressof(self.glyph))+b'\xc3');self.protect(0x76d1000,0x76d2000,0x20)
         src=C.create_string_buffer(raw);struct.pack_into('<f',src,0xbc,hover)
         # Offline caller consumes the upload directly, so omit only queue submission.
@@ -84,7 +93,7 @@ class NativeUIPack(NativeUIStyle):
             x=(x*0x10000000200000+(~product&mask))&mask
             x^=x>>24;x=x*0x109&mask;x^=x>>14;x=x*21&mask;x^=x>>28
         else:raise ValueError('Original UI cache probe budget exhausted')
-        return self.output.raw[:524]
+        return C.string_at(self.output,524)
 if __name__=='__main__':
     vm=NativeUIPack()
     try:

@@ -5,7 +5,7 @@ from PIL import Image
 class CloudBackground:
     def __init__(self,path):
         self.path=path;self.lock=threading.Lock();self.stop=threading.Event()
-        self.latest=None;self.problem=None
+        self.latest=None;self.problem=None;self.paused=threading.Event()
         self.thread=threading.Thread(target=self._run,name='Dreams cloud playback',daemon=True)
         self.thread.start()
 
@@ -17,6 +17,8 @@ class CloudBackground:
                 assert len(times)>1 and all(b>a for a,b in zip(times,times[1:]))
                 duration=info.get('duration_ms',times[-1]+(times[-1]-times[-2]));start=time.monotonic();last=-1
                 while not self.stop.is_set():
+                    if self.paused.is_set():
+                        self.stop.wait(.1);continue
                     elapsed=((time.monotonic()-start)*1000)%duration
                     index=max(0,bisect.bisect_right(times,elapsed)-1)
                     if index!=last:
@@ -27,6 +29,10 @@ class CloudBackground:
                     self.stop.wait(.006)
         except Exception as exc:
             self.problem=str(exc)
+
+    def pause(self,paused=True):
+        if paused:self.paused.set()
+        else:self.paused.clear()
 
     def take(self):
         with self.lock:

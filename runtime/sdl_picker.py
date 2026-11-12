@@ -78,6 +78,7 @@ def main():
     button_renderer=NativeButtons(STATE/'native-ui.log');button_overlay=None
     hover_bounds=HoverBounds()
     canvas=None
+    cached_layout_key=None;cached_layout=None
 
     artwork={name:pygame.image.load(str(ROOT/'picker-assets'/f'{name}.png')).convert_alpha() for name in ('shuffle','imps','favorites','back','settings','previous','title-imp','selected')}
 
@@ -231,6 +232,15 @@ def main():
                     elif event.key in (pygame.K_LEFT,pygame.K_RIGHT):target=max(0,min(max(0,len(current)-1),round(target)+(1 if event.key==pygame.K_RIGHT else -1)))
 
             menu_music.set_focus(pygame.key.get_focused())
+            # Keep visible unfocused windows animated. Only a minimized picker
+            # suspends its previews; the separate desktop cursor keeps running.
+            minimized=not pygame.display.get_active()
+            clouds.pause(minimized)
+            if minimized:
+                if preview is not None:preview.request([])
+                button_renderer.pause()
+                clock.tick(10)
+                continue
 
             if surprise_carousel.poll():items=appearance_catalog()
             if mode=='surprise':surprise_carousel.ensure_ahead(max(offset,target))
@@ -273,24 +283,30 @@ def main():
             title_image=font.render(title,True,(242,237,233))
             canvas.blit(title_image,(round(w*.08),round(h*.083)))
 
-            visible=[];sizes={};positions={};transforms={}
+            layout_key=(tuple(item['id'] for item in current),offset,w,h,selected)
+            if layout_key!=cached_layout_key:
+                visible=[];sizes={};positions={};transforms={}
 
-            for idx,item in enumerate(current):
+                for idx,item in enumerate(current):
 
-                frame=anchor_frame(idx-offset,item_index=idx)
-                _,native_centre=crop_projection(frame,1080*.334)
-                x=native_centre[0]*w/1920
+                    frame=anchor_frame(idx-offset,item_index=idx)
+                    _,native_centre=crop_projection(frame,1080*.334)
+                    x=native_centre[0]*w/1920
 
-                if -thumbw/2<x<w+thumbw/2:
+                    if -thumbw/2<x<w+thumbw/2:
 
-                    ident=item['id'];visible.append(ident);sizes[ident]=(thumbw,thumbh);positions[ident]=(round(x),round(native_centre[1]*h/1080))
-                    # Replay captured carousel layout transforms, including their
-                    # scale and rotation, through the original spring solver.
-                    transforms[ident]=frame
+                        ident=item['id'];visible.append(ident);sizes[ident]=(thumbw,thumbh);positions[ident]=(round(x),round(native_centre[1]*h/1080))
+                        # Replay captured carousel layout transforms, including their
+                        # scale and rotation, through the original spring solver.
+                        transforms[ident]=frame
 
-            hero='hero:'+selected;visible.append(hero);sizes[hero]=(round(h*.757),round(h*.757))
-            _,hero_centre=crop_projection(HERO_FRAME,1080*.757)
-            positions[hero]=(round(hero_centre[0]*w/1920),round(hero_centre[1]*h/1080));transforms[hero]=HERO_FRAME
+                hero='hero:'+selected;visible.append(hero);sizes[hero]=(round(h*.757),round(h*.757))
+                _,hero_centre=crop_projection(HERO_FRAME,1080*.757)
+                positions[hero]=(round(hero_centre[0]*w/1920),round(hero_centre[1]*h/1080));transforms[hero]=HERO_FRAME
+
+                cached_layout_key=layout_key
+                cached_layout=(visible,sizes,positions,transforms)
+            visible,sizes,positions,transforms=cached_layout
 
             if visible and preview is None and not error:preview=GalleryClient(STATE/'gallery.log',premultiplied=True)
 

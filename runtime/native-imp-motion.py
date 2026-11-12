@@ -176,6 +176,11 @@ class Motion(FACE['FaceTest']):
         self.state[-64:] = b'\xa5' * 64
         self.render_state = self.state
         self.interpolated_state = C.create_string_buffer(STATE_BYTES)
+        from frame_helpers import library
+        self.interpolate_samples=library().imp_interpolate_samples
+        self.sample_previous_state=C.create_string_buffer(STATE_BYTES)
+        self.sample_current_state=C.create_string_buffer(STATE_BYTES)
+        self.interpolated_points=(C.c_double*((POINT_COUNT+5)*3))()
         self.motion_phase = SOLVER_STEP
         self.step_count = 0
         self.current_sample = None
@@ -679,25 +684,27 @@ class Motion(FACE['FaceTest']):
         if self.current_sample is None:
             points = self.move(x, y, SOLVER_STEP, squash=squash, bounds=bounds, menu_translation=menu_translation,menu_transform=menu_transform)
             self.current_sample = points, SURFACE_FLOATS.unpack_from(self.state, SURFACE_START)
+            C.memmove(self.sample_current_state,self.state,STATE_BYTES)
             return points
         self.motion_phase += elapsed * speed
         while self.motion_phase > SOLVER_STEP + 1e-8:
             self.motion_phase -= SOLVER_STEP
             self.previous_sample = self.current_sample
+            C.memmove(self.sample_previous_state,self.sample_current_state,STATE_BYTES)
             points = self.move(x, y, SOLVER_STEP, squash=squash, bounds=bounds, menu_translation=menu_translation,menu_transform=menu_transform)
             self.current_sample = points, SURFACE_FLOATS.unpack_from(self.state, SURFACE_START)
+            C.memmove(self.sample_current_state,self.state,STATE_BYTES)
         amount = min(1.0, self.motion_phase / SOLVER_STEP)
         current_points, current_surface = self.current_sample
         if amount >= 1.0 - 1e-6:
             self.render_state = self.state
             return current_points
-        previous_points, previous_surface = self.previous_sample
-        C.memmove(self.interpolated_state, self.state, STATE_BYTES)
-        SURFACE_FLOATS.pack_into(self.interpolated_state, SURFACE_START, *(
-            a + (b - a) * amount for a, b in zip(previous_surface, current_surface)))
+        self.interpolate_samples(self.sample_previous_state,self.sample_current_state,
+            self.interpolated_state,STATE_BYTES,SURFACE_START,
+            (SURFACE_END-SURFACE_START)//4,0x1560,80,POINT_COUNT+5,amount,
+            self.interpolated_points,self.state)
         self.render_state = self.interpolated_state
-        return tuple(tuple(a + (b - a) * amount for a, b in zip(previous, current))
-                     for previous, current in zip(previous_points, current_points))
+        return tuple(struct.iter_unpack('<3d',self.interpolated_points))
 
 
 def main():

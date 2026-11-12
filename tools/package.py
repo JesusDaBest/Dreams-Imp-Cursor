@@ -73,6 +73,9 @@ for archive in archives:
                 for p in sorted((ROOT/directory).rglob('*')):
                     if p.is_file() and p.suffix in ('.cpp','.h','.cmd','.rc','.py','.md','.txt','.glsl','.spvasm','.comp','.vert','.frag') and '__pycache__' not in p.parts and 'loading-screen' not in p.relative_to(ROOT).parts and p.name!='build-local.cmd':
                         z.write(p,Path('Imp Carousel')/p.relative_to(ROOT))
+            for test in sorted((ROOT/'tests').glob('test_*.py')):
+                if test.name not in ('test_persistent_cursor.py', 'test_native_clip_clock.py', 'test_cursor_tray.py', 'test_picker_lifecycle.py', 'test_desktop_access.py', 'test_portable_render.py', 'test_tip_bloom.py', 'test_live_gallery.py', 'test_gallery_history.py'):
+                    z.write(test,'Imp Carousel/tests/'+test.name)
             for filename in ('live-body-export-audit.json','live-character-export-audit.json','fleck-atlas-export-audit.json','test_persistent_cursor.py','test_native_clip_clock.py','test_cursor_tray.py','cursor-scale-calibration.json','test_picker_lifecycle.py','test_desktop_access.py','test_portable_render.py','test_tip_bloom.py','test_live_gallery.py','test_gallery_history.py','live-gallery-report.json','gallery-history-report.json','portable-render-log.txt','catalog-render.json','character-counts.json','appearance-sheet.png'):
                 z.write(ROOT/'tests'/filename,'Imp Carousel/tests/'+filename)
     with zipfile.ZipFile(archive) as z:

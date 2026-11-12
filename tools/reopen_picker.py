@@ -10,7 +10,7 @@ matches=[]
 def visit(hwnd,param):
     n=u.GetWindowTextLengthW(hwnd);buf=C.create_unicode_buffer(n+1)
     u.GetWindowTextW(hwnd,buf,n+1)
-    if buf.value=='Dreams Imp':matches.append(hwnd)
+    if buf.value in ('Dreams Imp','Imp Carousel'):matches.append(hwnd)
     return True
 u.EnumWindows(visit,0)
 for hwnd in matches:u.PostMessageW(hwnd,0x10,0,0)

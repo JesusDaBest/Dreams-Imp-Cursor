@@ -35,7 +35,7 @@ class GalleryFrames(C.Structure):
 
 def render(particles, present, stick_particles=lambda: (b'', b''), eye_count=lambda: 0,
            *, responsive_history=None, appearance=lambda: (1., 1., 1.),
-           tip_count=None, present_tip=None, gallery=None, projection=None):
+           tip_count=None, present_tip=None, gallery=None, projection=None,pointer_present=False):
     errors = []
     rgb = (C.c_float * 3)()
     matrix = (C.c_float * 32)() if projection is not None else None
@@ -63,7 +63,7 @@ def render(particles, present, stick_particles=lambda: (b'', b''), eye_count=lam
         try:
             if (width, height) != (WIDTH, HEIGHT):
                 raise ValueError(f'Unexpected Imp render surface: {width}x{height}')
-            return int(present(C.string_at(pixels, width * height * 8), width, height))
+            return int(present(pixels if pointer_present else C.string_at(pixels,width*height*8),width,height))
         except BaseException as exc:
             errors.append(exc)
             return 0

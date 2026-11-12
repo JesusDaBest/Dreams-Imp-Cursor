@@ -7,7 +7,7 @@ No development tools or Dreams installation are needed to run it.
 
 Use an x64 Visual Studio developer environment with clang-cl and the Windows SDK.
 Set VULKAN_SDK to the Vulkan SDK directory and NLOHMANN_INCLUDE to the directory
-containing nlohmann/json.hpp. Run native/build.cmd for the launcher and cursor renderer,
+containing nlohmann/json.hpp. Run native/build.cmd for the launcher, cursor renderer and CPU frame helper,
 and native/ui/build.cmd for the button renderer. Run tools/build_portable_shaders.py
 with --sdk PATH when rebuilding cursor SPIR-V; assembling the reference source alone
 is insufficient because the AMD extension must be lowered. The package builder rejects
@@ -18,6 +18,9 @@ Copy runtime/python from the Windows ZIP when building the checkout.
 ## Runtime
 
 - runtime/app.py and sdl_picker.py: launcher, carousel and explicit cursor selection.
+- runtime/gallery_client.py, gallery_worker.py, gallery_converter.py and gallery_shared_frames.py:
+  bounded shared-frame rendering and conversion, with latest frames only.
+- runtime/frame_helpers.py and native/frame-helpers.cpp: exact CPU frame preparation.
 - runtime/desktop-imp.py: desktop actions and native animation selection.
 - runtime/native-imp-motion.py, native_sparks.py, native_idle.py: native simulation bindings.
 - runtime/live-imp-render.py and native/dreams-native-cursor/: cursor shader rendering.

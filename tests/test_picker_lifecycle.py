@@ -102,7 +102,7 @@ class PickerLifecycle(unittest.TestCase):
             positions=[app.gallery.coords(item) for item in app.cards.values()]
             self.assertEqual(len({y for _,y in positions}),1)
             self.assertTrue(all(b[0]>a[0] for a,b in zip(positions,positions[1:])))
-            self.assertEqual(app.spacing,app.image_size[0]+90)
+            self.assertAlmostEqual(app.spacing,300)
             x,y=map(round,positions[0]);before=app.gallery.xview()[0]
             app.press_gallery(SimpleNamespace(x=x,y=y))
             app.drag_gallery(SimpleNamespace(x=x-240,y=y+10))
@@ -116,7 +116,7 @@ class PickerLifecycle(unittest.TestCase):
         try:
             app=picker.App(root);app.start=Mock()
             self.assertEqual(app.grid_size,1)
-            self.assertEqual([action[0] for _,action in app.control_bounds],['category'])
+            self.assertEqual([action[0] for _,action in app.control_bounds],['category','size'])
             app.start.assert_not_called()
         finally:root.destroy()
     def test_category_popup_filters_without_selecting_an_imp(self):

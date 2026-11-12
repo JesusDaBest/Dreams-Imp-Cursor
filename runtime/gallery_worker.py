@@ -13,7 +13,7 @@ import time
 from carousel_native import crop_projection,HERO_FRAME,CAMERA
 
 
-def run(connection, log_path):
+def run(connection, log_path, shared_name=None, source_name=None, source_connection=None):
     import os
     import traceback
     root = Path(__file__).resolve().parent
@@ -38,8 +38,55 @@ def run(connection, log_path):
 
     threading.Thread(target=receive, daemon=True).start()
     imps = OrderedDict()
+    output_condition=threading.Condition()
+    pending_output=OrderedDict()
+    output_done=False
+    sender=None
+    send_lock=threading.Lock()
+    sender_error=None
+    shared=None
+    source=None
+    source_slot=0
     try:
         api = runpy.run_path(str(root/'desktop-imp.py'))
+        if source_name:
+            from gallery_shared_frames import SharedFrames
+            from gallery_converter import SOURCE_SLOTS
+            source=SharedFrames(source_name,slots=SOURCE_SLOTS,bytes_per_pixel=8)
+        elif shared_name:
+            from gallery_shared_frames import SharedFrames
+            shared=SharedFrames(shared_name)
+        def send_frames():
+            nonlocal sender_error
+            try:
+                while True:
+                    with output_condition:
+                        while not pending_output and not output_done:output_condition.wait()
+                        if not pending_output:return
+                        ident,(raw,width,height,frame_slot,size)=pending_output.popitem(last=False)
+                    if shared is not None:
+                        if size and size!=(width,height) and size[0]*size[1]*4<=512*512*4:
+                            from PIL import Image
+                            pixels=api['decode'](raw).raw[:width*height*4]
+                            image=Image.frombytes('RGBa',(width,height),pixels,'raw','BGRa').resize(size,Image.Resampling.BILINEAR)
+                            width,height=size
+                            sequence=shared.write_pixels(frame_slot,image.tobytes(),width,height,ident)
+                            kind='shared-frame-ready-premultiplied'
+                        else:
+                            sequence=shared.write(frame_slot,raw,width,height,api['_cursor_decoder'](False),ident)
+                            kind='shared-frame-premultiplied'
+                        with send_lock:connection.send((kind,ident,frame_slot,sequence,width,height))
+                    else:
+                        pixels=api['decode'](raw).raw[:width*height*4]
+                        with send_lock:connection.send(('frame-premultiplied',ident,width,height,pixels))
+            except (BrokenPipeError,EOFError,OSError):
+                with condition:request['stop']=True;condition.notify_all()
+            except BaseException:
+                sender_error=traceback.format_exc()
+                with condition:request['stop']=True;condition.notify_all()
+        if source is None:
+            sender=threading.Thread(target=send_frames,daemon=True)
+            sender.start()
         from character_store import catalog as appearance_catalog
         known = {item['id'] for item in appearance_catalog()}
         # Slots describe concurrently retained render histories, not the number
@@ -116,21 +163,44 @@ def run(connection, log_path):
                                      menu_translation=movement.get(ident),menu_transform=transforms.get(ident))
 
         def present(raw, width, height):
-            premultiplied = api['decode'](raw).raw[:width*height*4]
+            nonlocal source_slot
             ident=next(key for key,value in indexes.items() if value==slot)
-            connection.send(('frame-premultiplied',ident,width,height,premultiplied))
+            with condition:
+                wanted=set(request['ids']);sizes=request.get('size');size=sizes.get(ident) if isinstance(sizes,dict) else sizes
+            if source is not None:
+                version=source.write_pointer(slot,raw,width,height,ident)
+                source_connection.send(('source-frame',ident,slot,version,slot,width,height,size))
+                active[slot]=1
+                return True
+            with output_condition:
+                for stale in tuple(pending_output):
+                    if stale not in wanted:del pending_output[stale]
+                pending_output[ident]=(raw,width,height,slot,size)
+                while len(pending_output)>32:pending_output.popitem(last=False)
+                output_condition.notify()
             active[slot]=1
             return True
 
         api['GPU']['render'](particles,present,lambda:(current.stick,current.antenna_path),
                              lambda:current.eye_count,appearance=lambda:current.motion.body_color,
-                             gallery=(active,lambda:slot),projection=lambda:current_projection)
+                             gallery=(active,lambda:slot),projection=lambda:current_projection,
+                             pointer_present=source is not None)
+        if sender_error:raise RuntimeError(sender_error)
     except (BrokenPipeError, EOFError):pass
     except BaseException:
         detail = traceback.format_exc()
         log.write(detail)
-        try:connection.send(('error',detail))
+        try:
+            with send_lock:connection.send(('error',detail))
         except (BrokenPipeError, EOFError, OSError):pass
     finally:
+        with output_condition:output_done=True;output_condition.notify_all()
+        if sender:sender.join(timeout=2)
         for imp, *_ in imps.values():imp.close()
+        if shared and (sender is None or not sender.is_alive()):shared.close()
+        if source_connection is not None:
+            try:source_connection.send(('stop',))
+            except (BrokenPipeError,EOFError,OSError):pass
+            source_connection.close()
+        if source:source.close()
         connection.close();log.close()

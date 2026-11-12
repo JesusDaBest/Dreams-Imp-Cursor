@@ -20,3 +20,6 @@ Source: https://github.com/adobe-fonts/source-sans/releases/tag/3.006R
 Vulkan headers/tools and nlohmann/json are build dependencies, not supplied
 runtime libraries. The Vulkan loader is supplied by the installed graphics
 driver. Native Vulkan helper code is supplied in the source package.
+
+The CPU bilinear resizer follows Pillow 12.3.0 Resample.c coefficient and
+rounding rules. Pillow copyright and HPND licence are included with Pillow.
