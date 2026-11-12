@@ -36,6 +36,8 @@ PLAYBACK_SPEED = .5
 ANIMATION_RATE = CLIP_RATE
 PRESENT_STEP = 1 / 120
 SOLVER_STEP = ENGINE['SOLVER_STEP']
+# Desktop target displacement, separate from the original native look-at math.
+DESKTOP_GAZE_GAIN = 2.0
 EYE_BLEND_CHANNELS = ((0x10, 1), (0x14, 4), (0x18, 2), (0x1c, 5),
                       (0x20, 29), (0x24, 30), (0x28, 3), (0x2c, 6))
 IDLE_EXPRESSIONS = (
@@ -505,8 +507,8 @@ class Reactions:
                               restarted=clip is not None,
                               menu_transform=self.menu_transform,
                               edge_distances=distances if min(distances) < PROJECTION_SIZE else None,
-                              gaze_offset=((self.look_target[0]-state.x)/(PROJECTION_SIZE*.245*self.cursor_scale),
-                                           (state.y-self.look_target[1])/(PROJECTION_SIZE*.245*self.cursor_scale))
+                              gaze_offset=(DESKTOP_GAZE_GAIN*(self.look_target[0]-state.x)/(PROJECTION_SIZE*.245*self.cursor_scale),
+                                           DESKTOP_GAZE_GAIN*(state.y-self.look_target[1])/(PROJECTION_SIZE*.245*self.cursor_scale))
                                           if self.look_target is not None else
                                           (0.,0.) if self.menu_transform is None else None)
 
