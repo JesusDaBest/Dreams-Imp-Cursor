@@ -14,13 +14,13 @@ import tkinter as tk
 from tkinter import messagebox
 from PIL import Image, ImageTk
 
-from app_paths import ROOT, STATE, READY, ERROR, write_json
+from app_paths import ROOT, STATE, READY, ERROR, DEFAULT_CURSOR_SIZE, write_json
 from space_preview import space_image
-from picker_controls import GROUPS, pill, category_panel
+from picker_controls import GROUPS, pill, category_panel, size_slider
 from gallery_client import GalleryClient
 
 TITLE = 'Dreams Imp'
-VERSION = '1.0.7'
+VERSION = '1.1.0'
 BG, PANEL, FG, MUTED, ACCENT = '#170f26', '#291a40', '#f4edff', '#bfafd2', '#d8b3ff'
 
 def named_handle(name):
@@ -76,6 +76,9 @@ class App:
         self.preview = None
         self.preview_job = None
         self.preview_failed = False
+        self.preview_frame_index = 0
+        self.pending_frames = {}
+        self.frame_job = None
         self.items = json.loads((ROOT/'characters/catalog.json').read_text(encoding='utf-8'))
         self.by_id = {i['id']: i for i in self.items}
         self.config_path = STATE/'settings.json'
@@ -94,6 +97,7 @@ class App:
         try: root.iconbitmap(str(ROOT/'app.ico'))
         except tk.TclError: pass
         self.group = tk.StringVar(value='All Imps')
+        self.cursor_size=tk.DoubleVar(value=max(.5,min(2,float(self.settings.get('cursor_size',DEFAULT_CURSOR_SIZE)))))
         self.gallery = tk.Canvas(root,bg=BG,highlightthickness=0,yscrollincrement=1,xscrollincrement=1)
         self.gallery.pack(fill='both',expand=True)
         self.background_item=self.gallery.create_image(0,0,anchor='nw')
@@ -132,6 +136,10 @@ class App:
         self.gallery.xview_moveto(0)
         self.gallery.yview_moveto(0)
 
+    def set_cursor_size(self,value):
+        self.settings['cursor_size']=round(max(.5,min(2,float(value)))*2)/2
+        write_json(self.config_path,self.settings)
+
     def select(self,ident):
         if self.changing or self.closing:return
         self.show(ident)
@@ -147,13 +155,13 @@ class App:
         self.cancel_snap()
         width,height=max(340,self.gallery.winfo_width()),max(360,self.gallery.winfo_height())
         area_height=height-94
-        imp_height=round(min(440,area_height-64) if self.grid_size==1 else max(48,area_height/self.grid_size-24))
+        imp_height=round(min(440,area_height-64,max(48,(width/3-24)*256/176)) if self.grid_size==1 else max(48,area_height/self.grid_size-24))
         imp_width=round(imp_height*176/256)
         size=(imp_width,imp_height)
         if self.image_size!=size:
             self.card_images.clear();self.image_size=size
             self.empty_image=ImageTk.PhotoImage(Image.new('RGBA',size))
-        self.spacing=imp_width+90
+        self.spacing=width/3 if self.grid_size==1 else imp_width+90
         columns=max(1,int((width-24)/(imp_width+28)))
         step=area_height/self.grid_size
         for index,(ident,card) in enumerate(self.cards.items()):
@@ -178,6 +186,9 @@ class App:
         category_width=min(284,width-112)
         left=(width-category_width)/2
         self.add_control(pill(category_width,56,self.group.get(),expanded=self.menu_open),left,14,('category',None))
+        slider_width=min(340,width-36)
+        slider_left=(width-slider_width)/2
+        self.add_control(size_slider(slider_width,self.cursor_size.get()),slider_left,max(80,self.gallery.winfo_height()-68),('size',None))
         if self.menu_open:
             panel=category_panel(category_width,self.group.get())
             self.add_control(panel,left,76,None)
@@ -230,7 +241,10 @@ class App:
             t=min(1,(time.perf_counter()-began)/.18)
             value=start+(target-start)*(1-(1-t)**3)
             self.gallery.xview_moveto(value/self.content_width)
-            if t<1:self.snap_job=self.root.after(16,step)
+            # Windows' timer resolution can round a 16 ms Tk delay up to two
+            # timer ticks. Request the next tick sooner and use elapsed time
+            # above to keep the same 180 ms animation duration.
+            if t<1:self.snap_job=self.root.after(8,step)
         step()
 
     def imp_at(self,x,y):
@@ -243,6 +257,7 @@ class App:
         self.cancel_snap()
         self.press_position=(event.x,event.y)
         self.pressed_control=self.control_at(event.x,event.y)
+        if self.pressed_control and self.pressed_control[0]=='size':self.update_size_from_x(event.x)
         self.pressed_character=None if self.pressed_control else self.imp_at(event.x,event.y)
         if self.menu_open and not self.pressed_control:
             self.menu_open=False;self.draw_controls();self.pressed_character=None
@@ -253,12 +268,23 @@ class App:
 
     def drag_gallery(self,event):
         if self.press_position is None:return 'break'
+        if self.pressed_control and self.pressed_control[0]=='size':
+            self.update_size_from_x(event.x)
+            return 'break'
         x,y=self.press_position
         if max(abs(event.x-x),abs(event.y-y))>8:self.dragging=True
         if self.dragging and not self.pressed_control:
             if self.grid_size==1:self.gallery.scan_dragto(event.x,y,gain=1)
             else:self.gallery.scan_dragto(x,event.y,gain=1)
         return 'break'
+
+    def update_size_from_x(self,x):
+        width=max(340,self.gallery.winfo_width());slider_width=min(340,width-36)
+        left=(width-slider_width)/2
+        fraction=max(0,min(1,(x-left-92)/(slider_width-160)))
+        value=round((.5+1.5*fraction)*2)/2
+        if value!=self.cursor_size.get():
+            self.cursor_size.set(value);self.set_cursor_size(value);self.draw_controls()
 
     def release_gallery(self,event):
         if self.press_position is None:return 'break'
@@ -281,7 +307,7 @@ class App:
         began=time.perf_counter()
         self.preview_job=None
         if self.closing or self.preview_failed:return
-        visible=[];aim={}
+        visible=[];aim={};sizes={}
         if self.root.winfo_viewable() and self.root.state()!='iconic':
             left,top=self.gallery.canvasx(0),self.gallery.canvasy(0)
             width,height=self.gallery.winfo_width(),self.gallery.winfo_height()
@@ -292,8 +318,10 @@ class App:
                 x,y=self.gallery.coords(item)
                 if x+iw/2>left and x-iw/2<left+width and y+ih/2>top+74 and y-ih/2<top+height:
                     visible.append(ident)
+                    scale=max(.8,min(1.6,1.6-.8*((x-left)/width)))
+                    sizes[ident]=(max(1,round(iw*scale)),max(1,round(ih*scale)))
                     # Original menu-aim simulation, with restrained picker movement.
-                    aim[ident]=(max(-.15,min(.15,(mx-x)/width)),max(-.15,min(.15,(y-my)/height)))
+                    aim[ident]=(max(-.15,min(.15,(x-mx)/width)),max(-.15,min(.15,(y-my)/height)))
         if visible and self.preview is None:
             try:self.preview=GalleryClient(STATE/'gallery.log')
             except Exception as error:
@@ -303,21 +331,16 @@ class App:
                     '\n\nLog: '+str(STATE/'gallery.log'),parent=self.root)
                 return
         if self.preview is not None:
-            self.preview.request(visible,aim,size=self.image_size)
+            self.preview.request(visible,aim,size=sizes)
             frames,error=self.preview.take()
             for ident in list(self.card_images):
                 if ident not in visible:
                     if ident in self.cards:self.gallery.itemconfigure(self.cards[ident],image=self.empty_image)
                     del self.card_images[ident]
-            for ident,(width,height,pixels) in frames.items():
-                if ident not in visible:continue
-                if (width,height)!=self.image_size:continue
-                image=Image.frombytes('RGBA',(width,height),pixels)
-                # Pasting into an image already displayed by Tk forces expensive
-                # synchronous canvas updates. Prepare the next image off-canvas.
-                photo=ImageTk.PhotoImage(image)
-                self.gallery.itemconfigure(self.cards[ident],image=photo)
-                self.card_images[ident]=photo
+            self.pending_frames={key:value for key,value in self.pending_frames.items() if key in visible}
+            self.pending_frames.update((key,value) for key,value in frames.items() if key in visible)
+            if self.pending_frames and self.frame_job is None:
+                self.frame_job=self.root.after(1,self.present_preview_frame)
             if error or not self.preview.process.is_alive():
                 self.preview_failed=True
                 self.preview.close();self.preview=None
@@ -326,6 +349,17 @@ class App:
                     '\n\nLog: '+str(STATE/'gallery.log'),parent=self.root)
                 return
         self.preview_job=self.root.after(max(1,round(1000*(1/60-(time.perf_counter()-began)))),self.poll_previews)
+
+    def present_preview_frame(self):
+        self.frame_job=None
+        if self.closing or not self.pending_frames:return
+        ident=next(iter(self.pending_frames))
+        width,height,pixels=self.pending_frames.pop(ident)
+        if ident in self.cards:
+            photo=ImageTk.PhotoImage(Image.frombytes('RGBA',(width,height),pixels))
+            self.gallery.itemconfigure(self.cards[ident],image=photo)
+            self.card_images[ident]=photo
+        if self.pending_frames:self.frame_job=self.root.after(1,self.present_preview_frame)
 
     def signal_stop(self):
         return runpy.run_path(str(ROOT/'win-imp-overlay.py'))['stop']()
@@ -419,7 +453,8 @@ def main():
             user.ShowWindow(hwnd,9);user.SetForegroundWindow(hwnd)
         return
     try:
-        root=tk.Tk();App(root);root.mainloop()
+        from sdl_picker import main as picker_main
+        picker_main()
     finally:
         kernel.CloseHandle.argtypes=(W.HANDLE,);kernel.CloseHandle(mutex)
 

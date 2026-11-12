@@ -9,13 +9,20 @@ static std::vector<uint8_t> read(const std::string&path){
 }
 struct Buffer{
     Context&c;VkBuffer handle{};VkDeviceMemory memory{};void*data{};size_t bytes;uint64_t address{};
-    Buffer(Context&ctx,size_t n):c(ctx),bytes(std::max<size_t>(n,256)){
+    Buffer(Context&ctx,size_t n,bool cpu_readback=false):c(ctx),bytes(std::max<size_t>(n,256)){
         VkBufferCreateInfo bi{VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO};bi.size=bytes;
         bi.usage=VK_BUFFER_USAGE_STORAGE_BUFFER_BIT|VK_BUFFER_USAGE_TRANSFER_SRC_BIT|VK_BUFFER_USAGE_TRANSFER_DST_BIT|VK_BUFFER_USAGE_INDEX_BUFFER_BIT|VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT;
         check(vkCreateBuffer(c.device,&bi,nullptr,&handle));VkMemoryRequirements mr{};vkGetBufferMemoryRequirements(c.device,handle,&mr);
         VkMemoryAllocateFlagsInfo flags{VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_FLAGS_INFO};flags.flags=VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_BIT;
         VkMemoryAllocateInfo ai{VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO};ai.pNext=&flags;ai.allocationSize=mr.size;
-        ai.memoryTypeIndex=c.memory_type(mr.memoryTypeBits,VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT|VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+        constexpr auto host=VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT|VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+        ai.memoryTypeIndex=c.memory_type(mr.memoryTypeBits,host);
+        if(cpu_readback){
+            for(uint32_t i=0;i<c.memory.memoryTypeCount;++i){
+                const auto wanted=host|VK_MEMORY_PROPERTY_HOST_CACHED_BIT;
+                if((mr.memoryTypeBits&(1u<<i)) && (c.memory.memoryTypes[i].propertyFlags&wanted)==wanted){ai.memoryTypeIndex=i;break;}
+            }
+        }
         check(vkAllocateMemory(c.device,&ai,nullptr,&memory));check(vkBindBufferMemory(c.device,handle,memory,0));
         check(vkMapMemory(c.device,memory,0,bytes,0,&data));memset(data,0,bytes);
         VkBufferDeviceAddressInfo a{VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO};a.buffer=handle;address=vkGetBufferDeviceAddress(c.device,&a);

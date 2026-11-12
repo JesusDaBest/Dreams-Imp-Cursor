@@ -1,0 +1,104 @@
+{
+  "pages": [
+    {
+      "address": 132014080,
+      "file": "7de6000.bin",
+      "sha256": "241f2839cf3216ffc605e4f96cd836cc2080e63f4729a8c0f272a51f4d1abe6c"
+    },
+    {
+      "address": 145174528,
+      "file": "8a73000.bin",
+      "sha256": "37d40feb1a5596bca84c032d110c27c2b0c4ca64b90515d155a1f5acf430f892"
+    },
+    {
+      "address": 145182720,
+      "file": "8a75000.bin",
+      "sha256": "723fb5cd71a39ff382e91f642423656b7e03374d56109d5ebe83a4e32634c576"
+    },
+    {
+      "address": 174977024,
+      "file": "a6df000.bin",
+      "sha256": "8a4e99902cb83fe7ee271c9bcd1d7013587ca783cb3467500aaea669bf00e9d0"
+    },
+    {
+      "address": 192528384,
+      "file": "b79c000.bin",
+      "sha256": "a9648a98f2f19eddb3979d9b3987803009500a77c95a4ed0f629a0f304a408a2"
+    },
+    {
+      "address": 228474880,
+      "file": "d9e4000.bin",
+      "sha256": "3ba0008229eb63a54775926d41f0605d74682dd79e888ab1cfbb6ebf23d48d5d"
+    },
+    {
+      "address": 228708352,
+      "file": "da1d000.bin",
+      "sha256": "a6c561c60ea9e35b44a7701bec500a66b0d350b0c82129f5378ecbc86934e908"
+    },
+    {
+      "address": 228745216,
+      "file": "da26000.bin",
+      "sha256": "a919838cc4f46e5629cc9c92935ccc820618925cf741266c8dac863f48e3ed88"
+    },
+    {
+      "address": 258654208,
+      "file": "f6ac000.bin",
+      "sha256": "0494b0aa5521685ccecd20cfbd4f46ffc3f44f7a3399fb015aab5c4d2a5c0e7e"
+    },
+    {
+      "address": 258670592,
+      "file": "f6b0000.bin",
+      "sha256": "1998b673d61000ae64cc3b7e90fb82d523ebaae3fe3457ae452797ff948768df"
+    },
+    {
+      "address": 261226496,
+      "file": "f920000.bin",
+      "sha256": "a5b7143428be7e6291e891dac5fda3d3969f3b08ae07c93adc5e0a3d941ceb0a"
+    },
+    {
+      "address": 261259264,
+      "file": "f928000.bin",
+      "sha256": "a1ea3ebe013291fed9574003996f96a5c9aec63a2823a4a6dc4992ab22e5f26e"
+    },
+    {
+      "address": 261263360,
+      "file": "f929000.bin",
+      "sha256": "f96342ab5bd384c344914b97a91b1446716c7fa07ac0bc714e6f60e4fe9bd61f"
+    },
+    {
+      "address": 261308416,
+      "file": "f934000.bin",
+      "sha256": "ffe701a855842e7ebff4025531ccf6a2414ea2abd6d22c544b3e75bcf45dc33a"
+    }
+  ],
+  "glyphs": {
+    "57921": {
+      "index": 145,
+      "linked": false
+    },
+    "58137": {
+      "index": 223,
+      "linked": true
+    },
+    "57667": {
+      "index": 60,
+      "linked": false
+    },
+    "57673": {
+      "index": 66,
+      "linked": false
+    },
+    "57938": {
+      "index": 156,
+      "linked": false
+    },
+    "57683": {
+      "index": 70,
+      "linked": false
+    },
+    "59031": {
+      "index": 551,
+      "linked": false
+    }
+  }
+}

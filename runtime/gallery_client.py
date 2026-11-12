@@ -6,7 +6,7 @@ from gallery_worker import run
 
 
 class GalleryClient:
-    def __init__(self, log_path):
+    def __init__(self, log_path, *, premultiplied=False):
         context = mp.get_context('spawn')
         self.connection, child = context.Pipe()
         self.lock = threading.Lock()
@@ -15,6 +15,7 @@ class GalleryClient:
         self.size = None
         self.error = None
         self.closed = False
+        self.premultiplied=premultiplied
         self.process = context.Process(target=run,args=(child,str(log_path)),daemon=True)
         self.process.start();child.close()
         self.reader = threading.Thread(target=self._read,daemon=True)
@@ -24,29 +25,32 @@ class GalleryClient:
         try:
             while True:
                 message = self.connection.recv()
-                if message[0]=='frame':
+                if message[0] in ('frame','frame-premultiplied'):
                     _,ident,width,height,pixels = message
                     with self.lock:
                         if ident not in self.visible:continue
-                        size=self.size
-                    # Resampling must not block Tk's pointer/scroll event loop.
-                    if size and size!=(width,height):
-                        image=Image.frombytes('RGBA',(width,height),pixels).resize(size,Image.Resampling.LANCZOS)
-                        width,height=image.size;pixels=image.tobytes()
+                        size=self.size.get(ident) if isinstance(self.size,dict) else self.size
+                    # Keep the native premultiplied display pixels through
+                    # resizing; RGBA resize otherwise adds two alpha conversions.
+                    native=message[0]=='frame-premultiplied'
+                    image=Image.frombytes('RGBa' if native else 'RGBA',(width,height),pixels,'raw','BGRa' if native else 'RGBA')
+                    if size and size!=(width,height):image=image.resize(size,Image.Resampling.BILINEAR)
+                    if self.premultiplied and not native:image=image.convert('RGBa')
+                    if not self.premultiplied and native:image=image.convert('RGBA')
+                    width,height=image.size;pixels=image.tobytes()
                 with self.lock:
-                    if message[0]=='frame':
-                        if ident in self.visible and size==self.size:self.frames[ident]=(width,height,pixels)
+                    if message[0] in ('frame','frame-premultiplied'):
+                        if ident in self.visible:self.frames[ident]=(width,height,pixels)
                     elif message[0]=='error':self.error=message[1]
         except (OSError,EOFError):pass
 
-    def request(self, ids, aim=None, size=None):
+    def request(self, ids, aim=None, size=None, interaction=None, movement=None, transforms=None,hovered=None):
         if self.closed or not self.process.is_alive():return
         with self.lock:
-            if size!=self.size:self.frames.clear()
             self.size=size
             self.visible=set(ids)
             self.frames={key:value for key,value in self.frames.items() if key in self.visible}
-        try:self.connection.send({'ids':list(ids),'aim':aim or {}})
+        try:self.connection.send({'ids':list(ids),'aim':aim or {},'interaction':interaction or {},'movement':movement or {},'transforms':transforms or {},'hovered':hovered})
         except (BrokenPipeError,EOFError,OSError):pass
 
     def take(self):

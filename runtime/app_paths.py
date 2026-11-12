@@ -3,6 +3,7 @@ import os
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
+DEFAULT_CURSOR_SIZE = 1.22
 STATE = Path(os.environ.get('LOCALAPPDATA', str(Path.home()))) / 'Dreams Imp'
 STATE.mkdir(parents=True, exist_ok=True)
 REQUEST = STATE / 'expression.request'

@@ -124,6 +124,7 @@ struct GalleryFrames {
     const uint8_t* active;
     unsigned count;
     int (*index)(void*);
+    const float* projection;
 };
 
 struct TemporalResolve {
@@ -290,7 +291,7 @@ static void draw(Context& c, const char* vs, const char* ps, const char* fleck,
                  const char* noise_file, const char* particle_file, const char* view_file,
                  const char* output, const LiveFrames* live = nullptr,
                  const GalleryFrames* gallery = nullptr) {
-    const VkExtent2D extent = live ? VkExtent2D{176, 256} : VkExtent2D{512, 512};
+    const VkExtent2D extent{512, 512};
     const auto [width, height] = extent;
     const auto pixel_count = width * height;
     constexpr uint32_t layers = 128;
@@ -304,7 +305,7 @@ static void draw(Context& c, const char* vs, const char* ps, const char* fleck,
     Buffer particles(c, live ? capacity * 136 : particle_bytes.size());
     if (!live) std::memcpy(particles.data, particle_bytes.data(), particle_bytes.size());
     const bool tip_bloom = live && live->bloom_particles && live->bloom_present;
-    Buffer readback(c, pixel_count * 8 * (tip_bloom ? 2 : 1));
+    Buffer readback(c, pixel_count * 8 * (tip_bloom ? 2 : 1), true);
     Buffer vflat(c, 300), pflat(c, 336), stick_flat(c, 328), stick_path(c, 4096),
            planes(c, 256), pagetable(c, 256), fault(c, 256), stick_fault(c, 256),
            eye_flat(c, 300), eye_fault(c, 256);
@@ -349,11 +350,11 @@ static void draw(Context& c, const char* vs, const char* ps, const char* fleck,
         state[3] = pixel_count;
     }
     auto* projection = static_cast<float*>(matrix.data) + 85;
-    // Add transparent space around the original 160-pixel projection.
-    projection[0] = live ? 0.49f * 160 / width : 0.85f;
-    projection[5] = live ? -0.49f * 160 / height : -0.85f;
+    // Render the original field of view with twice the samples on each axis.
+    projection[0] = live ? 0.49f * 320 / width : 0.85f;
+    projection[5] = live ? -0.49f * 320 / height : -0.85f;
     projection[10] = live ? 0.20f : 0.25f;
-    projection[13] = live ? 0.32f * 160 / height : 0.0f;
+    projection[13] = live ? 0.32f * 320 / height : 0.0f;
     projection[14] = live ? 0.10f : 0.0f;
     projection[15] = 1.0f;
 
@@ -569,6 +570,23 @@ static void draw(Context& c, const char* vs, const char* ps, const char* fleck,
         TemporalResolve* resolve = temporal.get();
         const int count = live ? live->next(particles.data, capacity/2, live->user) : int(particle_bytes.size()/136);
         if (count == 0) break;
+        if (gallery && gallery->projection) {
+            // Native carousel projection, actor frame and camera frame. Preserve
+            // the shader's own camera-facing fleck construction before projection.
+            std::memcpy(projection, gallery->projection, 64);
+            for (auto* flat : {&vflat, &eye_flat}) {
+                auto* f = static_cast<float*>(flat->data);
+                std::memcpy(f + 25, gallery->projection + 16, 32);
+                std::memcpy(f + 33, gallery->projection + 16, 32);
+                std::memcpy(f + 55, gallery->projection + 24, 32);
+                std::memcpy(f + 63, gallery->projection + 24, 32);
+            }
+            auto* stick = static_cast<float*>(stick_flat.data);
+            std::memcpy(stick + 31, gallery->projection + 16, 32);
+            std::memcpy(stick + 39, gallery->projection + 16, 32);
+            std::memcpy(stick + 58, gallery->projection + 24, 32);
+            std::memcpy(stick + 66, gallery->projection + 24, 32);
+        }
         if (live && live->appearance_rgb) std::memcpy(static_cast<uint8_t*>(view.data) + 16, live->appearance_rgb, 12);
         require(count > 0 && (!live || count <= int(capacity)), "invalid particle count from host");
         int sticks = 0, eyes = 0, tips = 0;
@@ -595,6 +613,9 @@ static void draw(Context& c, const char* vs, const char* ps, const char* fleck,
                     if (!gallery->active[it->first]) it = gallery_history.erase(it);
                     else ++it;
                 }
+                // A recycled preview slot belongs to a different appearance.
+                // Never blend its old pixels into the new character.
+                if (gallery->active[slot] == 2) gallery_history.erase(unsigned(slot));
                 auto& history = gallery_history[unsigned(slot)];
                 if (!history) history = std::make_unique<TemporalResolve>(c, extent, target, *live, cmd);
                 resolve = history.get();

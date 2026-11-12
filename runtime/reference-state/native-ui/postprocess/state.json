@@ -1,0 +1,41 @@
+{
+  "alpha_op": 0,
+  "blend_enable": 0,
+  "color_op": 0,
+  "data_format": 9,
+  "dst_alpha": 0,
+  "dst_color": 0,
+  "instances": 1,
+  "key_bytes": 344,
+  "mrt_mask": 1,
+  "num_color_attachments": 1,
+  "num_format": 0,
+  "prim_type": 17,
+  "separate_alpha": 0,
+  "src_alpha": 0,
+  "src_color": 0,
+  "targets": [
+    {
+      "alpha_op": 0,
+      "blend_enable": 0,
+      "color_op": 0,
+      "data_format": 9,
+      "dst_alpha": 0,
+      "dst_color": 0,
+      "index": 0,
+      "num_format": 0,
+      "separate_alpha": 0,
+      "src_alpha": 0,
+      "src_color": 0,
+      "write_mask": 15
+    }
+  ],
+  "vertex_count": 3,
+  "viewport": {
+    "xoffset": 960.0,
+    "xscale": 960.0,
+    "yoffset": 540.0,
+    "yscale": -540.0
+  },
+  "write_mask": 15
+}

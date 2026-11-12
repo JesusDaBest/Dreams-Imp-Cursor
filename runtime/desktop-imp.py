@@ -1,6 +1,8 @@
 """Drive the standalone Dreams Imp render loop with desktop input."""
 import argparse
 import ctypes as C
+import json
+from PIL import Image
 from functools import lru_cache
 import math
 import os
@@ -19,13 +21,19 @@ WINDOWS = runpy.run_path(str(ROOT/'win-imp-overlay.py'))
 MouseState = WINDOWS['MouseState']
 NATIVE, BODY = ENGINE['NATIVE'], ENGINE['BODY']
 WIDTH, HEIGHT = GPU['WIDTH'], GPU['HEIGHT']
-PROJECTION_SIZE = 160
+PROJECTION_SIZE = 320
+# Physical-size baseline: the previous 160-sample projection displayed at
+# 1.5x (the user's requested new 1x). More render samples must not enlarge it.
+CURSOR_PROJECTION_SIZE = 160 * 1.5
+CURSOR_BASE_SCALE = CURSOR_PROJECTION_SIZE / PROJECTION_SIZE
 VERTICAL_PADDING = (HEIGHT - PROJECTION_SIZE) // 2
 IDENTITY = (0.0, 0.0, 0.0, 1.0)
 REQUEST = APP_PATHS['REQUEST']
 CLIP_RATE = 30
 PLAYBACK_SPEED = .5
-ANIMATION_RATE = CLIP_RATE * PLAYBACK_SPEED
+# Original evaluator 0x75b2582..0x75b2592 converts seconds to 30 Hz
+# frames (float at 0x77a6a1c). Morph-speed preference is independent.
+ANIMATION_RATE = CLIP_RATE
 PRESENT_STEP = 1 / 120
 SOLVER_STEP = ENGINE['SOLVER_STEP']
 EYE_BLEND_CHANNELS = ((0x10, 1), (0x14, 4), (0x18, 2), (0x1c, 5),
@@ -52,61 +60,7 @@ VARIANTS = {
     'ui menu hold': ('ui menu hold', 'ui hold', 'ui hold 3', 'ui hold 4'),
     'level load': ('level load', 'level load 3', 'level load 4', 'level load 5', 'level load OLD'),
     'can_possess': ('can_possess', 'can_possess 02'),
-    'default_blink': ('default_blink', 'default_blink2', 'blink', 'blink 2', 'blink 3'),
-}
-# Alt-drag gives the Dreams-only clips their own triggers without making
-# everyday clicks look like sculpting, painting, or operating game tools.
-GESTURE_CLIPS = {
-    ('primary', 'up'): (
-        'sculpt stamp', 'stamp object', 'ui sculpt add', 'sculpt symmetry',
-        'flip cube', 'flip cube out', 'zzzflip cube',
-    ),
-    ('primary', 'down'): (
-        'sculpt subtract', 'ui sculpt sub', 'delete object', 'ui delete mode',
-        'ui shift delete', 'ui shiftdelete', 'ui shiftdelete2',
-    ),
-    ('primary', 'left'): (
-        'lightpaint', 'lightpaintclose', 'flip brush', 'flip brush 2',
-        'flip brush 3', 'ui flip brush', 'light cycle', 'sculpt smear',
-    ),
-    ('primary', 'right'): (
-        'draw mouth', 'ui shift doodle', 'custom doodle', 'ui button 3dood',
-        'mouth shape', 'mouth shape 2', 'mouth shape 3',
-    ),
-    ('secondary', 'up'): (
-        'ui style mode', 'ui style comb', 'ui style balloo', 'ui style ruffle',
-        'ui coat mode', 'ui hide mode', 'custom colour',
-    ),
-    ('secondary', 'down'): (
-        'custom outfit', 'custom outfit 2', 'custom outfit 3', 'custom outfit 4',
-        'custom outfit b', 'custom save', 'custom body', 'custom eyes',
-    ),
-    ('secondary', 'left'): (
-        'custom hover', 'custom hover 2', 'custom hover 3', 'custom hover b',
-        'selectdream', 'collect 100', 'curious collect', 'curious max',
-    ),
-    ('secondary', 'right'): (
-        'anim mode', 'record mode', 'record animate', 'grab teleport', 'ui tunnel',
-        'ui detunnel', 'zui shift clone', 'selectbuttonhol',
-    ),
-    ('middle', 'up'): (
-        'audio rec', 'audio dance', 'audio blink', 'audio colour', 'audio bounce',
-        'audio light',
-    ),
-    ('middle', 'down'): (
-        'ui calibrate', 'ui ps button', 'ui power off', 'touchpad', 'test', 'xxx',
-        'ui null', 'ui shift null', 'ui shift null 2', 'ui shift d OLD',
-        'xxmenu press ', 'zzz_temp',
-    ),
-    ('middle', 'left'): (
-        'idle 1 out', 'idle 1 out slow', 'idle 1 out old', 'zzz_can_possess',
-        'glow', 'pointer_glow', 'look suprise', 'ui gecko',
-    ),
-    ('middle', 'right'): (
-        'ui spin face', 'ui spin face b', 'ui spin face c', 'ui spin face d',
-        'ui spin face bo', 'ui spin face do', 'roll', 'squash', 'bump', 'bump 2',
-        'ui bounce', 'ui bounce 2', 'ui bounce -',
-    ),
+    'default_blink': ('default_blink',),
 }
 ROLE_CLIPS = {
     32513: 'look down hold',    # Text selection
@@ -143,18 +97,22 @@ class Imp:
         guest = NATIVE['verified_bytes'](NATIVE['GUEST'], NATIVE['EXPECTED_TEXT'])
         self.motion = ENGINE['Motion'](guest, faces)
         if character:
-            import hashlib, json
-            catalog = json.loads((ROOT/'characters'/'catalog.json').read_text(encoding='utf-8'))
-            entry = next((entry for entry in catalog if entry['id'] == character), None)
+            from character_store import catalog,load
+            entry = next((entry for entry in catalog() if entry['id'] == character), None)
             if entry is None:
                 raise ValueError('Unknown Imp appearance')
-            data = (ROOT/'characters'/entry['file']).read_bytes()
-            if hashlib.sha256(data).hexdigest() != entry['sha256']:
-                raise ValueError('Imp appearance failed its integrity check')
-            self.motion.set_character(data, (ROOT/'characters'/(character+'.bindings')).read_bytes())
+            data,bindings=load(entry)
+            self.motion.set_character(data,bindings)
         parse = runpy.run_path(str(ROOT/'read-imp-animation.py'))['parse_bank']
         bank = NATIVE['verified_bytes'](NATIVE['ASSET'], NATIVE['EXPECTED_BANK'])
         self.clips = {clip['name']: clip for clip in parse(bank)}
+        character_bytes=self.motion.character_data
+        # Dreams 0x75f7f9d-0x75f8007 indexes four ordered appearance slots.
+        # Keep repeated and empty entries in that table; they are not a shuffle bag.
+        self.character_emote_slots=tuple(
+            character_bytes[o:o+16].split(b'\0',1)[0].decode('ascii')
+            for o in range(0x41e0,0x4220,16)) if character_bytes else ('emote happy','emote sad','emote angry','emote confused')
+        self.character_emotes=tuple(dict.fromkeys(name for name in self.character_emote_slots if name in self.clips))
         self.channels = {name: {track[0]&255 for track in clip['descriptors']}
                          for name, clip in self.clips.items()}
         self.groups = {}
@@ -184,9 +142,22 @@ class Imp:
                                for offset in (0, 136))
         self.tip_base_radii = tuple(math.hypot(*basis[:3]) for basis in self.tip_bases)
         self.tip_color = struct.unpack_from('<3f', self.tip_records, 108)
+        self.player = 2
+        palette = (ROOT/'reference-state'/'player-tip-colors.bin').read_bytes()
+        if len(palette) != 16:
+            raise ValueError('Incomplete Dreams player colour table')
+        self.player_tip_colors = tuple(tuple(v / 255 for v in palette[i:i+3]) for i in range(0,16,4))
         self.tip_radius, self.tip_core_radius = self.tip_base_radii
         self.tip_seed = 42
         self.tip_step = 0
+        self.sparks = None
+        self.hover_interactable = False
+
+    def enable_sparks(self):
+        from native_sparks import Sparks
+        guest=NATIVE['verified_bytes'](NATIVE['GUEST'],NATIVE['EXPECTED_TEXT'])
+        self.sparks=Sparks(self.motion,guest)
+        self.sparks.emission_init(guest)
 
     def close(self):
         self.motion.close()
@@ -247,6 +218,8 @@ class Imp:
         if self.tip_radius <= 0.001:
             return b''
         tip = bytearray(self.tip_records)
+        color = self.player_tip_colors[self.player - 1]
+        struct.pack_into('<3f', tip, 108, *color)
         radii = self.tip_radius, self.tip_core_radius
         for offset, basis, radius, original in zip((0, 136), self.tip_bases,
                                                    radii, self.tip_base_radii):
@@ -259,11 +232,11 @@ class Imp:
             ))
         # Dreams 0x75ae353. Only the core receives the animated HDR multiplier.
         energy = 50 + 950 * min(brightness * brightness, 1.0)
-        struct.pack_into('<3f', tip, 136 + 108, *(value * energy for value in self.tip_color))
+        struct.pack_into('<3f', tip, 136 + 108, *(value * energy for value in color))
         return tip
 
     def frame(self, clip_name, animation_time, aim_x, aim_y, dt=PRESENT_STEP, *, looping=False,
-              restarted=False, edge_distances=None):
+              restarted=False, edge_distances=None, menu_translation=None, menu_transform=None, gaze_offset=None):
         clip = self.clips[clip_name]
         header = clip['header']
         phase, wrapped = clip_phase(header, animation_time, looping)
@@ -297,8 +270,12 @@ class Imp:
             tip = self.motion.tip_height
             bounds = -left, tip - bottom, right, tip + top
         points = self.motion.advance(aim_x, aim_y, dt, squash=squash,
-                                     speed=PLAYBACK_SPEED, bounds=bounds)
+                                     speed=PLAYBACK_SPEED, bounds=bounds, menu_translation=menu_translation,
+                                     menu_transform=menu_transform)
         body = self.motion.body_particles(points)
+        self.motion.eye_target = (points[165][0] + gaze_offset[0],
+                                 points[165][1] + gaze_offset[1],
+                                 ENGINE['AIM_DEPTH'] / self.motion.rest_frame[3]) if gaze_offset is not None else None
         eyes = self.motion.eyes(pose, points, parameters=face)
         mouth = self.motion.mouth_particles(pose, channels)
         decorations = self.motion.stroke_particles(pose, 0x2190,
@@ -310,6 +287,10 @@ class Imp:
                         round(PROJECTION_SIZE*(0.66-0.245*tip_y)) + VERTICAL_PADDING)
         self.stick = self._previous('antenna-mesh', antenna_mesh)
         tip = self._tip_particles(points[165], tip_controls)
+        if self.sparks is not None:
+            tip+=self.sparks.advance(points[165],tip_controls,
+                                    self.player_tip_colors[self.player-1],
+                                    self.hover_interactable,dt,self.player)
         self.tip_count = len(tip)//136
         self.eye_count = (len(eyes)+len(mouth)+len(decorations)+len(tip))//136
         return (body + self._previous('antenna-flecks', antenna_flecks)
@@ -345,6 +326,9 @@ class InteractiveHover:
     def __init__(self):
         self.point = None
         self.hit = None
+        self.bounds = runpy.run_path(str(ROOT/'hover_bounds.py'))['HoverBounds']()
+        self.last_target = None
+        self.target_until = 0.0
         self.stop = threading.Event()
         self.probe = _renderer().imp_interactive_at
         self.probe.argtypes = C.c_long, C.c_long, C.POINTER(C.c_long * 4)
@@ -356,8 +340,9 @@ class InteractiveHover:
         bounds = (C.c_long * 4)()
         while not self.stop.wait(1 / 30):
             point = self.point
-            self.hit = ((time.monotonic(), *bounds) if point and self.probe(*point, C.byref(bounds))
-                        else None)
+            hit = self.bounds.hit(*point) if point else None
+            self.hit = hit or ((time.monotonic(), *bounds) if point and self.probe(*point, C.byref(bounds))
+                               else None)
 
     def at(self, x, y, visible):
         self.point = (x, y) if visible else None
@@ -367,10 +352,24 @@ class InteractiveHover:
         sampled, left, top, right, bottom = hit
         return left <= x < right and top <= y < bottom and time.monotonic() - sampled < 0.20
 
+    def target(self, x, y, visible, now=None):
+        now = time.monotonic() if now is None else now
+        if not visible:
+            self.last_target = None
+            self.target_until = 0.0
+            return None
+        active = self.at(x, y, visible)
+        hit = self.hit
+        if active and hit is not None:
+            _, left, top, right, bottom = hit
+            self.last_target = ((left+right)/2, (top+bottom)/2)
+            self.target_until = now + 1.5
+        return self.last_target if now < self.target_until else None
 
-def preview(clip, output):
+
+def preview(clip, output, character=None):
     from PIL import Image
-    imp = Imp()
+    imp = Imp(character)
     index = 0
     frames = []
 
@@ -413,14 +412,16 @@ class Reactions:
         self.fixed = expression
         self.clip = expression or 'idle'
         self.started = now
-        self.next_blink = now + 2.5
-        self.next_emote = now + 2.5
+        self.idle_clock = runpy.run_path(str(ROOT/'native_idle.py'))['NativeIdle']()
+        self.next_blink = now + self.idle_clock.blink_delay()
+        self.next_emote = now + self.idle_clock.delay()
+        self.next_rare_idle = now + self.idle_clock.delay(rare=True)
+        self.was_moving = False
         self.last_motion = now
         self.last_update = now - PRESENT_STEP
         self.previous = None
         self.random = random.Random()
-        self.emotes = tuple(name for name in imp.clips
-                            if name in IDLE_EXPRESSIONS or name.split(' ', 1)[0] == 'emote')
+        self.emotes = imp.character_emotes
         self.emote_queue = []
         self.variant_index = {}
         self.last_emote = None
@@ -430,11 +431,14 @@ class Reactions:
         self.last_click = None
         self.double_click = double_click
         self.viewport = viewport
+        self.cursor_scale = 1.0
         self.grabbing = False
         self.pan = None
         self.gesture = None
         self.gesture_clip = False
         self.direction = None
+        self.look_target = None
+        self.menu_transform = None
 
     def update(self, state, now):
         prior = self.previous or MouseState(state.x, state.y, False, 0)
@@ -443,6 +447,10 @@ class Reactions:
         moving = abs(dx)+abs(dy)
         if moving or state.role != prior.role or state.menu_event or any(state[4:14]):
             self.last_motion = now
+            self.was_moving = True
+        elif self.was_moving:
+            self.next_emote = now + self.idle_clock.delay()
+            self.was_moving = False
         last_frame = self.imp.clips[self.clip]['header'][2]
         duration = (last_frame + 1) / ANIMATION_RATE
         if self.gesture_clip and last_frame <= 1:
@@ -467,17 +475,18 @@ class Reactions:
                 clip = self.fixed
         elif not clip and (not self.playing_requested or done):
             self.playing_requested = False
-            gesture_active, clip = self.tool_gesture(state, prior)
-            if not gesture_active:
-                clip = self.automatic(now, state, prior, dx, dy, moving, done)
+            # Desktop Alt-drags are not Dreams sculpt/paint/audio-tool events.
+            # Tool clips remain available through explicit animation requests.
+            clip = self.automatic(now, state, prior, dx, dy, moving, done)
         if clip:
             self.clip, self.started = clip, now
             self.gesture_clip = gesture_active
         left, top, width, height = self.viewport
         aim_x = 2 * (state.x - left) / max(1, width - 1) - 1
         aim_y = 1 - 2 * (state.y - top) / max(1, height - 1)
-        distances = (state.x - left + .5, top + height - state.y - .5,
-                     left + width - state.x - .5, state.y - top + .5)
+        distances = tuple(d / self.cursor_scale for d in
+                    (state.x - left + .5, top + height - state.y - .5,
+                     left + width - state.x - .5, state.y - top + .5))
         looping = (not self.gesture_clip and not self.fixed and not self.playing_requested and
                    ((state.primary and self.grabbing and self.clip in VARIANTS['ui menu hold']) or
                     (state.secondary and self.pan is None and self.clip in VARIANTS['ui menu hold 2']) or
@@ -485,7 +494,11 @@ class Reactions:
                      now - self.last_motion < .15)))
         return self.imp.frame(self.clip, now-self.started, aim_x, aim_y, dt, looping=looping,
                               restarted=clip is not None,
-                              edge_distances=distances if min(distances) < PROJECTION_SIZE else None)
+                              menu_transform=self.menu_transform,
+                              edge_distances=distances if min(distances) < PROJECTION_SIZE else None,
+                              gaze_offset=((self.look_target[0]-state.x)/(PROJECTION_SIZE*.245*self.cursor_scale),
+                                           (state.y-self.look_target[1])/(PROJECTION_SIZE*.245*self.cursor_scale))
+                                          if self.look_target is not None else None)
 
     def next_expression(self):
         if not self.emote_queue:
@@ -507,36 +520,18 @@ class Reactions:
         return self.next_variant('selectbutton')
 
     def next_variant(self, action):
-        clips = GESTURE_CLIPS.get(action) if isinstance(action, tuple) else VARIANTS.get(action)
-        if clips is None:
-            return action
-        index = self.variant_index.get(action, 0)
-        self.variant_index[action] = (index+1) % len(clips)
-        return clips[index]
+        # Native clip identity is an event choice, not a round-robin playlist.
+        # Do not substitute unrelated UI/tool/legacy clips on repeated actions.
+        return action if isinstance(action, str) and action in self.imp.clips else None
 
-    def tool_gesture(self, state, prior):
-        if self.gesture is None:
-            if not state.alt:
-                return False, None
-            for button in ('primary', 'secondary', 'middle'):
-                if getattr(state, button) and not getattr(prior, button):
-                    self.gesture = button, state.x, state.y, False
-                    self.last_click = None
-                    self.press = self.pan = None
-                    self.grabbing = False
-                    return True, None
-            return False, None
-        button, x, y, fired = self.gesture
-        dx, dy = state.x-x, state.y-y
-        down = getattr(state, button)
-        if not fired and max(abs(dx), abs(dy)) >= 8:
-            direction = ('right' if dx > 0 else 'left') if abs(dx) >= abs(dy) else (
-                'down' if dy > 0 else 'up')
-            self.gesture = (button, x, y, True) if down else None
-            return True, self.next_variant((button, direction))
-        if not down:
-            self.gesture = None
-        return True, None
+    def appearance_emote(self, selector):
+        # Exact four-slot selection from Dreams' native update routine.
+        index = (selector >> 4) - 1
+        if not 0 <= index < 4:
+            return None
+        clip = self.imp.character_emote_slots[index]
+        return clip if clip in self.imp.clips else None
+
 
     def automatic(self, now, state, prior, dx, dy, moving, done):
         x, y, _, role = state[:4]
@@ -624,24 +619,20 @@ class Reactions:
         looking = self.clip.startswith('look ')
         can_look = (done or self.clip == 'idle' or looking or self.clip in self.emotes
                     or prior.role in ROLE_CLIPS and role != prior.role)
-        if moving >= 2 and can_look:
-            direction = ('right' if dx > 0 else 'left') if abs(dx) >= abs(dy) else (
-                'down' if dy > 0 else 'up')
-            if not looking or direction != self.direction and now-self.started >= .08:
-                self.direction = direction
-                return 'look ' + direction + ('2' if moving >= 4 else '')
-            if done and self.clip in ('look '+direction, 'look '+direction+'2'):
-                return 'look ' + direction + ' hold'
-            return None
-        if looking and now-self.last_motion < .15:
-            return None
+        # Pointer travel deforms the native spring mesh. Do not turn its
+        # largest axis into a four-direction eye-animation selector: that loses
+        # diagonal gaze and makes the eyes jump when the larger axis changes.
+        if looking and self.clip not in ROLE_CLIPS.values():
+            return 'idle'
         if done or self.clip == 'idle' or prior.role in ROLE_CLIPS and role != prior.role:
-            if self.emotes and now-self.last_motion >= 2.5 and now >= self.next_emote:
-                expression = self.next_expression()
-                self.next_emote = now + (self.imp.clips[expression]['header'][2]+1) / ANIMATION_RATE + self.random.uniform(3, 5)
-                return expression
+            if not moving and now >= self.next_rare_idle:
+                self.next_rare_idle = now + self.idle_clock.delay(rare=True)
+                return self.idle_clock.clip(rare=True)
+            if not moving and now >= self.next_emote:
+                self.next_emote = now + self.idle_clock.delay()
+                return self.idle_clock.clip()
             if now >= self.next_blink:
-                self.next_blink = now+self.random.uniform(2.7, 5.1)
+                self.next_blink = now+self.idle_clock.blink_delay()
                 return self.next_variant('default_blink')
             if self.clip != 'idle' or done:
                 return 'idle'
@@ -695,6 +686,10 @@ def desktop(seconds, expression, replace_arrow=False, character=None, owner_pid=
     state = None
     presented = []
     tip_frame = None
+    tray = None
+    resize_pad = None
+    cursor_scale = 1.0
+    next_size_read = 0.0
     try:
         if owner_pid:
             # An unexpected picker exit must not leave a hidden system cursor behind.
@@ -711,15 +706,26 @@ def desktop(seconds, expression, replace_arrow=False, character=None, owner_pid=
                 WINDOWS['stop']()
             threading.Thread(target=owner_guard, daemon=True).start()
         imp = Imp(character)
+        imp.enable_sparks()
+        if replace_arrow:
+            from cursor_tray import CursorTray
+            tray = CursorTray(ROOT, WINDOWS['stop'])
         hover = InteractiveHover()
         if expression and expression not in imp.clips:
             raise ValueError(f'Unknown native expression {expression!r}')
         started = time.perf_counter()
         viewport = tuple(window.win.GetSystemMetrics(metric) for metric in (76, 77, 78, 79))
         reaction = Reactions(imp, started, expression, window.double_click, viewport)
+        from cursor_resize import CursorResize, DpadResize
+        resize_keys = CursorResize(APP_PATHS['STATE']/'settings.json')
+        if replace_arrow:
+            try:
+                resize_settings=json.loads((APP_PATHS['STATE']/'settings.json').read_text(encoding='utf-8-sig'))
+            except (OSError,ValueError):resize_settings={}
+            if resize_settings.get('dpad_resize_enabled',False):resize_pad = DpadResize()
 
         def particles():
-            nonlocal state
+            nonlocal state, next_size_read
             state = window.state()
             while state is not None and not window.input_available:
                 # Leave the GPU idle while Windows withholds desktop input.
@@ -732,14 +738,36 @@ def desktop(seconds, expression, replace_arrow=False, character=None, owner_pid=
             now = time.perf_counter()
             if state is None or (seconds and now-started >= seconds):
                 return None
+            if resize_pad:
+                up, down = resize_pad.poll()
+                if resize_keys.update(now, True, up, down):next_size_read = 0.
+            reaction.look_target = hover.target(*state[:3], now=now)
+            imp.hover_interactable = hover.at(*state[:3])
             return reaction.update(state, now)
 
         def present(raw, width, height):
-            nonlocal index, deadline
+            nonlocal index, deadline, cursor_scale, next_size_read
             pixels = decode(raw, glow=tip_frame is not None, tip=tip_frame)
             if not index and max(pixels.raw[3::4]) < 20:
                 raise ValueError('The first cursor frame was empty')
-            window.present(pixels, state[:2], imp.hotspot, state[2])
+            now=time.perf_counter()
+            if now >= next_size_read:
+                next_size_read=now+.2
+                try:
+                    settings=json.loads((APP_PATHS['STATE']/'settings.json').read_text(encoding='utf-8'))
+                    # Preserve the established physical size at twice the
+                    # internal sample density. Both axes share this one factor.
+                    cursor_scale=CURSOR_BASE_SCALE*max(.5,min(2,float(settings.get('cursor_size',APP_PATHS['DEFAULT_CURSOR_SIZE']))))
+                    reaction.cursor_scale=cursor_scale
+                    imp.player=max(1,min(4,int(settings.get('player',2))))
+                except (OSError,ValueError,TypeError):pass
+            target=(max(1,round(width*cursor_scale)),max(1,round(height*cursor_scale)))
+            window.resize(*target)
+            hotspot=tuple(round(v*cursor_scale) for v in imp.hotspot)
+            if target!=(width,height):
+                resized=Image.frombytes('RGBa',(width,height),pixels.raw,'raw','BGRa').resize(target,Image.Resampling.BILINEAR)
+                pixels=C.create_string_buffer(resized.tobytes('raw','BGRa'))
+            window.present(pixels, state[:2], hotspot, state[2])
             if not index:
                 APP_PATHS['write_json'](APP_PATHS['READY'], {'pid': os.getpid(), 'character': character})
             index += 1
@@ -763,6 +791,9 @@ def desktop(seconds, expression, replace_arrow=False, character=None, owner_pid=
                       responsive_history=lambda: (reaction.clip != 'idle' or
                           reaction.last_update - reaction.last_motion <= .10))
     finally:
+        if resize_pad:resize_pad.close()
+        if tray:
+            tray.close()
         if hover:
             hover.stop.set()
         if imp:
@@ -792,7 +823,7 @@ if __name__ == '__main__':
     if args.watch:
         runpy.run_path(str(ROOT/'win-imp-overlay.py'))['watch'](int(args.watch[0]), args.watch[1])
     elif args.preview:
-        preview(args.expression or 'default_blink2', args.preview)
+        preview(args.expression or 'default_blink2', args.preview, args.character)
     elif args.stop:
         runpy.run_path(str(ROOT/'win-imp-overlay.py'))['stop']()
     elif args.expressions:

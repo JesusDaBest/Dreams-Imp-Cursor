@@ -1,0 +1,701 @@
+{
+  "capture": "draw",
+  "textures": [
+    {
+      "width": 376,
+      "height": 376,
+      "layers": 2,
+      "mips": 9,
+      "format": 139,
+      "mapping": [
+        3,
+        1,
+        1,
+        2
+      ],
+      "subresources": [
+        {
+          "address": "2DB0FF500",
+          "layer": 0,
+          "mip": 0,
+          "file": "textures/2DB0FF500-layer0-mip0.bin",
+          "bytes": 70688
+        },
+        {
+          "address": "2DB0FF500",
+          "layer": 0,
+          "mip": 1,
+          "file": "textures/2DB0FF500-layer0-mip1.bin",
+          "bytes": 17672
+        },
+        {
+          "address": "2DB0FF500",
+          "layer": 0,
+          "mip": 2,
+          "file": "textures/2DB0FF500-layer0-mip2.bin",
+          "bytes": 4608
+        },
+        {
+          "address": "2DB0FF500",
+          "layer": 0,
+          "mip": 3,
+          "file": "textures/2DB0FF500-layer0-mip3.bin",
+          "bytes": 1152
+        },
+        {
+          "address": "2DB0FF500",
+          "layer": 0,
+          "mip": 4,
+          "file": "textures/2DB0FF500-layer0-mip4.bin",
+          "bytes": 288
+        },
+        {
+          "address": "2DB0FF500",
+          "layer": 0,
+          "mip": 5,
+          "file": "textures/2DB0FF500-layer0-mip5.bin",
+          "bytes": 72
+        },
+        {
+          "address": "2DB0FF500",
+          "layer": 0,
+          "mip": 6,
+          "file": "textures/2DB0FF500-layer0-mip6.bin",
+          "bytes": 32
+        },
+        {
+          "address": "2DB0FF500",
+          "layer": 0,
+          "mip": 7,
+          "file": "textures/2DB0FF500-layer0-mip7.bin",
+          "bytes": 8
+        },
+        {
+          "address": "2DB0FF500",
+          "layer": 0,
+          "mip": 8,
+          "file": "textures/2DB0FF500-layer0-mip8.bin",
+          "bytes": 8
+        },
+        {
+          "address": "2DB0FF500",
+          "layer": 1,
+          "mip": 0,
+          "file": "textures/2DB0FF500-layer1-mip0.bin",
+          "bytes": 70688
+        },
+        {
+          "address": "2DB0FF500",
+          "layer": 1,
+          "mip": 1,
+          "file": "textures/2DB0FF500-layer1-mip1.bin",
+          "bytes": 17672
+        },
+        {
+          "address": "2DB0FF500",
+          "layer": 1,
+          "mip": 2,
+          "file": "textures/2DB0FF500-layer1-mip2.bin",
+          "bytes": 4608
+        },
+        {
+          "address": "2DB0FF500",
+          "layer": 1,
+          "mip": 3,
+          "file": "textures/2DB0FF500-layer1-mip3.bin",
+          "bytes": 1152
+        },
+        {
+          "address": "2DB0FF500",
+          "layer": 1,
+          "mip": 4,
+          "file": "textures/2DB0FF500-layer1-mip4.bin",
+          "bytes": 288
+        },
+        {
+          "address": "2DB0FF500",
+          "layer": 1,
+          "mip": 5,
+          "file": "textures/2DB0FF500-layer1-mip5.bin",
+          "bytes": 72
+        },
+        {
+          "address": "2DB0FF500",
+          "layer": 1,
+          "mip": 6,
+          "file": "textures/2DB0FF500-layer1-mip6.bin",
+          "bytes": 32
+        },
+        {
+          "address": "2DB0FF500",
+          "layer": 1,
+          "mip": 7,
+          "file": "textures/2DB0FF500-layer1-mip7.bin",
+          "bytes": 8
+        },
+        {
+          "address": "2DB0FF500",
+          "layer": 1,
+          "mip": 8,
+          "file": "textures/2DB0FF500-layer1-mip8.bin",
+          "bytes": 8
+        }
+      ]
+    },
+    {
+      "width": 256,
+      "height": 256,
+      "layers": 6,
+      "mips": 9,
+      "format": 139,
+      "mapping": [
+        3,
+        1,
+        1,
+        2
+      ],
+      "subresources": [
+        {
+          "address": "2DB0A5500",
+          "layer": 0,
+          "mip": 0,
+          "file": "textures/2DB0A5500-layer0-mip0.bin",
+          "bytes": 32768
+        },
+        {
+          "address": "2DB0A5500",
+          "layer": 0,
+          "mip": 1,
+          "file": "textures/2DB0A5500-layer0-mip1.bin",
+          "bytes": 8192
+        },
+        {
+          "address": "2DB0A5500",
+          "layer": 0,
+          "mip": 2,
+          "file": "textures/2DB0A5500-layer0-mip2.bin",
+          "bytes": 2048
+        },
+        {
+          "address": "2DB0A5500",
+          "layer": 0,
+          "mip": 3,
+          "file": "textures/2DB0A5500-layer0-mip3.bin",
+          "bytes": 512
+        },
+        {
+          "address": "2DB0A5500",
+          "layer": 0,
+          "mip": 4,
+          "file": "textures/2DB0A5500-layer0-mip4.bin",
+          "bytes": 128
+        },
+        {
+          "address": "2DB0A5500",
+          "layer": 0,
+          "mip": 5,
+          "file": "textures/2DB0A5500-layer0-mip5.bin",
+          "bytes": 32
+        },
+        {
+          "address": "2DB0A5500",
+          "layer": 0,
+          "mip": 6,
+          "file": "textures/2DB0A5500-layer0-mip6.bin",
+          "bytes": 8
+        },
+        {
+          "address": "2DB0A5500",
+          "layer": 0,
+          "mip": 7,
+          "file": "textures/2DB0A5500-layer0-mip7.bin",
+          "bytes": 8
+        },
+        {
+          "address": "2DB0A5500",
+          "layer": 0,
+          "mip": 8,
+          "file": "textures/2DB0A5500-layer0-mip8.bin",
+          "bytes": 8
+        },
+        {
+          "address": "2DB0A5500",
+          "layer": 1,
+          "mip": 0,
+          "file": "textures/2DB0A5500-layer1-mip0.bin",
+          "bytes": 32768
+        },
+        {
+          "address": "2DB0A5500",
+          "layer": 1,
+          "mip": 1,
+          "file": "textures/2DB0A5500-layer1-mip1.bin",
+          "bytes": 8192
+        },
+        {
+          "address": "2DB0A5500",
+          "layer": 1,
+          "mip": 2,
+          "file": "textures/2DB0A5500-layer1-mip2.bin",
+          "bytes": 2048
+        },
+        {
+          "address": "2DB0A5500",
+          "layer": 1,
+          "mip": 3,
+          "file": "textures/2DB0A5500-layer1-mip3.bin",
+          "bytes": 512
+        },
+        {
+          "address": "2DB0A5500",
+          "layer": 1,
+          "mip": 4,
+          "file": "textures/2DB0A5500-layer1-mip4.bin",
+          "bytes": 128
+        },
+        {
+          "address": "2DB0A5500",
+          "layer": 1,
+          "mip": 5,
+          "file": "textures/2DB0A5500-layer1-mip5.bin",
+          "bytes": 32
+        },
+        {
+          "address": "2DB0A5500",
+          "layer": 1,
+          "mip": 6,
+          "file": "textures/2DB0A5500-layer1-mip6.bin",
+          "bytes": 8
+        },
+        {
+          "address": "2DB0A5500",
+          "layer": 1,
+          "mip": 7,
+          "file": "textures/2DB0A5500-layer1-mip7.bin",
+          "bytes": 8
+        },
+        {
+          "address": "2DB0A5500",
+          "layer": 1,
+          "mip": 8,
+          "file": "textures/2DB0A5500-layer1-mip8.bin",
+          "bytes": 8
+        },
+        {
+          "address": "2DB0A5500",
+          "layer": 2,
+          "mip": 0,
+          "file": "textures/2DB0A5500-layer2-mip0.bin",
+          "bytes": 32768
+        },
+        {
+          "address": "2DB0A5500",
+          "layer": 2,
+          "mip": 1,
+          "file": "textures/2DB0A5500-layer2-mip1.bin",
+          "bytes": 8192
+        },
+        {
+          "address": "2DB0A5500",
+          "layer": 2,
+          "mip": 2,
+          "file": "textures/2DB0A5500-layer2-mip2.bin",
+          "bytes": 2048
+        },
+        {
+          "address": "2DB0A5500",
+          "layer": 2,
+          "mip": 3,
+          "file": "textures/2DB0A5500-layer2-mip3.bin",
+          "bytes": 512
+        },
+        {
+          "address": "2DB0A5500",
+          "layer": 2,
+          "mip": 4,
+          "file": "textures/2DB0A5500-layer2-mip4.bin",
+          "bytes": 128
+        },
+        {
+          "address": "2DB0A5500",
+          "layer": 2,
+          "mip": 5,
+          "file": "textures/2DB0A5500-layer2-mip5.bin",
+          "bytes": 32
+        },
+        {
+          "address": "2DB0A5500",
+          "layer": 2,
+          "mip": 6,
+          "file": "textures/2DB0A5500-layer2-mip6.bin",
+          "bytes": 8
+        },
+        {
+          "address": "2DB0A5500",
+          "layer": 2,
+          "mip": 7,
+          "file": "textures/2DB0A5500-layer2-mip7.bin",
+          "bytes": 8
+        },
+        {
+          "address": "2DB0A5500",
+          "layer": 2,
+          "mip": 8,
+          "file": "textures/2DB0A5500-layer2-mip8.bin",
+          "bytes": 8
+        },
+        {
+          "address": "2DB0A5500",
+          "layer": 3,
+          "mip": 0,
+          "file": "textures/2DB0A5500-layer3-mip0.bin",
+          "bytes": 32768
+        },
+        {
+          "address": "2DB0A5500",
+          "layer": 3,
+          "mip": 1,
+          "file": "textures/2DB0A5500-layer3-mip1.bin",
+          "bytes": 8192
+        },
+        {
+          "address": "2DB0A5500",
+          "layer": 3,
+          "mip": 2,
+          "file": "textures/2DB0A5500-layer3-mip2.bin",
+          "bytes": 2048
+        },
+        {
+          "address": "2DB0A5500",
+          "layer": 3,
+          "mip": 3,
+          "file": "textures/2DB0A5500-layer3-mip3.bin",
+          "bytes": 512
+        },
+        {
+          "address": "2DB0A5500",
+          "layer": 3,
+          "mip": 4,
+          "file": "textures/2DB0A5500-layer3-mip4.bin",
+          "bytes": 128
+        },
+        {
+          "address": "2DB0A5500",
+          "layer": 3,
+          "mip": 5,
+          "file": "textures/2DB0A5500-layer3-mip5.bin",
+          "bytes": 32
+        },
+        {
+          "address": "2DB0A5500",
+          "layer": 3,
+          "mip": 6,
+          "file": "textures/2DB0A5500-layer3-mip6.bin",
+          "bytes": 8
+        },
+        {
+          "address": "2DB0A5500",
+          "layer": 3,
+          "mip": 7,
+          "file": "textures/2DB0A5500-layer3-mip7.bin",
+          "bytes": 8
+        },
+        {
+          "address": "2DB0A5500",
+          "layer": 3,
+          "mip": 8,
+          "file": "textures/2DB0A5500-layer3-mip8.bin",
+          "bytes": 8
+        },
+        {
+          "address": "2DB0A5500",
+          "layer": 4,
+          "mip": 0,
+          "file": "textures/2DB0A5500-layer4-mip0.bin",
+          "bytes": 32768
+        },
+        {
+          "address": "2DB0A5500",
+          "layer": 4,
+          "mip": 1,
+          "file": "textures/2DB0A5500-layer4-mip1.bin",
+          "bytes": 8192
+        },
+        {
+          "address": "2DB0A5500",
+          "layer": 4,
+          "mip": 2,
+          "file": "textures/2DB0A5500-layer4-mip2.bin",
+          "bytes": 2048
+        },
+        {
+          "address": "2DB0A5500",
+          "layer": 4,
+          "mip": 3,
+          "file": "textures/2DB0A5500-layer4-mip3.bin",
+          "bytes": 512
+        },
+        {
+          "address": "2DB0A5500",
+          "layer": 4,
+          "mip": 4,
+          "file": "textures/2DB0A5500-layer4-mip4.bin",
+          "bytes": 128
+        },
+        {
+          "address": "2DB0A5500",
+          "layer": 4,
+          "mip": 5,
+          "file": "textures/2DB0A5500-layer4-mip5.bin",
+          "bytes": 32
+        },
+        {
+          "address": "2DB0A5500",
+          "layer": 4,
+          "mip": 6,
+          "file": "textures/2DB0A5500-layer4-mip6.bin",
+          "bytes": 8
+        },
+        {
+          "address": "2DB0A5500",
+          "layer": 4,
+          "mip": 7,
+          "file": "textures/2DB0A5500-layer4-mip7.bin",
+          "bytes": 8
+        },
+        {
+          "address": "2DB0A5500",
+          "layer": 4,
+          "mip": 8,
+          "file": "textures/2DB0A5500-layer4-mip8.bin",
+          "bytes": 8
+        },
+        {
+          "address": "2DB0A5500",
+          "layer": 5,
+          "mip": 0,
+          "file": "textures/2DB0A5500-layer5-mip0.bin",
+          "bytes": 32768
+        },
+        {
+          "address": "2DB0A5500",
+          "layer": 5,
+          "mip": 1,
+          "file": "textures/2DB0A5500-layer5-mip1.bin",
+          "bytes": 8192
+        },
+        {
+          "address": "2DB0A5500",
+          "layer": 5,
+          "mip": 2,
+          "file": "textures/2DB0A5500-layer5-mip2.bin",
+          "bytes": 2048
+        },
+        {
+          "address": "2DB0A5500",
+          "layer": 5,
+          "mip": 3,
+          "file": "textures/2DB0A5500-layer5-mip3.bin",
+          "bytes": 512
+        },
+        {
+          "address": "2DB0A5500",
+          "layer": 5,
+          "mip": 4,
+          "file": "textures/2DB0A5500-layer5-mip4.bin",
+          "bytes": 128
+        },
+        {
+          "address": "2DB0A5500",
+          "layer": 5,
+          "mip": 5,
+          "file": "textures/2DB0A5500-layer5-mip5.bin",
+          "bytes": 32
+        },
+        {
+          "address": "2DB0A5500",
+          "layer": 5,
+          "mip": 6,
+          "file": "textures/2DB0A5500-layer5-mip6.bin",
+          "bytes": 8
+        },
+        {
+          "address": "2DB0A5500",
+          "layer": 5,
+          "mip": 7,
+          "file": "textures/2DB0A5500-layer5-mip7.bin",
+          "bytes": 8
+        },
+        {
+          "address": "2DB0A5500",
+          "layer": 5,
+          "mip": 8,
+          "file": "textures/2DB0A5500-layer5-mip8.bin",
+          "bytes": 8
+        }
+      ]
+    },
+    {
+      "width": 2048,
+      "height": 8112,
+      "layers": 1,
+      "mips": 3,
+      "format": 10,
+      "mapping": [
+        3,
+        1,
+        1,
+        2
+      ],
+      "subresources": [
+        {
+          "address": "2B06D8000",
+          "layer": 0,
+          "mip": 0,
+          "file": "textures/2B06D8000-layer0-mip0.bin",
+          "bytes": 16613376
+        },
+        {
+          "address": "2B06D8000",
+          "layer": 0,
+          "mip": 1,
+          "file": "textures/2B06D8000-layer0-mip1.bin",
+          "bytes": 4153344
+        },
+        {
+          "address": "2B06D8000",
+          "layer": 0,
+          "mip": 2,
+          "file": "textures/2B06D8000-layer0-mip2.bin",
+          "bytes": 1038336
+        }
+      ]
+    }
+  ],
+  "samplers": [
+    {
+      "decoded": {
+        "bias": 0.0,
+        "border": 0,
+        "clamp_x": 2,
+        "clamp_y": 2,
+        "clamp_z": 2,
+        "compare": 6,
+        "mag": 1,
+        "max_lod": 15.99609375,
+        "min": 1,
+        "min_lod": 0.0,
+        "mip": 1
+      },
+      "file": "D:\\CodexData\\Workspaces\\2026-10-12\\can\\work\\imp-fidelity-20261111\\native-session\\draw-inputs\\stage-0-sampler0.bin",
+      "index": 0
+    },
+    {
+      "decoded": {
+        "bias": 0.0,
+        "border": 0,
+        "clamp_x": 6,
+        "clamp_y": 6,
+        "clamp_z": 6,
+        "compare": 0,
+        "mag": 1,
+        "max_lod": 15.99609375,
+        "min": 1,
+        "min_lod": 0.0,
+        "mip": 2
+      },
+      "file": "D:\\CodexData\\Workspaces\\2026-10-12\\can\\work\\imp-fidelity-20261111\\native-session\\draw-inputs\\stage-0-sampler1.bin",
+      "index": 1
+    },
+    {
+      "decoded": {
+        "bias": 0.0,
+        "border": 0,
+        "clamp_x": 0,
+        "clamp_y": 0,
+        "clamp_z": 0,
+        "compare": 0,
+        "mag": 1,
+        "max_lod": 15.99609375,
+        "min": 1,
+        "min_lod": 0.0,
+        "mip": 2
+      },
+      "file": "D:\\CodexData\\Workspaces\\2026-10-12\\can\\work\\imp-fidelity-20261111\\native-session\\draw-inputs\\stage-0-sampler2.bin",
+      "index": 2
+    },
+    {
+      "decoded": {
+        "bias": 0.0,
+        "border": 0,
+        "clamp_x": 0,
+        "clamp_y": 0,
+        "clamp_z": 0,
+        "compare": 0,
+        "mag": 1,
+        "max_lod": 15.99609375,
+        "min": 1,
+        "min_lod": 0.0,
+        "mip": 2
+      },
+      "file": "D:\\CodexData\\Workspaces\\2026-10-12\\can\\work\\imp-fidelity-20261111\\native-session\\draw-inputs\\stage-0-sampler3.bin",
+      "index": 3
+    }
+  ],
+  "viewport": {
+    "xoffset": 960.0,
+    "xscale": 960.0,
+    "yoffset": 540.0,
+    "yscale": -540.0
+  },
+  "fragment_shader": "ui-portable-fs.spv",
+  "vertex_shader": "ui-portable-vs.spv",
+  "stream": true,
+  "display_rgba": true,
+  "full_overlay": true,
+  "postprocess": {
+    "flat": "postprocess/stage-0-srt.bin",
+    "push": "postprocess/push-data.bin",
+    "vs": "postprocess/portable-vs.spv",
+    "fs": "postprocess/portable-fs.spv",
+    "sampler": {
+      "bias": 0.0,
+      "border": 0,
+      "clamp_x": 6,
+      "clamp_y": 6,
+      "clamp_z": 6,
+      "compare": 0,
+      "mag": 1,
+      "max_lod": 15.99609375,
+      "min": 1,
+      "min_lod": 0.0,
+      "mip": 2
+    },
+    "viewport": {
+      "xoffset": 960.0,
+      "xscale": 960.0,
+      "yoffset": 540.0,
+      "yscale": -540.0
+    }
+  },
+  "native_bloom": {
+    "down_flat": "bloom/compute-live-716342fc-srt.bin",
+    "up_flat": "bloom/compute-live-11b0ece9-srt.bin",
+    "down_shader": "bloom/portable-716342fc.spv",
+    "up_shader": "bloom/portable-11b0ece9.spv",
+    "sampler": {
+      "bias": 0.0,
+      "border": 0,
+      "clamp_x": 6,
+      "clamp_y": 6,
+      "clamp_z": 6,
+      "compare": 0,
+      "mag": 1,
+      "max_lod": 15.99609375,
+      "min": 1,
+      "min_lod": 0.0,
+      "mip": 1
+    },
+    "down_rest_flat": "bloom/down-rest-srt.bin"
+  }
+}

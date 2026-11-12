@@ -1,0 +1,13 @@
+{
+  "bias": 0.0,
+  "border": 0,
+  "clamp_x": 6,
+  "clamp_y": 6,
+  "clamp_z": 6,
+  "compare": 0,
+  "mag": 1,
+  "max_lod": 15.99609375,
+  "min": 1,
+  "min_lod": 0.0,
+  "mip": 2
+}

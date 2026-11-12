@@ -44,7 +44,7 @@ def multiply_rotation(a, b):
 def menu_aim_frame(rest, x, y):
     # A mouse supplies two axes. Use the native axis curves without adding
     # a controller roll component.
-    view_x, view_y = -AIM_LIMIT_X*x, AIM_LIMIT_Y*y
+    view_x, view_y = AIM_LIMIT_X*x, AIM_LIMIT_Y*y
     yaw = math.atan2(-view_x, AIM_DEPTH) / 2
     height = abs(view_y)
     i = min(bisect_right(PITCH_POSITIONS, height), len(PITCH_POSITIONS) - 1)
@@ -73,7 +73,7 @@ def relative_frame(previous, current):
 
 class Motion(FACE['FaceTest']):
     def __init__(self, text, faces):
-        super().__init__(text, faces, last_page=0x119e8000)
+        super().__init__(text, faces, last_page=0x119ee000)
         try:
             self._motion_init(text)
         except BaseException:
@@ -206,12 +206,15 @@ class Motion(FACE['FaceTest']):
         self.face_head = (REFERENCE/'face-head-frame.bin').read_bytes()
         self._mouth_init(text)
         self._eye_binding_init(text)
+        self._gaze_init(text)
+        self.eye_target = None
         self.character_data = None
         self.character_mouth = None
 
     def set_character(self, data, bindings=None):
         if len(data) != 0x4500:
             raise ValueError('Invalid decoded Imp appearance')
+        self.__dict__.pop('_mouth_centre', None)
         self.character_data = bytes(data)
         character = C.create_string_buffer(data, len(data))
         self.eye_character = [character, character]
@@ -226,12 +229,41 @@ class Motion(FACE['FaceTest']):
         self.previous_body = None
 
     def mouth_particles(self, pose, channels):
-        if self.character_mouth is not None and 0 not in channels:
+        if self.character_mouth is not None:
             count, = struct.unpack_from('<I', self.character_mouth, 0x2000)
+            # Dreams 0x75a9e41–0x75a9e52: mouth animation cannot introduce
+            # a mouth on an appearance with no native mouth curve.
             if not count:
                 return b''
-            return self.stroke_particles(self.character_mouth, 0, mouth=True)
+            animated_count, = struct.unpack_from('<H', pose, 0xbc)
+            if 0 not in channels or not animated_count:
+                return self.stroke_particles(self.character_mouth, 0, mouth=True)
+            pose = self.position_mouth_curve(pose)
         return self.stroke_particles(pose, 0xb0, mouth=True)
+
+    def position_mouth_curve(self, pose):
+        # Native curve blending centres the animated curve on the appearance's
+        # mouth, rather than treating authored points as absolute face positions
+        # (0x75aa7d5–0x75aa9fa). W is the point width, not a position coordinate.
+        # Bindings contain header + control points, including the closing point;
+        # the native centroid excludes that closing point (0x75aaa30–0x75aaa80).
+        f32 = lambda value: struct.unpack('<f', struct.pack('<f', value))[0]
+        if not hasattr(self, '_mouth_centre'):
+            n, = struct.unpack_from('<H', self.character_mouth, 12)
+            centre = [0.0, 0.0, 0.0]
+            for index in range(n):
+                point = struct.unpack_from('<3f', self.character_mouth, 16 + index*16)
+                centre = [f32(a+b) for a, b in zip(centre, point)]
+            self._mouth_centre = tuple(f32(a/n) for a in centre)
+        animated_centre = struct.unpack_from('<3f', pose, 0x20c0)
+        n, = struct.unpack_from('<H', pose, 0xbc)
+        placed = bytearray(pose)
+        for index in range(n):
+            offset = 0xc0 + index*16
+            point = struct.unpack_from('<3f', pose, offset)
+            struct.pack_into('<3f', placed, offset, *(f32(f32(p-a)+b)
+                for p, a, b in zip(point, animated_centre, self._mouth_centre)))
+        return bytes(placed)
 
     def character_strokes(self):
         if self.character_data is None:
@@ -272,6 +304,40 @@ class Motion(FACE['FaceTest']):
         self.eye_object[0x2c340:0x2c370] = (REFERENCE/'face-bindings.bin').read_bytes()
         struct.pack_into('<Q', self.eye_object, 0x3f0, C.addressof(self.eye_character[0]))
         struct.pack_into('<4f', self.eye_object, 0x29c40, 0, 0, 1, 1)
+
+    def _gaze_init(self, text):
+        # Execute Dreams' own look-at shortest-arc/normalization path. The
+        # isolated return replaces only the following actor-state update.
+        begin, end = 0x75f7000, 0x75f8000
+        self.pages(begin, end)
+        self.put(begin, text[begin-NATIVE['BASE']:end-NATIVE['BASE']])
+        self.put(0x75f7b3a, bytes.fromhex('41 0f 11 09 c3'))  # [r9] = normalized xmm1
+        self.protect(begin, end, 0x20)
+        code = NATIVE['to_guest'](self.addr(0x75f7cf9))
+        at = code.index(bytes.fromhex('48 89 cf 48 b8'))
+        args = bytes.fromhex(
+            '48 89 c8 4c 8d 48 30 44 0f 10 20 0f 10 48 10 '
+            'f3 0f 10 40 20 f3 44 0f 10 78 24 31 ff '
+            '48 81 ec c0 01 00 00 0f 57 ed 0f 11 ac 24 78 01 00 00')
+        code = code[:at] + args + code[at+3:]
+        at = code.index(bytes.fromhex('ff d0')) + 2
+        code = code[:at] + bytes.fromhex('48 81 c4 c0 01 00 00') + code[at:]
+        self.protect(0x75b6000, 0x75b7000, 4)
+        self.put(0x75b6a00, code)
+        self.protect(0x75b6000, 0x75b7000, 0x20)
+        self.win.FlushInstructionCache(self.win.GetCurrentProcess(), self.start, 0)
+        self.look_at = C.CFUNCTYPE(None, C.c_void_p)(self.addr(0x75b6a00))
+
+    def gaze_rotation(self, direction):
+        if not all(math.isfinite(v) for v in direction) or math.hypot(*direction) < 1e-6:
+            return IDENTITY
+        args = C.create_string_buffer(struct.pack('<12f', *direction, 0, 0, 0, 1, 0,
+                                                  3, .5, 0, 0) + bytes(16))
+        self.look_at(C.addressof(args))
+        rotation = struct.unpack_from('<4f', args, 0x30)
+        if not all(math.isfinite(v) for v in rotation):
+            raise ValueError('Native gaze returned a non-finite rotation')
+        return rotation
 
     def _mouth_init(self, text):
         base = NATIVE['BASE']
@@ -316,7 +382,7 @@ class Motion(FACE['FaceTest']):
         stroke = C.create_string_buffer(self.mouth_rest if mouth else b'', 0xa100)
         struct.pack_into('<I', stroke, 0xa014, 0)
         if not mouth:
-            # Original decoration initialization, Dreams 0x75a5391–0x75a53cd.
+            # Original decoration initialization, Dreams 0x75a5391â€“0x75a53cd.
             stroke[0x9fc4] = b'\x01'
             struct.pack_into('<f', stroke, 0xa018, .15)
             struct.pack_into('<f', stroke, 0xa01c, .375)
@@ -460,7 +526,7 @@ class Motion(FACE['FaceTest']):
             stock_blink, stock_lower, stock_angle, _ = struct.unpack_from('<4f', defaults, 0x170)
             stock_scale, = struct.unpack_from('<f', self.eye_character[eye], 0x120)
             if track not in channels:
-                # Original appearance defaults, Dreams 0x75a54c1–0x75a552d.
+                # Original appearance defaults, Dreams 0x75a54c1â€“0x75a552d.
                 blink = (struct.unpack_from('<f', self.character_data, 0x184+off)[0]
                          if self.character_data is not None else stock_blink / 0.9)
                 struct.pack_into('<f', face, 0x18+off, blink)
@@ -498,6 +564,19 @@ class Motion(FACE['FaceTest']):
                 transform = C.create_string_buffer(32)
                 bind_args = (C.c_void_p*3)(C.addressof(self.eye_object), side, C.addressof(transform))
                 self.bind_eye(C.addressof(bind_args))
+                if self.eye_target is not None and self.eye_character[side][0xe5+side] == b'\0':
+                    # Native per-eye gaze is suppressed by the appearance flags
+                    # at 0x75f7c45. Use its real look-at rotation, then retain
+                    # the authored animation rotation rather than selecting a
+                    # cardinal-direction animation for a diagonal target.
+                    origin = struct.unpack_from('<3f', transform, 0)
+                    rotation = struct.unpack_from('<4f', transform, 0x10)
+                    inverse = (-rotation[0], -rotation[1], -rotation[2], rotation[3])
+                    direction = tuple(a-b for a,b in zip(self.eye_target, origin))
+                    direction = multiply_rotation(multiply_rotation(inverse, (*direction, 0)), rotation)[:3]
+                    gaze = self.gaze_rotation(direction)
+                    authored = struct.unpack_from('<4f', face, 0x30+side*16)
+                    struct.pack_into('<4f', face, 0x30+side*16, *multiply_rotation(gaze, authored))
                 previous = C.create_string_buffer(raw[0x150:0x170])
                 config = C.create_string_buffer(job[0x10:0xf8])
                 args = (C.c_void_p * 5)(*(C.addressof(buf)
@@ -546,14 +625,22 @@ class Motion(FACE['FaceTest']):
                          1 / spacing, 3 * scale)
         COLLISION_GRID.pack_into(self.state, 0xab60, *distances)
 
-    def move(self, x, y, dt, *, squash=0.0, bounds=None):
+    def move(self, x, y, dt, *, squash=0.0, bounds=None, menu_translation=None, menu_transform=None):
         # Map normalized desktop aim to the range of the captured Dreams menu Imp.
         x, y = max(-1.0, min(1.0, x)), max(-1.0, min(1.0, y))
         frame = menu_aim_frame(self.rest_frame, x, y)
+        if menu_translation is not None:
+            ox,oy,oz,scale,*rotation=self.rest_frame
+            tx,ty=menu_translation
+            frame=(ox+tx*scale,oy+ty*scale,oz,scale,*rotation)
+        if menu_transform is not None:
+            if len(menu_transform)!=8 or not all(math.isfinite(v) for v in menu_transform) or menu_transform[3]<=0:
+                raise ValueError('Invalid native carousel transform')
+            frame=tuple(menu_transform)
         self.update_screen_collision(frame, bounds)
         # A jump across almost half the viewport in one frame can happen when
         # Windows relocates the pointer. Use the solver's recenter path for it.
-        recenter = self.previous_frame is None or math.dist(self.previous_aim, (x, y)) > .9
+        recenter = self.previous_frame is None or (menu_translation is None and menu_transform is None and math.dist(self.previous_aim, (x, y)) > .9)
         if recenter:
             self.state[0xb400:0xb402] = b'\x01\x01'
         translation, rotation = relative_frame(frame if recenter else self.previous_frame, frame)
@@ -586,18 +673,18 @@ class Motion(FACE['FaceTest']):
         self.step_count += 1
         return points
 
-    def advance(self, x, y, elapsed, *, squash, speed, bounds=None):
+    def advance(self, x, y, elapsed, *, squash, speed, bounds=None, menu_translation=None, menu_transform=None):
         # The native solve performs a fixed number of spring iterations per
         # call. Advance it on the playback clock and draw between its samples.
         if self.current_sample is None:
-            points = self.move(x, y, SOLVER_STEP, squash=squash, bounds=bounds)
+            points = self.move(x, y, SOLVER_STEP, squash=squash, bounds=bounds, menu_translation=menu_translation,menu_transform=menu_transform)
             self.current_sample = points, SURFACE_FLOATS.unpack_from(self.state, SURFACE_START)
             return points
         self.motion_phase += elapsed * speed
         while self.motion_phase > SOLVER_STEP + 1e-8:
             self.motion_phase -= SOLVER_STEP
             self.previous_sample = self.current_sample
-            points = self.move(x, y, SOLVER_STEP, squash=squash, bounds=bounds)
+            points = self.move(x, y, SOLVER_STEP, squash=squash, bounds=bounds, menu_translation=menu_translation,menu_transform=menu_transform)
             self.current_sample = points, SURFACE_FLOATS.unpack_from(self.state, SURFACE_START)
         amount = min(1.0, self.motion_phase / SOLVER_STEP)
         current_points, current_surface = self.current_sample

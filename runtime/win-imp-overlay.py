@@ -280,6 +280,17 @@ class Overlay:
             if not self.input_available:
                 break
 
+    def resize(self, width, height):
+        if (width,height)==(self.size.cx,self.size.cy):return
+        header=BitmapHeader(C.sizeof(BitmapHeader),width,-height,1,32)
+        pixels=C.c_void_p()
+        bitmap=self.gdi.CreateDIBSection(self.dc,C.byref(header),0,C.byref(pixels),None,0)
+        if not bitmap:raise C.WinError(C.get_last_error())
+        old=self.gdi.SelectObject(self.dc,bitmap)
+        self.gdi.DeleteObject(old)
+        self.bitmap=bitmap;self.pixels=pixels
+        self.size=W.SIZE(width,height);self.pixel_bytes=width*height*4
+
     def present(self, bgra, pointer, hotspot, visible):
         if not self.input_available:
             return

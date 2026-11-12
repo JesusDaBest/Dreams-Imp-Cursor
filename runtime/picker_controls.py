@@ -56,3 +56,31 @@ def category_panel(width, selected):
                                    radius=21*SCALE,fill='#ecdae9')
         text(draw,(width/2,top+21),label,fill='#563453' if label==selected else '#f7ecf5')
     return image.resize((width,height),Image.Resampling.LANCZOS)
+
+@lru_cache(maxsize=40)
+def size_slider(width, value):
+    height=56
+    image=pill(width,height,'').copy()
+    draw=ImageDraw.Draw(image)
+    draw.rounded_rectangle((6,6,width-6,height-10),radius=20,fill='#ecd9e9')
+    text_draw=ImageDraw.Draw(image)
+    f=ImageFont.truetype(str(Path(__file__).resolve().parent/'fonts/SourceSansPro-Regular.ttf'),16)
+    text_draw.text((18,14),'Imp size',font=f,fill='#563453')
+    text_draw.text((width-52,14),f'{value:g}×',font=f,fill='#563453')
+    start,end=92,width-68
+    draw.line((start,27,end,27),fill='#b79ab6',width=4)
+    x=start+(end-start)*(value-.5)/1.5
+    draw.ellipse((x-9,18,x+9,36),fill='#785477',outline='#fff4fc',width=2)
+    return image
+
+
+@lru_cache(maxsize=16)
+def player_slider(width, value):
+    image=size_slider(width, 0.5+(value-1)*0.5).copy()
+    draw=ImageDraw.Draw(image)
+    draw.rounded_rectangle((8,8,88,40),radius=10,fill='#ecd9e9')
+    draw.rounded_rectangle((width-64,8,width-8,40),radius=10,fill='#ecd9e9')
+    f=ImageFont.truetype(str(Path(__file__).resolve().parent/'fonts/SourceSansPro-Regular.ttf'),16)
+    draw.text((18,14),'Player',font=f,fill='#563453')
+    draw.text((width-52,14),f'P{value}',font=f,fill='#563453')
+    return image

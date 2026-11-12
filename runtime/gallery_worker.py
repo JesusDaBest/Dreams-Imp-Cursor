@@ -4,17 +4,18 @@ One GPU context, independent native simulation/TAA per visible Imp. The pipe
 only carries current viewport requests and newly rendered pixels, never video.
 """
 import ctypes as C
+from collections import OrderedDict
 import json
 from pathlib import Path
 import runpy
 import threading
 import time
+from carousel_native import crop_projection,HERO_FRAME,CAMERA
 
 
 def run(connection, log_path):
     import os
     import traceback
-    from PIL import Image
     root = Path(__file__).resolve().parent
     log = open(log_path, 'w', encoding='utf-8', buffering=1)
     # Vulkan diagnostics must not open a console or disturb the cursor process.
@@ -36,14 +37,18 @@ def run(connection, log_path):
                 condition.notify_all()
 
     threading.Thread(target=receive, daemon=True).start()
-    imps = {}
+    imps = OrderedDict()
     try:
         api = runpy.run_path(str(root/'desktop-imp.py'))
-        catalog = json.loads((root/'characters/catalog.json').read_text(encoding='utf-8'))
-        indexes = {item['id']: i for i, item in enumerate(catalog)}
-        active = (C.c_uint8*len(catalog))()
+        from character_store import catalog as appearance_catalog
+        known = {item['id'] for item in appearance_catalog()}
+        # Slots describe concurrently retained render histories, not the number
+        # of selectable Imps. New Surprise appearances reuse evicted slots.
+        active = (C.c_uint8*32)()
+        indexes = {}
         order = []; next_index = 0; current = None; slot = 0
         next_cycle = 0.0
+        current_projection = [0.] * 32
 
         def particles():
             nonlocal order, next_index, current, slot, next_cycle
@@ -53,15 +58,27 @@ def run(connection, log_path):
                         # No simulation work while the picker is minimized.
                         condition.wait()
                     if request['stop']:return None
-                    wanted = tuple(i for i in request['ids'] if i in indexes)
+                    requested = tuple(request['ids'])
+                    if any(i.removeprefix('hero:') not in known for i in requested):
+                        known.update(item['id'] for item in appearance_catalog())
+                    wanted = tuple(i for i in requested if i.removeprefix('hero:') in known)
                     aim = dict(request['aim'])
+                    interaction = dict(request.get('interaction',{}))
+                    movement = dict(request.get('movement',{}))
+                    transforms = dict(request.get('transforms',{}))
+                    hovered=request.get('hovered')
                 if tuple(order) != wanted:
-                    order = list(wanted);next_index = 0;next_cycle = 0.0
-                    for ident in list(imps):
-                        if ident not in wanted:
-                            imps.pop(ident)[0].close()
-                    active[:] = bytes(len(active))
-                    for ident in wanted:active[indexes[ident]] = 1
+                    following=order[next_index] if order else None
+                    order = list(wanted)
+                    next_index=order.index(following) if following in order else min(next_index,max(0,len(order)-1))
+                    next_cycle = 0.0
+                    # Keep recently visible simulations alive while scrolling;
+                    # recreating them at every edge causes a visible hitch.
+                    while len(imps)>8:
+                        oldest=next((key for key in imps if key not in wanted),None)
+                        if oldest is None:break
+                        imps.pop(oldest)[0].close()
+                        active[indexes.pop(oldest)] = 0
                 if not order:return None
                 if next_index == 0:
                     delay = next_cycle-time.perf_counter()
@@ -73,22 +90,41 @@ def run(connection, log_path):
                 next_index = (next_index+1)%len(order)
                 now = time.perf_counter()
                 if ident not in imps:
-                    imp = api['Imp'](ident)
-                    imps[ident] = [imp, now, now-1/30]
+                    available=next((i for i in range(len(active)) if i not in indexes.values()),None)
+                    if available is None:raise RuntimeError('Too many simultaneously visible Imp previews')
+                    indexes[ident]=available
+                    imp = api['Imp'](ident.removeprefix('hero:'))
+                    reaction = api['Reactions'](imp,now,None,viewport=(0,0,1000,1000)) if ident.startswith('hero:') else None
+                    if reaction is not None:reaction.poll_after = float('inf')
+                    imps[ident] = [imp, now, now-1/30, reaction,'idle',now]
+                    active[indexes[ident]] = 2
+                imps.move_to_end(ident)
                 state = imps[ident];current = state[0];slot = indexes[ident]
+                frame=transforms.get(ident,HERO_FRAME)
+                current_projection[:]=(*crop_projection(frame,1080*(.757 if ident.startswith('hero:') else .334))[0],*frame,*CAMERA['camera_frame'])
                 dt = max(1/240, min(.1, now-state[2]));state[2] = now
                 x,y = aim.get(ident,(0.0,0.0))
-                return current.frame('idle', now-state[1], x, y, dt, looping=True)
+                if state[3] is not None:
+                    # This is a stationary preview character, not another mouse
+                    # cursor. Its own reaction clock chooses blinks and emotes.
+                    mouse = api['MouseState'](500,500,True,32512)
+                    state[3].menu_transform=frame
+                    return state[3].update(mouse,now)
+                clip='custom hover' if ident==hovered else 'idle'
+                if clip!=state[4]:state[4]=clip;state[5]=now
+                return current.frame(clip, now-state[5], x, y, dt, looping=True,
+                                     menu_translation=movement.get(ident),menu_transform=transforms.get(ident))
 
         def present(raw, width, height):
             premultiplied = api['decode'](raw).raw[:width*height*4]
-            image = Image.frombytes('RGBa',(width,height),premultiplied,'raw','BGRa').convert('RGBA')
-            connection.send(('frame',catalog[slot]['id'],width,height,image.tobytes()))
+            ident=next(key for key,value in indexes.items() if value==slot)
+            connection.send(('frame-premultiplied',ident,width,height,premultiplied))
+            active[slot]=1
             return True
 
         api['GPU']['render'](particles,present,lambda:(current.stick,current.antenna_path),
                              lambda:current.eye_count,appearance=lambda:current.motion.body_color,
-                             gallery=(active,lambda:slot))
+                             gallery=(active,lambda:slot),projection=lambda:current_projection)
     except (BrokenPipeError, EOFError):pass
     except BaseException:
         detail = traceback.format_exc()

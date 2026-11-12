@@ -1,17 +1,21 @@
 # Dreams Imp Cursor
 
-An animated Dreams Imp as your Windows mouse cursor.
+Choose an animated Dreams Imp as your Windows mouse cursor.
 
-**[Download for Windows](https://github.com/JesusDaBest/Dreams-Imp-Cursor/releases/latest/download/Dreams-Imp-Windows.zip)** · [All downloads and source](https://github.com/JesusDaBest/Dreams-Imp-Cursor/releases/latest)
+**[Download for Windows](https://github.com/JesusDaBest/Dreams-Imp-Cursor/releases/latest/download/Dreams-Imp-Windows.zip)**
 
 1. Download and extract the ZIP.
 2. Open **Dreams Imp.exe**.
-3. Tap or click an Imp to set it as your cursor.
+3. Click an Imp to use it as your cursor.
 
-Drag with one finger to scroll, or use the mouse wheel. The original size-1 sideways carousel is the only layout; the category selector filters the Imps. The visible Imps render live using the original game shaders. Opening the app or filtering categories leaves your cursor alone. Minimize the app to pause its previews and keep your cursor Imp; close it to restore the Windows cursor. No commands, Python installation, or running copy of Dreams required.
+Everything is included. No commands, Python installation, Dreams installation,
+emulator, account or extra asset downloads. Close the picker to keep your Imp cursor;
+use its system-tray icon to reopen the picker or restore the Windows cursor.
 
-Includes 147 named Imps and special editions, including Clown, Halloween Clown and Dream Queen, plus two labelled internal presets. Uses original game assets, animation routines and ported shaders, with live mouse reactions.
+Includes the live Imp Carousel, favourites and Imp Surprise, using original game
+assets, native routines and ported shaders. Opens fullscreen; **F11** toggles fullscreen.
 
-Requires Windows 10/11 x64, an AVX2 CPU and a compatible Vulkan 1.3 graphics driver. Tested on AMD Radeon 8060S; NVIDIA and Intel hardware are not yet physically verified. See [requirements](README.txt), [mouse controls](Controls.txt) and [source/build details](docs/BUILD.md).
+Windows 10/11 x64, AVX2 CPU and compatible Vulkan 1.3 graphics required.
+[Tested requirements](README.txt) · [Controls](Controls.txt) · [Source/build](docs/BUILD.md)
 
-Unofficial fan project. Dreams and its game-derived materials belong to their respective rights holders. [Third-party notices](THIRD_PARTY_NOTICES.txt).
+Unofficial fan project. [Third-party notices](THIRD_PARTY_NOTICES.txt).

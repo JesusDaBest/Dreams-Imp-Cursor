@@ -7,7 +7,7 @@ import struct
 import time
 
 ROOT = Path(__file__).resolve().parent
-WIDTH, HEIGHT = 176, 256
+WIDTH, HEIGHT = 512, 512
 SHADERS = ROOT/'shader-inputs'
 ORIGINAL = SHADERS
 NextParticles = C.CFUNCTYPE(C.c_int, C.c_void_p, C.c_uint, C.c_void_p)
@@ -29,14 +29,16 @@ class LiveFrames(C.Structure):
     ]
 
 class GalleryFrames(C.Structure):
-    _fields_ = [('active', C.POINTER(C.c_uint8)), ('count', C.c_uint), ('index', Eyes)]
+    _fields_ = [('active', C.POINTER(C.c_uint8)), ('count', C.c_uint), ('index', Eyes),
+                ('projection', C.POINTER(C.c_float))]
 
 
 def render(particles, present, stick_particles=lambda: (b'', b''), eye_count=lambda: 0,
            *, responsive_history=None, appearance=lambda: (1., 1., 1.),
-           tip_count=None, present_tip=None, gallery=None):
+           tip_count=None, present_tip=None, gallery=None, projection=None):
     errors = []
     rgb = (C.c_float * 3)()
+    matrix = (C.c_float * 32)() if projection is not None else None
 
     @NextParticles
     def next_frame(destination, capacity, _):
@@ -44,7 +46,8 @@ def render(particles, present, stick_particles=lambda: (b'', b''), eye_count=lam
             data = particles()
             if data is None:
                 return 0
-            rgb[:] = appearance()
+            if matrix is not None:matrix[:] = projection()
+            rgb[:] = tuple(value * 0.5 for value in appearance())
             if len(data) % 136 or len(data) > capacity * 136 or not data:
                 raise ValueError('Invalid particle frame from the native runtime')
             if responsive_history is not None:
@@ -127,7 +130,10 @@ def render(particles, present, stick_particles=lambda: (b'', b''), eye_count=lam
                    tip_ready if tip_count and present_tip else Present())
     import tempfile
     view = Path(tempfile.gettempdir())/f'dreams-imp-lighting-{os.getpid()}.bin'
-    view_bytes = bytearray((captures/'stage-0-buffer1.bin').read_bytes()[:208])
+    # Use the complete, captured lit-body parameters. The eye-pass capture
+    # contains zero scene-light coefficients and cannot represent this pass.
+    # Keep Dreams' own fur ramp and body-light contribution unchanged.
+    view_bytes = bytearray((ROOT/'reference-state'/'scene-lighting.bin').read_bytes()[:208])
     body = runpy.run_path(str(ROOT/'verify-native-imp-body.py'))
     view_bytes[16:28] = body['stock_body_parameters']()[0x40:0x4c]
     view.write_bytes(view_bytes)
@@ -137,7 +143,7 @@ def render(particles, present, stick_particles=lambda: (b'', b''), eye_count=lam
     if gallery is not None:
         active, index = gallery
         get_index = Eyes(lambda _: index())
-        gallery_frames = GalleryFrames(active, len(active), get_index)
+        gallery_frames = GalleryFrames(active, len(active), get_index, matrix)
         extra = (C.byref(gallery_frames),)
     loop.argtypes = (C.c_char_p,)*5 + (C.POINTER(LiveFrames),) + (
         (C.POINTER(GalleryFrames),) if gallery is not None else ()) + (C.c_void_p, C.c_size_t)
