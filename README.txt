@@ -1,12 +1,12 @@
-Dreams Imp for Windows — 1.1.1
+Imp Carousel for Windows — 1.1.4
 
-Extract the complete ZIP, then double-click Dreams Imp.exe.
+Extract the complete ZIP, then double-click Imp Carousel.exe.
 Click an Imp in the carousel to use it as your mouse cursor.
 Everything the app needs is included: no commands, Python installation,
 Dreams installation, emulator, account or additional asset downloads.
 
 Closing the picker keeps your Imp cursor running and stops its previews.
-Use the Dreams Imp system-tray icon to reopen the picker or restore the
+Use the Imp Carousel system-tray icon to reopen the picker or restore the
 normal Windows cursor. Opening the picker does not change your cursor.
 
 The app opens fullscreen. F11 or Alt+Enter toggles fullscreen; Escape leaves

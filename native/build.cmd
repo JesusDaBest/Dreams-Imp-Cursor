@@ -9,6 +9,6 @@ clang-cl /nologo /MT /EHsc /std:c++20 /O2 /arch:AVX2 /I"%VULKAN_SDK%\Include" /I
 if errorlevel 1 exit /b 1
 rc /nologo /fo app.res app.rc
 if errorlevel 1 exit /b 1
-clang-cl /nologo /MT /EHsc /std:c++20 /O2 /Fe"%IMP_OUTPUT%\Dreams Imp.exe" /Fo"windows-launcher.obj" "windows-launcher.cpp" /link app.res /SUBSYSTEM:WINDOWS user32.lib
+clang-cl /nologo /MT /EHsc /std:c++20 /O2 /Fe"%IMP_OUTPUT%\Imp Carousel.exe" /Fo"windows-launcher.obj" "windows-launcher.cpp" /link app.res /SUBSYSTEM:WINDOWS user32.lib
 if errorlevel 1 exit /b 1
 exit /b 0

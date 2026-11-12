@@ -10,14 +10,14 @@ kernel.CloseHandle.argtypes=(C.c_void_p,)
 existing=kernel.OpenEventW(0x100000,False,'Local\\DreamsImp.Exit')
 if existing:
     kernel.CloseHandle(existing)
-    raise RuntimeError('Close Dreams Imp before running the isolated launcher tests; the live app will not be changed.')
+    raise RuntimeError('Close Imp Carousel before running the isolated launcher tests; the live app will not be changed.')
 TEST=ROOT.parent/'imp-selection-lifecycle-20261111'
 TEST.mkdir(exist_ok=True)
 (TEST/'runtime').mkdir(exist_ok=True)
 python=TEST/'runtime/python'
 if not python.exists():
     subprocess.run(['cmd','/c','mklink','/J',str(python),str(ROOT/'runtime/python')],check=True,capture_output=True)
-shutil.copy2(ROOT/'build-output/Dreams Imp.exe',TEST/'Dreams Imp.exe')
+shutil.copy2(ROOT/'build-output/Imp Carousel.exe',TEST/'Imp Carousel.exe')
 shutil.copy2(ROOT/'runtime/app_lifecycle.py',TEST/'runtime/app_lifecycle.py')
 (TEST/'runtime/app.py').write_text('''import os,sys,json,subprocess,time,ctypes as C
 from pathlib import Path
@@ -64,7 +64,7 @@ def launch(mode):
     (TEST/'runtime/pids.json').unlink(missing_ok=True)
     (TEST/'runtime/watch-done').unlink(missing_ok=True)
     (TEST/'runtime/watch-ready').unlink(missing_ok=True)
-    p=subprocess.Popen([str(TEST/'Dreams Imp.exe')],env={**os.environ,'IMP_TEST_MODE':mode})
+    p=subprocess.Popen([str(TEST/'Imp Carousel.exe')],env={**os.environ,'IMP_TEST_MODE':mode})
     if mode=='empty':return p,None
     until(lambda:(TEST/'runtime/pids.json').exists())
     ids=json.loads((TEST/'runtime/pids.json').read_text())

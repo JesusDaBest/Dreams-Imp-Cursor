@@ -68,7 +68,7 @@ class CursorTray:
         notice = NOTICE()
 
         def choose():
-            exe = self.root.parent / 'Dreams Imp.exe'
+            exe = self.root.parent / 'Imp Carousel.exe'
             command = [str(exe)] if exe.exists() else [sys.executable, str(self.root / 'app.py')]
             subprocess.Popen(command, cwd=self.root, creationflags=subprocess.CREATE_NO_WINDOW)
 
@@ -120,7 +120,7 @@ class CursorTray:
             icon = user.LoadImageW(None, str(self.root / 'app.ico'), 1, 0, 0, 0x10)
             notice.size = C.sizeof(NOTICE)
             notice.hwnd, notice.id, notice.flags = self.hwnd, 1, 7
-            notice.callback, notice.icon, notice.tip = 0x8001, icon, 'Dreams Imp'
+            notice.callback, notice.icon, notice.tip = 0x8001, icon, 'Imp Carousel'
             if not shell.Shell_NotifyIconW(0, C.byref(notice)):
                 raise C.WinError(C.get_last_error())
             self.ready.set()

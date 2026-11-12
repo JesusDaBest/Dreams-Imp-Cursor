@@ -18,7 +18,7 @@ int WINAPI wWinMain(HINSTANCE, HINSTANCE, LPWSTR, int) {
     limits.BasicLimitInformation.LimitFlags = JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE | JOB_OBJECT_LIMIT_BREAKAWAY_OK;
     if (!job || !SetInformationJobObject(job, JobObjectExtendedLimitInformation, &limits, sizeof(limits))) {
         if (job) CloseHandle(job);
-        MessageBoxW(nullptr, L"Windows could not create the app's process group.", L"Dreams Imp", MB_OK | MB_ICONERROR);
+        MessageBoxW(nullptr, L"Windows could not create the app's process group.", L"Imp Carousel", MB_OK | MB_ICONERROR);
         return 1;
     }
     HANDLE exit = CreateEventW(nullptr, TRUE, FALSE, L"Local\\DreamsImp.Exit");
@@ -39,14 +39,14 @@ int WINAPI wWinMain(HINSTANCE, HINSTANCE, LPWSTR, int) {
     if (!CreateProcessW(python.c_str(), args.data(), nullptr, nullptr, FALSE, CREATE_NO_WINDOW | CREATE_SUSPENDED,
                         nullptr, runtime.c_str(), &startup, &child)) {
         MessageBoxW(nullptr, L"Extract the entire ZIP to a folder, then open the launcher again.",
-                    L"Dreams Imp", MB_OK | MB_ICONERROR);
+                    L"Imp Carousel", MB_OK | MB_ICONERROR);
         CloseHandle(closed); CloseHandle(exit); CloseHandle(job); return 1;
     }
     if (!AssignProcessToJobObject(job, child.hProcess)) {
         TerminateProcess(child.hProcess, 1);
         CloseHandle(child.hThread); CloseHandle(child.hProcess);
         CloseHandle(closed); CloseHandle(exit); CloseHandle(job);
-        MessageBoxW(nullptr, L"Windows could not manage the app's child processes.", L"Dreams Imp", MB_OK | MB_ICONERROR);
+        MessageBoxW(nullptr, L"Windows could not manage the app's child processes.", L"Imp Carousel", MB_OK | MB_ICONERROR);
         return 1;
     }
     ResumeThread(child.hThread);

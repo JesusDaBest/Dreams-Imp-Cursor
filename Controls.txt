@@ -1,4 +1,4 @@
-Dreams Imp — mouse reactions
+Imp Carousel — mouse reactions
 
 Move: native body/antenna motion and directional looks.
 Screen edges: the native edge response acts on the body.
@@ -20,7 +20,7 @@ Appearance-specific emote selectors retain their four original ordered slots.
 Windows event mappings adapt native clips; they do not reproduce every game event.
 Mouse cursor hidden by an application: the Imp hides too, until it is shown again.
 
-Open Dreams Imp.exe and tap or click an Imp to set it as your cursor.
+Open Imp Carousel.exe and tap or click an Imp to set it as your cursor.
 Drag the empty background or main preview to scroll, or use the mouse wheel.
 Drag the header outside its buttons to move the window; dragging it to the screen's top edge uses
 Windows' normal maximize/snap behavior. Window edges resize it.
@@ -31,7 +31,7 @@ The + button saves the selected Imp to the heart tab.
 Bottom-row Imps idle until hovered, then play Dreams' custom-hover clip.
 Selecting a row Imp changes the large preview without scrolling the row.
 Closing the picker keeps the selected cursor running and releases its previews.
-Right-click the Dreams Imp system-tray icon to reopen the picker or restore the
+Right-click the Imp Carousel system-tray icon to reopen the picker or restore the
 Windows cursor. Double-click the tray icon to open the picker.
 
 Click the top-left Imp icon or title to choose menu music from your files.

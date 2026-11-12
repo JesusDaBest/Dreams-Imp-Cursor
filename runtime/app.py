@@ -19,8 +19,8 @@ from space_preview import space_image
 from picker_controls import GROUPS, pill, category_panel, size_slider
 from gallery_client import GalleryClient
 
-TITLE = 'Dreams Imp'
-VERSION = '1.1.3'
+TITLE = 'Imp Carousel'
+VERSION = '1.1.4'
 BG, PANEL, FG, MUTED, ACCENT = '#170f26', '#291a40', '#f4edff', '#bfafd2', '#d8b3ff'
 
 def named_handle(name):
@@ -465,5 +465,5 @@ if __name__=='__main__':
         picker_closed()
     except Exception:
         ERROR.write_text(traceback.format_exc(),encoding='utf-8')
-        C.windll.user32.MessageBoxW(None,'Dreams Imp could not open.\n\n'+str(ERROR),TITLE,0x10)
+        C.windll.user32.MessageBoxW(None,'Imp Carousel could not open.\n\n'+str(ERROR),TITLE,0x10)
         raise

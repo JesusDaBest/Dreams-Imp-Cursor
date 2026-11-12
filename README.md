@@ -1,10 +1,10 @@
-# Dreams Imp Cursor
+# Imp Carousel
 
 Dreams Imps. On your desktop.
 
-**[Download for Windows](https://github.com/JesusDaBest/Dreams-Imp-Cursor/releases/latest/download/Dreams-Imp-Windows.zip)**
+**[Download for Windows](https://github.com/JesusDaBest/Dreams-Imp-Cursor/releases/latest/download/Imp-Carousel-Windows.zip)**
 
-Download, extract, open **Dreams Imp.exe**, and choose your Imp.
+Download, extract, open **Imp Carousel.exe**, and choose your Imp.
 
 ![Imp Carousel](docs/images/imp-carousel.png)
 

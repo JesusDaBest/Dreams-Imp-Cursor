@@ -1,6 +1,6 @@
-# Dreams Imp source
+# Imp Carousel source
 
-The Windows download contains the complete runtime. Extract it and open Dreams Imp.exe.
+The Windows download contains the complete runtime. Extract it and open Imp Carousel.exe.
 No development tools or Dreams installation are needed to run it.
 
 ## Build

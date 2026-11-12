@@ -7,7 +7,7 @@ import shutil
 import zipfile
 
 ROOT=Path(__file__).resolve().parents[1]
-OUT=ROOT/'release'/'Dreams Imp'
+OUT=ROOT/'release'/'Imp Carousel'
 OUT.mkdir(parents=True,exist_ok=True)
 
 # Do not ship vendor-only SPIR-V imports in a cross-vendor download.
@@ -49,7 +49,7 @@ for original in (ROOT/'runtime').rglob('*'):
     if not include(relative):continue
     if relative.as_posix()=='runtime/imp-renderer.dll':continue
     copy_changed(original,OUT/relative)
-for relative in ('Dreams Imp.exe','runtime/imp-renderer.dll'):
+for relative in ('Imp Carousel.exe','runtime/imp-renderer.dll'):
     copy_changed(ROOT/'build-output'/relative,OUT/relative)
 for name in ('README.txt','Controls.txt','THIRD_PARTY_NOTICES.txt'):
     shutil.copy2(ROOT/name,OUT/name)
@@ -62,32 +62,32 @@ parser=argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--output',type=Path,default=Path.home()/'Downloads')
 downloads=parser.parse_args().output
 downloads.mkdir(parents=True,exist_ok=True)
-archives=[downloads/'Dreams Imp - Windows.zip',downloads/'Dreams Imp - Source.zip']
+archives=[downloads/'Imp Carousel - Windows.zip',downloads/'Imp Carousel - Source.zip']
 for archive in archives:
     with zipfile.ZipFile(archive,'w',zipfile.ZIP_DEFLATED,compresslevel=7) as z:
         for p in sorted(OUT.rglob('*')):
-            if p.is_file() and include(p.relative_to(OUT)):z.write(p,Path('Dreams Imp')/p.relative_to(OUT))
+            if p.is_file() and include(p.relative_to(OUT)):z.write(p,Path('Imp Carousel')/p.relative_to(OUT))
         if 'Source' in archive.name:
-            z.write(ROOT/'SOURCE.md','Dreams Imp/README.md')
+            z.write(ROOT/'SOURCE.md','Imp Carousel/README.md')
             for directory in ('native','tools'):
                 for p in sorted((ROOT/directory).rglob('*')):
                     if p.is_file() and p.suffix in ('.cpp','.h','.cmd','.rc','.py','.md','.txt','.glsl','.spvasm','.comp','.vert','.frag') and '__pycache__' not in p.parts and 'loading-screen' not in p.relative_to(ROOT).parts and p.name!='build-local.cmd':
-                        z.write(p,Path('Dreams Imp')/p.relative_to(ROOT))
+                        z.write(p,Path('Imp Carousel')/p.relative_to(ROOT))
             for filename in ('live-body-export-audit.json','live-character-export-audit.json','fleck-atlas-export-audit.json','test_persistent_cursor.py','test_native_clip_clock.py','test_cursor_tray.py','cursor-scale-calibration.json','test_picker_lifecycle.py','test_desktop_access.py','test_portable_render.py','test_tip_bloom.py','test_live_gallery.py','test_gallery_history.py','live-gallery-report.json','gallery-history-report.json','portable-render-log.txt','catalog-render.json','character-counts.json','appearance-sheet.png'):
-                z.write(ROOT/'tests'/filename,'Dreams Imp/tests/'+filename)
+                z.write(ROOT/'tests'/filename,'Imp Carousel/tests/'+filename)
     with zipfile.ZipFile(archive) as z:
         bad=z.testzip()
         if bad:raise RuntimeError('Corrupt archive member: '+bad)
         names=set(z.namelist())
-        assert 'Dreams Imp/Dreams Imp.exe' in names
-        assert 'Dreams Imp/runtime/python/DLLs/_multiprocessing.pyd' in names
-        assert 'Dreams Imp/runtime/fonts/SourceSansPro-Regular.ttf' in names
+        assert 'Imp Carousel/Imp Carousel.exe' in names
+        assert 'Imp Carousel/runtime/python/DLLs/_multiprocessing.pyd' in names
+        assert 'Imp Carousel/runtime/fonts/SourceSansPro-Regular.ttf' in names
         assert not any(name.endswith(('Start Imp.exe','Stop Imp.exe','renderer.log','settings.json')) for name in names)
-        catalog=json.loads(z.read('Dreams Imp/runtime/characters/catalog.json'))
+        catalog=json.loads(z.read('Imp Carousel/runtime/characters/catalog.json'))
         assert len(catalog)==149
         for character in catalog:
-            data=z.read('Dreams Imp/runtime/characters/'+character['file'])
+            data=z.read('Imp Carousel/runtime/characters/'+character['file'])
             assert hashlib.sha256(data).hexdigest()==character['sha256']
-            assert len(z.read('Dreams Imp/runtime/characters/'+character['id']+'.bindings'))==0x2040
-            assert 'Dreams Imp/runtime/thumbnails/'+character['id']+'.png' in names
+            assert len(z.read('Imp Carousel/runtime/characters/'+character['id']+'.bindings'))==0x2040
+            assert 'Imp Carousel/runtime/thumbnails/'+character['id']+'.png' in names
     print(archive,archive.stat().st_size,hashlib.sha256(archive.read_bytes()).hexdigest(),flush=True)

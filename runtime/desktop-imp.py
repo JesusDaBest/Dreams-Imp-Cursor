@@ -645,7 +645,7 @@ def expression_picker():
     bank = NATIVE['verified_bytes'](NATIVE['ASSET'], NATIVE['EXPECTED_BANK'])
     names = sorted({clip['name'] for clip in parse(bank)}, key=str.casefold)
     panel = tk.Tk()
-    panel.title('Dreams Imp Expressions')
+    panel.title('Imp Carousel Expressions')
     panel.geometry('410x450')
     query = tk.StringVar()
     search = ttk.Entry(panel, textvariable=query)
