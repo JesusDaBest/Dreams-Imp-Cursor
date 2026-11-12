@@ -18,6 +18,8 @@ or restores your Windows cursor.
 Explore the **Imp Carousel**, save your **favourites**, or try **Imp Surprise**
 for a new combination of colours and features. **F11** toggles fullscreen.
 
+Music is included. Click the top-left Imp icon or title to choose your own song.
+
 Windows 10/11 x64, AVX2 CPU and compatible Vulkan 1.3 graphics required.
 [Tested requirements](README.txt) · [Controls](Controls.txt) · [Source/build](docs/BUILD.md)
 

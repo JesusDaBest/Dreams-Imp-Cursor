@@ -16,7 +16,8 @@ def hit_region(x,y,w,h):
     bounds=content_bounds(w,h);x,y=content_point((x,y),bounds);w,h=bounds[2:]
     # The header moves the window; its buttons retain normal client input.
     controls=(.409*w<=x<=.596*w or .888*w<=x<=.952*w) and .047*h<=y<=.17*h
-    return 1 if y<.18*h and not controls else 0
+    music_title=.053*w<=x<=.25*w and .083*h<=y<=.14*h
+    return 1 if y<.18*h and not controls and not music_title else 0
 
 class PickerWindow:
     def __init__(self):

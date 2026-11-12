@@ -1,19 +1,17 @@
 """Stream the user's selected local track while the picker is open."""
 from pathlib import Path
 import pygame
-from app_paths import STATE,write_json
+from app_paths import ROOT,STATE,write_json
 _active=False
 _focused=None
 _track=None
 
 def start(settings):
     global _active,_focused,_track
-    path = settings.get('menu_music')
-    if not path:
-        return
-    path = Path(path)
+    path = Path(settings.get('menu_music') or ROOT/'music/menu.mp3')
     if not path.is_file():
-        return
+        path = ROOT/'music/menu.mp3'
+    if not path.is_file():return
     try:
         if not pygame.mixer.get_init():
             pygame.mixer.init()
@@ -25,6 +23,23 @@ def start(settings):
         set_focus(pygame.key.get_focused())
     except pygame.error as error:
         write_json(STATE/'menu-music.json',dict(track=str(path),playing=False,error=str(error)))
+
+def choose(settings,save):
+    """Choose a local track without changing the cursor or carousel selection."""
+    import tkinter as tk
+    from tkinter import filedialog
+    dialog=tk.Tk()
+    dialog.withdraw()
+    dialog.attributes('-topmost',True)
+    try:
+        path=filedialog.askopenfilename(parent=dialog,title='Choose menu music',
+            filetypes=[('Audio files','*.mp3 *.ogg *.wav *.flac'),('All files','*.*')])
+    finally:
+        dialog.destroy()
+    if path:
+        settings['menu_music']=path
+        save()
+        start(settings)
 
 def set_focus(focused):
     global _focused

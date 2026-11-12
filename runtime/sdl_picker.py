@@ -126,6 +126,14 @@ def main():
             catwidth=max(1,round(284*ui_scale));catleft=(w-catwidth)/2
             catrow=46*ui_scale
 
+            desired_fontsize=max(1,round(38*scale))
+            if fontsize!=desired_fontsize:
+                font=pygame.font.Font(str(ROOT/'fonts/SourceSansPro-Regular.ttf'),desired_fontsize);fontsize=desired_fontsize
+            title={'surprise':'Imp Surprise','favorites':'My Imps'}.get(mode,'Imp Carousel')
+            title_image=font.render(title,True,(242,237,233))
+            title_bounds=pygame.Rect(round(w*.053),round(h*.083),
+                round(w*.027)+title_image.get_width(),max(round(52*scale),title_image.get_height()))
+
             for event in pygame.event.get():
                 if event.type in (pygame.MOUSEBUTTONDOWN,pygame.MOUSEBUTTONUP,pygame.MOUSEMOTION):
                     event.pos=content_point(event.pos,viewport)
@@ -144,13 +152,19 @@ def main():
 
                     x,y=event.pos;hit=next((name for name,r in buttons.items() if r.collidepoint(x,y)),None)
 
-                    if hit=='back':running=False
+                    if title_bounds.collidepoint(x,y):
+                        opened=False
+                        menu_music.choose(settings,save_settings)
+
+                    elif hit=='back':running=False
 
                     elif hit=='shuffle':
                         mode='surprise';selected_button='shuffle';opened=False;target=offset=0
                         surprise_carousel.extend()
 
-                    elif hit=='imps':mode='imps';selected_button='imps';opened=not opened
+                    elif hit=='imps':
+                        opened=not opened if selected_button=='imps' else False
+                        mode='imps';selected_button='imps'
 
                     elif hit=='favorites':
                         mode='favorites' if mode!='favorites' else 'imps';selected_button='favorites' if mode=='favorites' else None;target=offset=0;opened=False
@@ -246,13 +260,10 @@ def main():
                 canvas.blit(background,(0,0))
             else:canvas.blit(background,(0,0))
 
-            desired_fontsize=max(1,round(38*scale))
-            if fontsize!=desired_fontsize:
-                font=pygame.font.Font(str(ROOT/'fonts/SourceSansPro-Regular.ttf'),desired_fontsize);fontsize=desired_fontsize
-
             canvas.blit(pygame.transform.smoothscale(artwork['title-imp'],(round(39*scale),round(52*scale))),(round(w*.053),round(h*.083)))
             title={'surprise':'Imp Surprise','favorites':'My Imps'}.get(mode,'Imp Carousel')
-            canvas.blit(font.render(title,True,(242,237,233)),(round(w*.08),round(h*.083)))
+            title_image=font.render(title,True,(242,237,233))
+            canvas.blit(title_image,(round(w*.08),round(h*.083)))
 
             visible=[];sizes={};positions={};transforms={}
 
@@ -302,6 +313,7 @@ def main():
 
             pointer=content_point(pygame.mouse.get_pos(),viewport)
             hit_rect=next((rect for rect in buttons.values() if rect.collidepoint(pointer)),None)
+            if title_bounds.collidepoint(pointer):hit_rect=title_bounds
             if hit_rect is None and hovered is not None:
                 hit_rect=pygame.Rect(0,0,round(spacing*.9),round(h*.26))
                 hit_rect.center=positions[hovered]

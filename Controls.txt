@@ -33,3 +33,7 @@ Selecting a row Imp changes the large preview without scrolling the row.
 Closing the picker keeps the selected cursor running and releases its previews.
 Right-click the Dreams Imp system-tray icon to reopen the picker or restore the
 Windows cursor. Double-click the tray icon to open the picker.
+
+Click the top-left Imp icon or title to choose menu music from your files.
+A default song is bundled. Music loops while the picker is focused.
+Click the top-centre Imp button once to select the carousel, then again for categories.
