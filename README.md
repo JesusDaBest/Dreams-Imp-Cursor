@@ -4,6 +4,8 @@ Dreams Imps. On your desktop.
 
 **[Download for Windows](https://github.com/JesusDaBest/Dreams-Imp-Cursor/releases/latest/download/Imp-Carousel-Windows.zip)**
 
+[Join the Discord for more](https://discord.gg/7jFj63vND)
+
 Download, extract, open **Imp Carousel.exe**, and choose your Imp.
 
 ![Imp Carousel](docs/images/imp-carousel.png)
