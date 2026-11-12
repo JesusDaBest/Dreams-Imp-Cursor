@@ -1,4 +1,4 @@
-Imp Carousel for Windows — 1.1.4
+Imp Carousel for Windows — 1.1.5
 
 Extract the complete ZIP, then double-click Imp Carousel.exe.
 Click an Imp in the carousel to use it as your mouse cursor.

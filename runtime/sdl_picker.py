@@ -288,10 +288,9 @@ def main():
                     # scale and rotation, through the original spring solver.
                     transforms[ident]=frame
 
-            if mode is not None:
-                hero='hero:'+selected;visible.append(hero);sizes[hero]=(round(h*.757),round(h*.757))
-                _,hero_centre=crop_projection(HERO_FRAME,1080*.757)
-                positions[hero]=(round(hero_centre[0]*w/1920),round(hero_centre[1]*h/1080));transforms[hero]=HERO_FRAME
+            hero='hero:'+selected;visible.append(hero);sizes[hero]=(round(h*.757),round(h*.757))
+            _,hero_centre=crop_projection(HERO_FRAME,1080*.757)
+            positions[hero]=(round(hero_centre[0]*w/1920),round(hero_centre[1]*h/1080));transforms[hero]=HERO_FRAME
 
             if visible and preview is None and not error:preview=GalleryClient(STATE/'gallery.log',premultiplied=True)
 

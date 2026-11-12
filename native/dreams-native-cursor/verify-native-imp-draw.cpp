@@ -141,6 +141,8 @@ struct TemporalResolve {
     VkSampler sample{};
     unsigned ping{};
     float draw_time{};
+    std::array<float, 32> previous_projection{};
+    bool have_projection{};
     const void* push;
 
     TemporalResolve(Context& c, VkExtent2D size, const DrawImage& draw, const LiveFrames& live,
@@ -621,6 +623,32 @@ static void draw(Context& c, const char* vs, const char* ps, const char* fleck,
                 resolve = history.get();
                 body_vertex[49] = history->draw_time;
                 body_vertex[50] = history->draw_time += 1.0f / 30;
+                if (gallery->projection) {
+                    // The native perspective path emits UV motion, not raw
+                    // camera-space motion. Its scale/bias must match this crop.
+                    const float* previous = history->have_projection
+                        ? history->previous_projection.data() : gallery->projection;
+                    for (auto* flat : {&vflat, &eye_flat}) {
+                        auto* f = static_cast<float*>(flat->data);
+                        static_cast<uint32_t*>(flat->data)[54] = 1;
+                        f[41] = -projection[0] * .5f; f[42] = -projection[5] * .5f;
+                        f[43] = .5f * (1.f - projection[8]); f[44] = .5f * (1.f - projection[9]);
+                        f[45] = -previous[0] * .5f; f[46] = -previous[5] * .5f;
+                        f[47] = .5f * (1.f - previous[8]); f[48] = .5f * (1.f - previous[9]);
+                        std::memcpy(f + 33, previous + 16, 32);
+                        std::memcpy(f + 63, previous + 24, 32);
+                    }
+                    auto* sf = static_cast<float*>(stick_flat.data);
+                    static_cast<uint32_t*>(stick_flat.data)[57] = 1;
+                    sf[47] = -projection[0] * .5f; sf[48] = -projection[5] * .5f;
+                    sf[49] = .5f * (1.f - projection[8]); sf[50] = .5f * (1.f - projection[9]);
+                    sf[51] = -previous[0] * .5f; sf[52] = -previous[5] * .5f;
+                    sf[53] = .5f * (1.f - previous[8]); sf[54] = .5f * (1.f - previous[9]);
+                    std::memcpy(sf + 39, previous + 16, 32);
+                    std::memcpy(sf + 66, previous + 24, 32);
+                    std::copy_n(gallery->projection, 32, history->previous_projection.data());
+                    history->have_projection = true;
+                }
             }
         }
         target.barrier(cmd, previous, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, 1, 1);

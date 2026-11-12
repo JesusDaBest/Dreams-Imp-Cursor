@@ -20,7 +20,7 @@ from picker_controls import GROUPS, pill, category_panel, size_slider
 from gallery_client import GalleryClient
 
 TITLE = 'Imp Carousel'
-VERSION = '1.1.4'
+VERSION = '1.1.5'
 BG, PANEL, FG, MUTED, ACCENT = '#170f26', '#291a40', '#f4edff', '#bfafd2', '#d8b3ff'
 
 def named_handle(name):

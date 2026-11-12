@@ -38,7 +38,7 @@ Click the top-left Imp icon or title to choose menu music from your files.
 A default song is bundled. Music loops while the picker is focused.
 Click the top-centre Imp button once to select the carousel, then again for categories.
 
-No carousel is shown until a top tab is selected.
+The large Imp preview appears at startup. The bottom carousel appears after choosing a top tab.
 A green check marks only the currently running Imp cursor. Click that Imp again to restore Windows.
 Right-click the cursor tray icon and choose Exit to close the app and cursor together.
 End Task on the app launcher also stops its renderer processes.

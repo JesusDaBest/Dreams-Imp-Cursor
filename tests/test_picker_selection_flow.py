@@ -64,7 +64,7 @@ def events():
     if step==0:return []
     if step==1:
         assert s.histories[-1]['mode'] is None and s.histories[-1]['selected_x'] is None
-        assert not s.requests,'No carousel or hero renderer before choosing a tab'
+        assert s.requests[-1]==['hero:00_default'],'Only the large preview appears before choosing a tab'
         r=pygame.Rect(buttons['imps']);return click(r.center)
     if step in (3,5):
         _,centre=crop_projection(anchor_frame(0,item_index=0),1080*.334)
@@ -79,4 +79,4 @@ def events():
     return []
 pygame.event.get=events
 p.main()
-print('PASS initial blank state; no saved-selection checkmark; choose Imp; checkmark only while active; click again restores cursor')
+print('PASS initial hero only; no saved-selection checkmark; choose Imp; checkmark only while active; click again restores cursor')

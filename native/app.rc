@@ -1,7 +1,7 @@
 1 ICON "../runtime/app.ico"
 1 VERSIONINFO
-FILEVERSION 1,1,4,0
-PRODUCTVERSION 1,1,4,0
+FILEVERSION 1,1,5,0
+PRODUCTVERSION 1,1,5,0
 FILEOS 0x40004
 FILETYPE 0x1
 BEGIN
@@ -11,8 +11,8 @@ BEGIN
   BEGIN
    VALUE "FileDescription", "Imp Carousel\0"
    VALUE "ProductName", "Imp Carousel\0"
-   VALUE "FileVersion", "1.1.4\0"
-   VALUE "ProductVersion", "1.1.4\0"
+   VALUE "FileVersion", "1.1.5\0"
+   VALUE "ProductVersion", "1.1.5\0"
    VALUE "OriginalFilename", "Imp Carousel.exe\0"
   END
  END
