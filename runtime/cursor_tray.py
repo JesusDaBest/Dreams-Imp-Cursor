@@ -86,10 +86,16 @@ class CursorTray:
                     try:
                         user.AppendMenuW(menu, 0, 1, 'Choose Imp…')
                         user.AppendMenuW(menu, 0, 2, 'Restore Windows cursor')
+                        user.AppendMenuW(menu, 0x800, 0, None)
+                        user.AppendMenuW(menu, 0, 3, 'Exit')
                         user.SetForegroundWindow(hwnd)
                         choice = user.TrackPopupMenu(menu, 0x100 | 2, point.x, point.y, 0, hwnd, None)
                         if choice == 1: choose()
                         elif choice == 2: self.restore()
+                        elif choice == 3:
+                            from app_lifecycle import request_exit
+                            request_exit()
+                            self.restore()
                         user.PostMessageW(hwnd, 0, 0, 0)
                     finally:
                         user.DestroyMenu(menu)

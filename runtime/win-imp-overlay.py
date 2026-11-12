@@ -336,7 +336,7 @@ class Overlay:
         try:
             subprocess.Popen([sys.executable, str(Path(__file__).with_name('desktop-imp.py')),
                               '--watch', str(os.getpid()), name],
-                             creationflags=subprocess.CREATE_NO_WINDOW)
+                              creationflags=subprocess.CREATE_NO_WINDOW | (0x01000000 if os.environ.get('DREAMS_IMP_MANAGED_JOB') else 0))
             if not ready or not self.watch_done or k.WaitForSingleObject(ready, 4000) != 0:
                 raise RuntimeError('Windows cursor recovery guard did not start')
         finally:

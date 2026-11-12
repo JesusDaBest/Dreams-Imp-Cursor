@@ -20,6 +20,7 @@ from carousel_native import anchor_frame,crop_projection,HERO_FRAME
 from native_buttons import NativeButtons,layout as native_button_layout
 from hover_bounds import HoverBounds
 import menu_music
+import app_lifecycle
 from picker_layout import content_bounds,content_point
 
 from app import category,display_name,named_handle,TITLE
@@ -67,7 +68,7 @@ def main():
     surprise_carousel=SurpriseCarousel(generate_surprises)
     surprises=surprise_carousel.items
 
-    favorites=set(settings.get('favorites',[]));group='All Imps';mode='imps';opened=False;selected_button=None
+    favorites=set(settings.get('favorites',[]));group='All Imps';mode=None;opened=False;selected_button=None
 
     offset=target=0.;drag=None;preview=None;worker=None;log=None;changing=False;pending=None;deadline=0
 
@@ -83,6 +84,7 @@ def main():
     stop=__import__('runpy').run_path(str(ROOT/'win-imp-overlay.py'))['stop']
 
     def filtered():
+        if mode is None:return []
         if mode=='surprise':return surprises
         return sorted((i for i in items if (mode=='favorites' and i['id'] in favorites or mode!='favorites' and not i.get('generated')) and (group=='All Imps' or category(i['id'])==group)),key=lambda i:(i['id']!='00_default',display_name(i).casefold()))
 
@@ -90,6 +92,10 @@ def main():
 
         nonlocal selected,changing,pending,deadline
 
+        if not ident:return
+        active=app_lifecycle.active_character()
+        if (changing and pending==ident) or active==ident:
+            pending=None;changing=False;stop();return
         selected=ident;pending=ident;changing=True;deadline=time.monotonic()+10;stop()
 
     def save_settings():
@@ -111,6 +117,8 @@ def main():
 
         while running:
 
+            if app_lifecycle.exit_requested():break
+
             dt=min(.05,clock.tick(120)/1000)
             viewport=content_bounds(*screen.get_size());_,_,w,h=viewport
             if canvas is None or canvas.get_size()!=(w,h):canvas=pygame.Surface((w,h))
@@ -121,7 +129,7 @@ def main():
             def rect(x,y,rw,rh):return pygame.Rect(round(x*w),round(y*h),round(rw*w),round(rh*h))
 
             buttons={name:pygame.Rect(values) for name,values in native_button_layout(mode,w,h).items()}
-            if offset<.01 and target<.01:buttons.pop('previous')
+            if mode is None or (offset<.01 and target<.01):buttons.pop('previous')
 
             catwidth=max(1,round(284*ui_scale));catleft=(w-catwidth)/2
             catrow=46*ui_scale
@@ -167,7 +175,7 @@ def main():
                         mode='imps';selected_button='imps'
 
                     elif hit=='favorites':
-                        mode='favorites' if mode!='favorites' else 'imps';selected_button='favorites' if mode=='favorites' else None;target=offset=0;opened=False
+                        mode='favorites';selected_button='favorites';target=offset=0;opened=False
 
                     elif hit=='settings':
                         favorites.add(selected);settings['favorites']=sorted(favorites);save_settings()
@@ -280,11 +288,12 @@ def main():
                     # scale and rotation, through the original spring solver.
                     transforms[ident]=frame
 
-            hero='hero:'+selected;visible.append(hero);sizes[hero]=(round(h*.757),round(h*.757))
-            _,hero_centre=crop_projection(HERO_FRAME,1080*.757)
-            positions[hero]=(round(hero_centre[0]*w/1920),round(hero_centre[1]*h/1080));transforms[hero]=HERO_FRAME
+            if mode is not None:
+                hero='hero:'+selected;visible.append(hero);sizes[hero]=(round(h*.757),round(h*.757))
+                _,hero_centre=crop_projection(HERO_FRAME,1080*.757)
+                positions[hero]=(round(hero_centre[0]*w/1920),round(hero_centre[1]*h/1080));transforms[hero]=HERO_FRAME
 
-            if preview is None and not error:preview=GalleryClient(STATE/'gallery.log',premultiplied=True)
+            if visible and preview is None and not error:preview=GalleryClient(STATE/'gallery.log',premultiplied=True)
 
             hovered=None
             if preview:
@@ -321,7 +330,8 @@ def main():
                 hit_rect=hit_rect.move(viewport[0],viewport[1])
             hover_bounds.publish(window.hwnd,hit_rect if pygame.mouse.get_focused() else None)
             button_hover=next((name for name,r in buttons.items() if r.collidepoint(pointer)),None)
-            button_renderer.request(hovered=button_hover,mode=mode,selected_button=selected_button,previous='previous' in buttons,selected_x=positions[selected][0]*1920/w if selected in positions else None)
+            active=None if changing else app_lifecycle.active_character()
+            button_renderer.request(hovered=button_hover,mode=mode,selected_button=selected_button,previous='previous' in buttons,selected_x=positions[active][0]*1920/w if active in positions else None)
             native_frame,native_problem=button_renderer.take()
             if native_problem:raise RuntimeError('Native UI renderer: '+native_problem)
             if native_frame:

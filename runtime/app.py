@@ -20,7 +20,7 @@ from picker_controls import GROUPS, pill, category_panel, size_slider
 from gallery_client import GalleryClient
 
 TITLE = 'Dreams Imp'
-VERSION = '1.1.2'
+VERSION = '1.1.3'
 BG, PANEL, FG, MUTED, ACCENT = '#170f26', '#291a40', '#f4edff', '#bfafd2', '#d8b3ff'
 
 def named_handle(name):
@@ -459,7 +459,10 @@ def main():
         kernel.CloseHandle.argtypes=(W.HANDLE,);kernel.CloseHandle(mutex)
 
 if __name__=='__main__':
-    try:main()
+    try:
+        main()
+        from app_lifecycle import picker_closed
+        picker_closed()
     except Exception:
         ERROR.write_text(traceback.format_exc(),encoding='utf-8')
         C.windll.user32.MessageBoxW(None,'Dreams Imp could not open.\n\n'+str(ERROR),TITLE,0x10)
