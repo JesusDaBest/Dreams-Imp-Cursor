@@ -8,7 +8,10 @@ No development tools or Dreams installation are needed to run it.
 Use an x64 Visual Studio developer environment with clang-cl and the Windows SDK.
 Set VULKAN_SDK to the Vulkan SDK directory and NLOHMANN_INCLUDE to the directory
 containing nlohmann/json.hpp. Run native/build.cmd for the launcher and cursor renderer,
-and native/ui/build.cmd for the button renderer. Python 3.12 and the Python packages
+and native/ui/build.cmd for the button renderer. Run tools/build_portable_shaders.py
+with --sdk PATH when rebuilding cursor SPIR-V; assembling the reference source alone
+is insufficient because the AMD extension must be lowered. The package builder rejects
+vendor-only SPIR-V imports. Python 3.12 and the Python packages
 are bundled in the release ZIP; the Git checkout excludes that interpreter distribution.
 Copy runtime/python from the Windows ZIP when building the checkout.
 

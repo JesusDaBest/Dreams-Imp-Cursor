@@ -1,0 +1,10 @@
+{
+  "vendor_imports_remaining": 0,
+  "original_shaders_rejected_by_packager": true,
+  "fragment_calls_replaced": 9,
+  "resolve_calls_replaced": 9,
+  "spirv_vulkan_1_3_validation": true,
+  "source_rebuild_instructions_match": true,
+  "cpu_routines_changed": false,
+  "desktop_permission_code_changed": false
+}

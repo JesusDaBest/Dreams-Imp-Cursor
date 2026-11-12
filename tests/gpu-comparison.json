@@ -1,0 +1,32 @@
+{
+  "appearances": 149,
+  "motion_clips": 8,
+  "cases": {
+    "original": {
+      "frames": 394,
+      "mismatched_frames": [],
+      "seconds": 1.643,
+      "stream_hash": "79f618ce893b859b6e7869d86c5ed6423df204ec0f6011a8c1f9232af0fa85ee"
+    },
+    "fragment-only": {
+      "frames": 394,
+      "mismatched_frames": [],
+      "seconds": 1.85,
+      "stream_hash": "79f618ce893b859b6e7869d86c5ed6423df204ec0f6011a8c1f9232af0fa85ee"
+    },
+    "resolve-only": {
+      "frames": 394,
+      "mismatched_frames": [],
+      "seconds": 1.702,
+      "stream_hash": "79f618ce893b859b6e7869d86c5ed6423df204ec0f6011a8c1f9232af0fa85ee"
+    },
+    "both": {
+      "frames": 394,
+      "mismatched_frames": [],
+      "seconds": 1.646,
+      "stream_hash": "79f618ce893b859b6e7869d86c5ed6423df204ec0f6011a8c1f9232af0fa85ee"
+    }
+  },
+  "gpu": "AMD Radeon 8060S",
+  "nvidia_retest_required": true
+}

@@ -1,4 +1,4 @@
-Dreams Imp for Windows — 1.1.0
+Dreams Imp for Windows — 1.1.1
 
 Extract the complete ZIP, then double-click Dreams Imp.exe.
 Click an Imp in the carousel to use it as your mouse cursor.
@@ -15,6 +15,7 @@ in the heart tab. Imp Surprise generates a separate carousel of appearances.
 
 Includes 149 game presets and original animation data, native particle/motion
 routines and ported game shaders. Windows actions drive the cursor reactions.
+The fragment and temporal-resolve shaders use standard instructions instead of AMD-only trinary min/max.
 Exact parity with every Dreams animation and event has not been established.
 
 Requirements

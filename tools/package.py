@@ -10,6 +10,26 @@ ROOT=Path(__file__).resolve().parents[1]
 OUT=ROOT/'release'/'Dreams Imp'
 OUT.mkdir(parents=True,exist_ok=True)
 
+# Do not ship vendor-only SPIR-V imports in a cross-vendor download.
+def audit_portable_shaders(root):
+    import struct
+    for shader in root.rglob('*.spv'):
+        raw=shader.read_bytes()
+        assert len(raw)>=20 and len(raw)%4==0, shader
+        words=struct.unpack('<%dI'%(len(raw)//4),raw)
+        assert words[0]==0x07230203, shader
+        i=5
+        while i<len(words):
+            n=words[i]>>16;op=words[i]&65535
+            assert n and i+n<=len(words), shader
+            if op in (10,11):
+                start=2 if op==11 else 1
+                name=struct.pack('<%dI'%(n-start),*words[i+start:i+n]).split(b'\0')[0].decode()
+                assert not any(v in name for v in ('AMD','NV_','NVX')), (shader,name)
+            i+=n
+
+audit_portable_shaders(ROOT/'runtime')
+
 def copy_changed(source,dest):
     if dest.exists() and source.read_bytes()==dest.read_bytes():return
     dest.parent.mkdir(parents=True,exist_ok=True)
@@ -33,6 +53,7 @@ for relative in ('Dreams Imp.exe','runtime/imp-renderer.dll'):
     copy_changed(ROOT/'build-output'/relative,OUT/relative)
 for name in ('README.txt','Controls.txt','THIRD_PARTY_NOTICES.txt'):
     shutil.copy2(ROOT/name,OUT/name)
+audit_portable_shaders(OUT/'runtime')
 files=sorted(p for p in OUT.rglob('*') if p.is_file() and p.name!='MANIFEST.sha256' and include(p.relative_to(OUT)))
 manifest=''.join(hashlib.sha256(p.read_bytes()).hexdigest()+'  '+p.relative_to(OUT).as_posix()+'\n' for p in files)
 (OUT/'MANIFEST.sha256').write_text(manifest,encoding='utf-8')
